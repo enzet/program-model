@@ -18,6 +18,7 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{mathtools}
+\usepackage{makeidx}
 \usepackage{multicol}
 % \usepackage{tikz-cd}
 
@@ -45,7 +46,7 @@
 \newcommand{\pcunchanged}{c_{t + 1} = c_t}
 \newcommand{\Ra}{\Rightarrow}
 \newcommand{\ra}{\rightarrow}
-\newcommand{\term}[1]{\textit{#1}}
+\newcommand{\term}[1]{\textit{#1}\index{#1}}
 % \newcommand{\term}[1]{\textcolor{magenta}{#1}}
 \newcommand{\true}{\textbf{true}}
 \newcommand{\false}{\textbf{false}}
@@ -86,6 +87,7 @@
     dynamic symbolic (concolic) execution,
     and taint tracking}
 \author{Sergey Vartanov}
+\makeindex
 
 \begin{document}
 
