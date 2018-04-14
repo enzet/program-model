@@ -39,6 +39,7 @@
 % Some useful definitions.
 
 \newcommand{\comment}[1]{\textcolor{blue}{#1}}  % red
+\newcommand{\Lra}{\Leftrightarrow}
 \newcommand{\nat}{\mathds{N}}
 \newcommand{\new}[1]{\textcolor{black}{#1}}  % blue
 % \newcommand{\new}[1]{\fcolorbox{black}{white}{#1}}
@@ -79,7 +80,12 @@
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{claim}{Claim}
 
-\lstset{basicstyle=\linespread{0.9}\small\ttfamily,keywordstyle=\bfseries\color{black},stringstyle=\color{black},identifierstyle=\color{black}}
+\lstset{
+    basicstyle=\linespread{0.9}\small\ttfamily,
+    keywordstyle=\bfseries\color{black},
+    stringstyle=\color{black},
+    identifierstyle=\color{black}
+}
 
 \setlength{\parindent}{0em}
 
@@ -343,10 +349,27 @@ $\forall j \,\, f_j \in F \land f_{j + 1} \in f_j[D] \land f_j \notin F_T$.
     Choose arbitrary $f_j = (f_j^F, f_j^D)$ and $f_{j + 1}$.
     By execution definition,
     $f_{j + 1} = f_j^F(d_j) \Ra f_{j + 1} \in f_j[D]$.
-    Hence, $P$ is an execuion path.
+    Hence, $P$ is an execution path.
 \end{proof}
 
-We will denote this fact as $E(d_0) \leadsto P$.
+We will denote this fact as $E(d_0) \Ra P$.
+
+Let's also define a \term{branch chain} $P_B$ of a execution path $P$
+as a subsequence of $P$, which contains only $f_j \in F_B$.
+We can denote this fact as $P \Ra P_B$
+
+% $P_B = \{f_{j_0}, f_{j_1}, \dots, f_{j_k}, \dots\}$, where
+% $\forall k \,\, f_{j_k} \in F_B$
+
+\begin{lemma}
+    $\forall P_B \,\, \exists! P: P \Ra P_B$.
+\end{lemma}
+
+\begin{proof}
+    \comment{Add proof.}
+\end{proof}
+
+Therefore, we can write $P \Lra P_B$.
 
 Note, that we define execution path just as a path in control flow graph.
 It could be infeasible if there is no such input data that implies that path.
@@ -398,8 +421,8 @@ Execution is performed using symbolic variables instead of concrete data.
 $\se{\mathcal{P}} = \langle \se{F}, \se{F}_I, \se{F}_T, \se{D} \rangle$~---
 \term{symbolic model} of program
 $\mathcal{P} = \langle F, F_I, F_T, D \rangle$.
-We assume, that there is a set of rules $R_\text{SE}$ that allow us to
-create a symbolic model from the program.
+There are a lot of ways to create a symbolic model from the program,
+therefore we will use some particular set of rules $R_\text{SE}$.
 We can write it as
 $\mathcal{P} \xrightarrow[]{R_\text{SE}} \se{\mathcal{P}}$.
 It denotes that for all $\mathcal{P}$ exists only one symbolic model
@@ -422,17 +445,15 @@ From definition:
     \item $\se{f}_j: \se{D} \times C \ra
         (\se{F} \times \se{D} \times C)*$~---
         \term{symbolic function element model}:
-    \begin{itemize}
-        \item $\se{f}_j^F: \se{D} \ra \se{F}*$~---
-            \term{control flow symbolic function element model},
-        \item $\se{f}_j^D: \se{D} \ra \se{D}*$~---
-            \term{data symbolic function element model}.
-    \end{itemize}
-    % \item $\se{F} = \{(\se{f}_j^F, \se{f}_j^D)\}$~---
-    %     concolic function element models.
+    % %%% Not sure we have to divide function $\se{f}_j$.
     % \begin{itemize}
-    %     \item $\se{f}_j^F: \se{D} \times D \ra \se{F}$.
-    %     \item $\se{f}_j^F: \se{D} \times D \ra \se{D}$.
+    %     \item $\se{f}_j^F: \varnothing \ra \se{F}*$~---
+    %         \term{control flow symbolic function element model},
+    %     \item $\se{f}_j^D: \se{D} \ra \se{D}*$~---
+    %         \term{data symbolic function element model}.
+    %     \item $\se{f}_j^C: \se{D} \times C \ra C*$~---
+    %         \term{data symbolic function element model}.
+    % \end{itemize}
     % \end{itemize}
 \end{itemize}
 
