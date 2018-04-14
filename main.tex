@@ -297,6 +297,12 @@ where $f_t \in F_T \land \forall j < t \,\, f_j \notin F_T$
 For the first case we will use notation $E(d_0) \ra d_t$,
 for the second: $E(d_0) \ra \infty$.
 
+Note, that execution is a sequence of states:
+$E(d_0) = (s_0, s_1, \dots, s_t, \dots)$.
+But we will use notation
+$E(d_0) = s_0 \ra s_1 \ra \dots \ra s_t \ra \dots$
+to emphasize that it is a process.
+
 \begin{lemma}
     \label{exists_one_execution}
     $\forall \mathcal{P} = \langle F, F_I, F_T, D \rangle \,\,
@@ -329,10 +335,10 @@ a circle with double stroke.
 \end{figure}
 
 We will also define \term{execution path} as either any finite sequence
-$P = \{f_0, f_1, \dots, f_t\}$, where
+$P = (f_0, f_1, \dots, f_t)$, where
 $\forall j \,\, f_j \in F \land f_{j + 1} \in f_j[D]$
 and $f_t \in F_T \land \forall j < t \,\, f_j \notin F_T$
-or infinite sequence $P = \{f_0, f_1, \dots, f_t, \dots\}$, where
+or infinite sequence $P = (f_0, f_1, \dots, f_t, \dots)$, where
 $\forall j \,\, f_j \in F \land f_{j + 1} \in f_j[D] \land f_j \notin F_T$.
 
 \begin{lemma}
@@ -340,13 +346,13 @@ $\forall j \,\, f_j \in F \land f_{j + 1} \in f_j[D] \land f_j \notin F_T$.
     \[ \begin{array}{c}
     \forall E(d_0) = s_0 \ra s_1 \ra \cdots \ra s_t \ra \cdots =
         (f_0, d_0) \ra (f_1, d_1) \ra \cdots \ra (f_t, d_t) \ra \cdots \\
-    \exists! P = \{f'_0, f'_1, \dots, f'_t, \dots\}:
+    \exists! P = (f'_0, f'_1, \dots, f'_t, \dots):
         f'_0 = f_0, f'_1 = f_1, \dots, f'_t = f_t, \dots
     \end{array} \]
 \end{lemma}
 
 \begin{proof}
-    Let's create an array $P = \{f_0, f_1, \dots, f_t, \dots\}$ from
+    Let's create a sequence $P = (f_0, f_1, \dots, f_t, \dots)$ from
     execution states.
     Now we have to proof that $P$ is execution path.
     Choose arbitrary $f_j = (f_j^F, f_j^D)$ and $f_{j + 1}$.
@@ -506,14 +512,14 @@ that manages the symbolic execution process:
 \se{\mathcal{F}}(s_{k, \dots, l})
 &= \se{\mathcal{F}}
     \big((f_{k, \dots, l}, d_{k, \dots, l}, c_{k, \dots, l})\big) = \\
-&= \{(f_{k, \dots, l, m}, d_{k, \dots, l, m}, c_{k, \dots, l, m}), \dots, 
-       (f_{k, \dots, l, n}, d_{k, \dots, l, n}, c_{k, \dots, l, n})\} = \\
-&= \{s_{k, \dots, l, m}, \dots, s_{k, \dots, l, n}\}
+&= \big((f_{k, \dots, l, m}, d_{k, \dots, l, m}, c_{k, \dots, l, m}), \dots, 
+       (f_{k, \dots, l, n}, d_{k, \dots, l, n}, c_{k, \dots, l, n})\big) = \\
+&= (s_{k, \dots, l, m}, \dots, s_{k, \dots, l, n})
 \end{align*}
 
 Definitions:
 \begin{itemize}
-    \item $C = \{e_i\}$~--- \term{path condition} or \term{path constraint}.
+    \item $C$~--- \term{path condition} or \term{path constraint}.
     \item $X = \{x_k\}, x_k \in \mathcal{B}$~--- \term{symbolic variables}.
 \end{itemize}
 
@@ -525,7 +531,8 @@ Definitions:
 \begin{tikzcd}
     && \se{s}_{0,0,0} \arrow{r} & \cdots \\
     & \se{s}_{0,0} \arrow{ru} \arrow{r} \arrow{rd} & \cdots \\
-    \se{s}_0 \arrow{r} \arrow{ru} \arrow{rd} & \cdots & \se{s}_{0,0,n_{0,0}}
+    \se{E} = \se{s}_0 \arrow{r} \arrow{ru} \arrow{rd} & \cdots & 
+        \se{s}_{0,0,n_{0,0}}
         \arrow{r} & \cdots \\
     & \se{s}_{0,n_0} \arrow{r} & \cdots
 \end{tikzcd}
@@ -546,6 +553,10 @@ Execution path $P = \{\se{f}_0, \se{f}_1, \dots, \se{f}_t\}$ is
 \sublevel{Symbolic execution and concrete execution}
 
 \comment{Feasibility in concrete model vs feasibility in symbolic model.}
+
+\sublevel{Static symbolic execution}
+
+\comment{Some thoughts goes here.}
 
 \level{Taint tracking}
 
