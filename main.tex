@@ -691,6 +691,17 @@ This example could be formalized as:
         f^D_1(\{x, y, z\}) = \{x, y, z\}$.
 \end{itemize}
 
+\sublevel{Veritesting example}
+
+Example from Veritesting paper~\cite{veritesting}.
+\lstset{language=c,caption=Listing,label={lst:impl}}
+\begin{lstlisting}[numbers=left,numberstyle=\scriptsize]
+for (int i = 0; i < 100; i++) {
+    if (input[i] == 'a') counter++;
+}
+if (counter == 75) abort();
+\end{lstlisting}
+
 \level{Other models}
 
 We compare our model with other concrete, symbolic, and dynamic symbolic
