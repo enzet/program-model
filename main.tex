@@ -145,7 +145,8 @@ Additionally, we will assume the following.
     \item To simplify considering, we will assume that unless otherwise stated
         there is one and only one initial function element $f_0$:
         $F_I = \{f_0\}$.
-    \item Program has terminal function elements: $F_T \neq \varnothing$.
+    \item Program has at least one terminal function elements:
+        $F_T \neq \varnothing$.
 \end{itemize}
 
 \subsublevel{Limitations}
@@ -216,11 +217,16 @@ $f[D] = \{f_j \in F | f_j = f^D(d), d \in D\}$.
 \term{Control flow graph} is a directed graph where vertices
 are function elements and there is an edge from
 vertex $f_i$ to vertex $f_j$ iff $f_j \in f_i[D]$.
-Function element $f = (f^F, f^D)$ is \term{branch} iff $|f[D]| > 1$.
+Function element $f_j = (f_j^F, f_j^D)$ is \term{branch} iff $|f_j[D]| > 1$.
 Otherwise (if range of the control flow function
 element has exactly one element),
 function element is \term{operation},
-i.e. iff $\exists j: f^D(d) = f_j, \forall d \in D$.
+i.e. iff $\exists f_k: f_j^D(d) = f_k, \forall d \in D$.
+
+The set of all branches is $F_B: \{f_j \in F: |f_j[D]| > 1\}$.
+The set of all operations is $F_O: \{f_j \in F: |f_j[D]| = 1\}$.
+Since $|f_j[D]|$ by definition is either equals to 1, or greater than 1,
+$F = F_B \cup F_O$ and $F_B \cap F_O = \varnothing$.
 
 We will use graphical representation of control flow graph using circles
 for vertices with function element captions and arrows for edges.
@@ -602,6 +608,18 @@ and either none of function elements.
 
 $\dse{E}(d_0) = \dse{s}_0 \ra \dse{s}_1 \ra \dots \ra \dse{s}_t \ra \dots$.
 
+\sublevel{Path alternation}
+
+\term{Path alternation} is a technique to construct new execution paths
+using dynamic symbolic execution.
+Assume, that we have dynamic symbolic execution path
+$\dse{E}(d_0) = \dse{s}_0 \ra \dse{s}_1 \ra \dots \ra \dse{s}_t \ra \dots$.
+There are states that we will call \term{branch states}:
+$\dse{S}_B = \{\dse{s}_t = (f_t, d_t, \se{f}_t, \se{d}_t, c_t) :
+f_t \in F_B\}$.
+
+\comment{Divergence?}
+
 \level{Examples}
 
 In that section we will consider some primitive programs
@@ -641,7 +659,7 @@ Simplest program that contains branch:
     \begin{center}
         \includegraphics[scale=1.25]{image/execution_branch.pdf}
     \end{center}
-    \caption{Control flow graph, shortened execution paths,
+    \caption{Control flow graph, execution paths,
         and symbolic execution tree of a program with one branch.}
 \end{figure}
 
@@ -665,7 +683,7 @@ Simplest program that contains a cycle:
     \begin{center}
         \includegraphics[scale=1.25]{image/execution_cycle.pdf}
     \end{center}
-    \caption{Control flow graph, shortened execution paths,
+    \caption{Control flow graph, execution paths,
         and symbolic execution tree of a program with one cycle.}
 \end{figure}
 
