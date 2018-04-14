@@ -20,7 +20,7 @@
 \usepackage{mathtools}
 \usepackage{makeidx}
 \usepackage{multicol}
-% \usepackage{tikz-cd}
+\usepackage{tikz-cd}
 
 \hoffset = 0pt
 \voffset = 0pt
@@ -492,13 +492,13 @@ Definitions:
         symbolic execution.
 \end{itemize}
 
-% \begin{tikzcd}
-%     && \se{s}_{0,0,0} \arrow{r} & \cdots \\
-%     & \se{s}_{0,0} \arrow{ru} \arrow{r} \arrow{rd} & \cdots \\
-%     \se{s}_0 \arrow{r} \arrow{ru} \arrow{rd} & \cdots & \se{s}_{0,0,n_{0,0}}
-%         \arrow{r} & \cdots \\
-%     & \se{s}_{0,n_0} \arrow{r} & \cdots
-% \end{tikzcd}
+\begin{tikzcd}
+    && \se{s}_{0,0,0} \arrow{r} & \cdots \\
+    & \se{s}_{0,0} \arrow{ru} \arrow{r} \arrow{rd} & \cdots \\
+    \se{s}_0 \arrow{r} \arrow{ru} \arrow{rd} & \cdots & \se{s}_{0,0,n_{0,0}}
+        \arrow{r} & \cdots \\
+    & \se{s}_{0,n_0} \arrow{r} & \cdots
+\end{tikzcd}
 
 Execution rule:
 \begin{itemize}
@@ -557,22 +557,50 @@ Definitions:
 
 \sublevel{Execution}
 
-Dynamic symbolic execution or, in other words, concolic execution, is
-an execution of a program along with execution of its symbolic model
+Dynamic symbolic execution or, in other words, concolic execution,
+is an execution of a program along with execution of its symbolic model
 (that means construction of a path condition) but for the particular
 execution path that is defined by initial input data $d_0$.
 
 As a concrete execution, it is iterative process with steps.
-We will also use variable $t \in nat$ as execution step.
+We will also use variable $t \in \nat$ as execution step.
 At every step, there are program execution state $s_t = (f_t, d_t)$
 and symbolic execution state $\se{s}_t = (\se{f}_t, \se{d}_t, c_t)$,
 which we combine into \term{concolic state}
 $\dse{s}_t = (f_t, d_t, \se{f}_t, \se{d}_t, c_t)$.
 
+We consider that there is Dynamic symbolic execution function
+$\dse{\mathcal{F}}: \dse{S} \ra \dse{S}$
+that manages the execution process:
+\begin{align*}
+\dse{\mathcal{F}}(\dse{s}_t) &=
+    \dse{\mathcal{F}}\big((f_t, d_t, \se{f}_t, \se{d}_t, c_t)\big) = \\
+    &= (f_t^F(d_t), f_t^D(d_t),
+        \se{f}_t^F(\se{d_t}), \se{f}_t^D(\se{d_t}), c_{t + 1}) = \\
+    &= (f_{t + 1}, d_{t + 1}, \se{f}_{t + 1}, \se{d}_{t + 1}, c_{t + 1}) = \\
+    &= \dse{s}_{t + 1}.
+\end{align*}
+
+\comment{Add function to produce $c_{t + 1}$ from $c_t$.}
+
+Execution function $\mathcal{F}$ defines an \term{execution rule}:
 \begin{itemize}
-    \item $\dse{E}(d_0) = \dse{s}_0 \ra \dse{s}_1 \ra \dots
-        \ra \dse{s}_t \ra \dots$~--- concolic execution.
+    \item $f_{t + 1} = f_t^F(d_t)$,
+    \item $d_{t + 1} = f_t^D(d_t)$.
 \end{itemize}
+
+\term{Dynamic symbolic execution} (or \term{concolic execution})
+of a program $\mathcal{P} = \langle F, F_I, F_T, D \rangle$
+and a symbolic model
+$\se{\mathcal{P}} = \langle \se{F}, \se{F_I}, \se{F_T}, \se{D} \rangle$
+is a chain of concolic states, starting with initial state
+$\dse{s}_0 = (f_0, d_0, \se{f}_0, \se{d}_0, \varnothing)$,
+where the next state is a function $\dse{\mathcal{F}}$ of previous state:
+$$s_{t + 1} = (f_{t + 1}, d_{t + 1}) = (f_t^F(d_t), f_t^D(d_t)) =
+    \mathcal{F}(s_t), s_t \in S$$
+and either none of function elements.
+
+$\dse{E}(d_0) = \dse{s}_0 \ra \dse{s}_1 \ra \dots \ra \dse{s}_t \ra \dots$.
 
 \level{Examples}
 
@@ -769,6 +797,7 @@ Statement is:
 
 % \listoffigures
 % \listoftables
+% \printindex
 
 \bibliography{paper}{}
 \bibliographystyle{plain}
