@@ -117,7 +117,7 @@ Where function elements and data defined as followed:
         $f_j: D \ra F \times D$~is \term{function element}.
         $f_j = (f^F_j, f^D_j)$:
         \begin{itemize}
-            \item $f^F_j: D \ra F \cup \{\bot\}$~is
+            \item $f^F_j: D \ra F$~is
                 \term{control flow function element}.
             \item $f^D_j: D \ra D$~is \term{data flow function element}.
         \end{itemize}
@@ -126,7 +126,6 @@ Where function elements and data defined as followed:
         and modifies data \{$f^D_j$\}.
     \item $F_I$ is a set of \term{initial function elements}.
     \item $F_T$ is a set of \term{terminal function elements}.
-    \item $\bot$ is a special terminal symbol.
     \item $D = \{d_j\}$ is \term{data}, $d_j \in \mathcal{B}$, which is
         \term{data set}.
 \end{itemize}
@@ -137,9 +136,9 @@ Additionally, we will assume the following.
     \item $\forall j \,\, f^F_j$ is a total function.
     \begin{itemize}
         \item If $f_j \notin F_T$,
-            $\forall d \in D \,\, f^F_j(d) = f_k \neq \bot, f_k \in F$.
+            $\forall d \in D \,\, f^F_j(d) = f_k, f_k \in F$.
         \item If $f_j \in F_T$,
-            $\forall d \in D \,\, f^F_j(d) = \bot$.
+            $\forall d \in D \,\, f^F_j(d) = f_j$.
     \end{itemize}
     \item To simplify considering, we will assume that unless otherwise stated
         there is one and only one initial function element $f_0$:
