@@ -101,9 +101,11 @@
 
 \setlength{\parskip}{0.5em}
 
-The main goal of this document is to offer a formal definition of
-some program analysis terms, such as symbolic execution,
-dynamic symbolic execution, feasibility, and taint analysis.
+The main goal of this document is to propose a formal definition of
+some program analysis terms, such as execution (concrete execution),
+(pure) symbolic execution,
+dynamic symbolic execution (concolic execution),
+feasibility, and taint analysis.
 
 \level{Concrete program execution}
 
@@ -234,18 +236,21 @@ or initial elements are represented by vertices that has no incoming edges.
 We consider that program execution is an iterative process with steps.
 For further considerations we will use variable $t \in \nat$ as
 \term{execution step}.
-At every step program execution has its \term{program state} $S = (f, d)$:
+At every step program execution has its \term{program state} $s = (f, d)$:
 next function element (next instruction) and current \term{data state}.
 $f \in F, d \in D$.
+Set of all possible execution states is $S$.
 Program state at the iteration $t$ is
-$s_t = (f_t, d_t) = \big((f_t^F, f_t^D), (\{m_{t,j}\}, \{r_{t,j}\})\big)$.
+$s_t = (f_t, d_t) = \big((f_t^F, f_t^D), d_t\big)$.
 $(f_0, d_0), f_0 \in F_I$ is \term{initial state}.
 Any state $(f_t, d_t)$ such as $f_t \in F_T$ is \term{terminal state}.
 
 We consider that there is \term{execution function} $\mathcal{F}: S \ra S$
 that manages the execution process:
 $$\mathcal{F}(s_t) = \mathcal{F}\big((f_t, d_t)\big) =
-    (f_t^F(d_t), f_t^D(d_t)) = (f_{t + 1}, d_{t + 1}) = s_{t + 1}.$$
+    f_t(d_t) =
+    \big(f_t^F(d_t), f_t^D(d_t)\big) =
+    (f_{t + 1}, d_{t + 1}) = s_{t + 1}.$$
 
 Execution function $\mathcal{F}$ defines an \term{execution rule}:
 \begin{itemize}
@@ -258,7 +263,7 @@ on \term{input data} $d_0$, where $F_I = \{f_0\}$,
 is a chain of program states,
 starting with initial state $s_0 = (f_0, d_0)$,
 where next state is a function $\mathcal{F}$ of previous state:
-$$s_{t + 1} = (f_{t + 1}, d_{t + 1}) = (f_t^F(d_t), f_t^D(d_t)) =
+$$s_{t + 1} = (f_{t + 1}, d_{t + 1}) = \big(f_t^F(d_t), f_t^D(d_t)\big) =
     \mathcal{F}(s_t), s_t \in S$$
 and either none of function elements.
 
@@ -396,7 +401,8 @@ $\se{\mathcal{P}}$ constructed using the set of rules $R_\text{SE}$.
 
 From definition:
 \begin{itemize}
-    \item $\se{F} = \{\se{f}_j\} = \{(\se{f}_j^F, \se{f}_j^D)\}$~---
+    \item $\se{F} = \{\se{f}_j\} =
+        \{(\se{f}_j^F, \se{f}_j^D, \se{f}_j^C)\}$~---
         \term{symbolic function element models}
         that correspond to function elements of the program $\mathcal{P}$.
     \item $\se{F}_I$ is a set of
@@ -483,7 +489,7 @@ Execution rule:
         \se{f}_{0, t_1, \dots, t_n}^D(\se{d}_{0, t_1, \dots, t_n})$.
 \end{itemize}
 
-Execution path $P = \{f_0, f_1, \dots, f_t\}$ is
+Execution path $P = \{\se{f}_0, \se{f}_1, \dots, \se{f}_t\}$ is
 \term{feasible in symbolic model} iff $c_{0, 1, \dots, t}$ is true.
 
 \sublevel{Symbolic execution and concrete execution}
