@@ -84,7 +84,7 @@
 \setlength{\parindent}{0em}
 
 \title{Formal model of concrete, symbolic,
-    dynamic symbolic (concolic) execution,
+    dynamic symbolic execution (concolic execution),
     and taint tracking}
 \author{Sergey Vartanov}
 \makeindex
@@ -458,11 +458,32 @@ Data model with memory, registers, and array lengths.
 
 \sublevel{Execution}
 
+Symbolic execution unlike concrete execution is not an iterative process.
+However, it has execution states
+$\se{s} = (\se{f}, \se{d}, c)$~--- \term{symbolic state},
+$\se{f} \in \se{F}, \se{d} \in \se{D}, c \in C$.
+Set of all possible symbolic states is $\se{S}$.
+$(\se{f}_0, \se{d}_0, \varnothing)$ is an \term{initial symbolic state}.
+Any state $(\se{f}_t, \se{d}_t, c_t)$, such as $\se{f}_t \in \se{F}_T$
+is a \term{symbolic terminal state}.
+Note, that $t$ is not an execution step here, but a state identifier.
+
+We consider that there is a \term{symbolic execution function}
+$\se{\mathcal{F}}: \se{S} \ra \se{S}$
+that manages the symbolic execution process:
+
+\begin{align*}
+\se{\mathcal{F}}(s_{k, \dots, l})
+&= \se{\mathcal{F}}
+    \big((f_{k, \dots, l}, d_{k, \dots, l}, c_{k, \dots, l})\big) = \\
+&= \{(f_{k, \dots, l, m}, d_{k, \dots, l, m}, c_{k, \dots, l, m}), \dots, 
+       (f_{k, \dots, l, n}, d_{k, \dots, l, n}, c_{k, \dots, l, n})\} = \\
+&= \{s_{k, \dots, l, m}, \dots, s_{k, \dots, l, n}\}
+\end{align*}
+
 Definitions:
 \begin{itemize}
-    \item $\se{S} = (\se{f}, \se{d}, c)$~--- \term{symbolic state}.
-          $\se{f} \in \se{F}, \se{d} \in \se{D}, c \in C$.
-    \item $C = \{e_i\}$~--- \term{path condition}.
+    \item $C = \{e_i\}$~--- \term{path condition} or \term{path constraint}.
     \item $X = \{x_k\}, x_k \in \mathcal{B}$~--- \term{symbolic variables}.
 \end{itemize}
 
