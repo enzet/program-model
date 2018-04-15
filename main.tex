@@ -365,7 +365,7 @@ We will denote this fact as $E(d_0) \Ra P$.
 
 Let's also define a \term{branch chain} $P_B$ of a execution path $P$
 as a subsequence of $P$, which contains only $f_j \in F_B$.
-We can denote this fact as $P \Ra P_B$
+We can denote this fact as $P \Ra P_B$.
 
 % $P_B = \{f_{j_0}, f_{j_1}, \dots, f_{j_k}, \dots\}$, where
 % $\forall k \,\, f_{j_k} \in F_B$
@@ -499,7 +499,7 @@ However, it has execution states
 $\se{s} = (\se{f}, \se{d}, c)$~--- \term{symbolic state},
 $\se{f} \in \se{F}, \se{d} \in \se{D}, c \in C$.
 Set of all possible symbolic states is $\se{S}$.
-$(\se{f}_0, \se{d}_0, \varnothing)$ is an \term{initial symbolic state}.
+$(\se{f}_0, \se{d}_0, \true)$ is an \term{initial symbolic state}.
 Any state $(\se{f}_t, \se{d}_t, c_t)$, such as $\se{f}_t \in \se{F}_T$
 is a \term{symbolic terminal state}.
 Note, that $t$ is not an execution step here, but a state identifier.
@@ -610,7 +610,7 @@ and symbolic execution state $\se{s}_t = (\se{f}_t, \se{d}_t, c_t)$,
 which we combine into \term{concolic state}
 $\dse{s}_t = (f_t, d_t, \se{f}_t, \se{d}_t, c_t)$.
 
-We consider that there is Dynamic symbolic execution function
+We consider that there is dynamic symbolic execution function
 $\dse{\mathcal{F}}: \dse{S} \ra \dse{S}$
 that manages the execution process:
 \begin{align*}
@@ -624,10 +624,13 @@ that manages the execution process:
 
 \comment{Add function to produce $c_{t + 1}$ from $c_t$.}
 
-Execution function $\mathcal{F}$ defines an \term{execution rule}:
+Execution function $\dse{\mathcal{F}}$ defines an \term{execution rule}:
 \begin{itemize}
     \item $f_{t + 1} = f_t^F(d_t)$,
-    \item $d_{t + 1} = f_t^D(d_t)$.
+    \item $d_{t + 1} = f_t^D(d_t)$,
+    \item $\se{f}_{t + 1} = \comment{?}$,
+    \item $\se{d}_{t + 1} = \comment{?}$,
+    \item $c_{t + 1} = \comment{?}$.
 \end{itemize}
 
 \term{Dynamic symbolic execution} (or \term{concolic execution})
@@ -635,11 +638,10 @@ of a program $\mathcal{P} = \langle F, F_I, F_T, D \rangle$
 and a symbolic model
 $\se{\mathcal{P}} = \langle \se{F}, \se{F_I}, \se{F_T}, \se{D} \rangle$
 is a chain of concolic states, starting with initial state
-$\dse{s}_0 = (f_0, d_0, \se{f}_0, \se{d}_0, \varnothing)$,
+$\dse{s}_0 = (f_0, d_0, \se{f}_0, \se{d}_0, \true)$,
 where the next state is a function $\dse{\mathcal{F}}$ of previous state:
 $$s_{t + 1} = (f_{t + 1}, d_{t + 1}) = (f_t^F(d_t), f_t^D(d_t)) =
-    \mathcal{F}(s_t), s_t \in S$$
-and either none of function elements.
+    \dse{\mathcal{F}}(s_t), s_t \in S$$
 
 $\dse{E}(d_0) = \dse{s}_0 \ra \dse{s}_1 \ra \dots \ra \dse{s}_t \ra \dots$.
 
@@ -772,9 +774,15 @@ for (int i = 0; i < a.length(); i++) {
 
 \comment{It is just write by tainted index.}
 
-\sublevel{SAGE example}
+\sublevel{Sequence comparison}
 
-Example from SAGE paper~\cite{sage}.
+Code example, in which program compare input string with some
+predefined string constant, could be called classic example.
+One can find a variation of this example in papers describes
+dynamic symbolic execution tools.
+
+Example from SAGE paper~\cite{sage}: compare input string of 4 bytes length
+with string constant \texttt{"bad!"}, if it so, trigger an error state.
 \lstset{language=c,caption=Listing,label={lst:impl}}
 \begin{lstlisting}[numbers=left,numberstyle=\scriptsize]
 void top(char input[4]) {
@@ -787,20 +795,9 @@ void top(char input[4]) {
 }
 \end{lstlisting}
 
-This example could be formalized as:
-\begin{itemize}
-    \item $\mathcal{P}_{\diamond} = \langle F, D \rangle =
-        \langle \{f_0, f_1\}, \{x, y, z\} \rangle$,
-    \item $x, y \in \mathcal{B} = \{\false, \true\}$,
-    \item $f_0 = (f^F_0, f^D_0), f^F_0(\{x, y, z\}) = f_1,
-        f^D_0(\{x, y, z\}) = \{x, y, x \diamond y\}$.
-    \item $f_1 = (f^F_1, f^D_1), f^F_1(\{x, y, z\}) = f_1,
-        f^D_1(\{x, y, z\}) = \{x, y, z\}$.
-\end{itemize}
-
-\sublevel{Veritesting example}
-
-Example from Veritesting paper~\cite{veritesting}.
+Example from Veritesting paper~\cite{veritesting}: check input string of
+100 bytes length, if it contains exactly 75 symbols \texttt{'a'},
+trigger an error state.
 \lstset{language=c,caption=Listing,label={lst:impl}}
 \begin{lstlisting}[numbers=left,numberstyle=\scriptsize]
 for (int i = 0; i < 100; i++) {
@@ -808,6 +805,37 @@ for (int i = 0; i < 100; i++) {
 }
 if (counter == 75) abort();
 \end{lstlisting}
+
+We will formalize this example as comparison of 3 bytes with
+values $(1, 1, 1)$.
+\begin{itemize}
+    \item $\mathcal{P}_{\text{SC}} = \langle F, D \rangle =
+        \langle \{f_0, f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8\},
+        \{x, y, z, c\} \rangle$,
+    \item $x, y, z, c \in \overline{0, 255}$,
+\end{itemize}
+
+Function elements will be defined as following.
+\[ f_0^F(\{x, y, z, c\}) =
+    \begin{cases}
+        f_1 & \text{if }x = 1 \\
+        f_2 & \text{if }x \neq 1
+    \end{cases} \]
+\[ f_2^F(\{x, y, z, c\}) =
+    \begin{cases}
+        f_3 & \text{if }y = 1 \\
+        f_4 & \text{if }y \neq 1
+    \end{cases} \]
+\[ f_4^F(\{x, y, z, c\}) =
+    \begin{cases}
+        f_5 & \text{if }z = 1 \\
+        f_6 & \text{if }z \neq 1
+    \end{cases} \]
+\[ f_6^F(\{x, y, z, c\}) =
+    \begin{cases}
+        f_7 & \text{if }c = 3 \\
+        f_8 & \text{if }c \neq 3
+    \end{cases} \]
 
 \level{Other models}
 
