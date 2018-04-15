@@ -54,16 +54,17 @@ class Line(SVGElement):
 
 
 class Circle(SVGElement):
-    def __init__(self, x: float, y: float) -> None:
+    def __init__(self, x: float, y: float, d: float) -> None:
         super().__init__()
         self.x = x
         self.y = y
+        self.d = d
         self.style = Style(fill="none", stroke="#000000", stroke_width=1.0)
 
     def draw(self, file_) -> None:
         x = self.x
         y = self.y
-        d = 7.5
+        d = self.d
         c = 0.577
         file_.write("""  <path d = "M %5.1f %5.1f C %5.1f %5.1f
                 %5.1f %5.1f %5.1f %5.1f C %5.1f %5.1f %5.1f %5.1f %5.1f

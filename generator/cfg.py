@@ -1,3 +1,5 @@
+import math
+
 from typing import List
 
 from generator import svg
@@ -12,7 +14,8 @@ class Node:
         self.is_terminal = is_terminal
 
     def add(self, output_svg: svg.SVG):
-        circle = svg.Circle(2.5 + self.x * 5, 2.5 + self.y * 5)
+        d = 7.5
+        circle = svg.Circle(2.5 + self.x * 5, 2.5 + self.y * 5, d)
         circle.style.stroke_width = 0.5
         output_svg.add(circle)
         text = svg.Text(2.5 + self.x * 5, 5 + self.y * 5,
@@ -25,6 +28,21 @@ class Node:
         output_svg.add(text)
 
 
+class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __add__(self, other):
+        return Vector(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        return Vector(self.x - other.x, self.y - other.y)
+
+    def __mul__(self, other):
+        return Vector(self.x * other, self.y * other)
+
+
 class Arrow:
     def __init__(self, x1: float, y1: float, x2: float, y2: float):
         self.x1 = x1
@@ -33,11 +51,27 @@ class Arrow:
         self.y2 = y2
 
     def add(self, output_svg: svg.SVG):
-        x1 = self.x1
-        y1 = self.y1
-        x2 = self.x2
-        y2 = self.y2
-        line = svg.Line(2.5 + x1 * 5, 2.5 + y1 * 5, 2.5 + x2 * 5, 2.5 + y2 * 5)
+        x1 = 2.5 + self.x1 * 5
+        y1 = 2.5 + self.y1 * 5
+        x2 = 2.5 + self.x2 * 5
+        y2 = 2.5 + self.y2 * 5
+        d1 = 7.5
+        d2 = 7.5
+        A = Vector(x1, y1)
+        B = Vector(x2, y2)
+        lenAB = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+        print(lenAB)
+        n = Vector((x2 - x1) / lenAB, (y2 - y1) / lenAB)
+        print(n.x, n.y)
+        nA = A + (n * d1)
+        nB = B - (n * d2)
+        nx1 = nA.x
+        ny1 = nA.y
+        nx2 = nB.x
+        ny2 = nB.y
+        print(x1, y1, x2, y2)
+        print(nx1, ny1, nx2, ny2)
+        line = svg.Line(nx1, ny1, nx2, ny2)
         line.style.stroke_width = 0.5
         output_svg.add(line)
 
