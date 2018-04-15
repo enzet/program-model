@@ -1,7 +1,10 @@
 *.aux 
 *.bbl 
 *.blg 
+*.idx
 *.lof 
 *.log 
 *.pdf 
 *.toc
+
+.idea
