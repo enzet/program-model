@@ -1,14 +1,27 @@
 class Style:
-    def __init__(self, stroke="#000000", stroke_width=1.0, fill="none") -> None:
+    def __init__(self, stroke=None, stroke_width=None, fill=None,
+            font_size=None, font_family=None, text_anchor=None) -> None:
         self.stroke = stroke
         self.stroke_width = stroke_width
         self.fill = fill
+        self.font_family = font_family
+        self.text_anchor = text_anchor
+        self.font_size = font_size
 
     def __repr__(self) -> str:
         result = ""
-        result += "stroke:" + str(self.stroke) + "; "
-        result += "stroke-width:" + str(self.stroke_width) + "; "
-        result += "fill:" + str(self.fill) + "; "
+        if self.stroke:
+            result += "stroke:" + str(self.stroke) + "; "
+        if self.stroke_width:
+            result += "stroke-width:" + str(self.stroke_width) + "; "
+        if self.fill:
+            result += "fill:" + str(self.fill) + "; "
+        if self.font_size:
+            result += "font-size:" + str(self.font_size) + "; "
+        if self.font_family:
+            result += "font-family:" + str(self.font_family) + "; "
+        if self.text_anchor:
+            result += "text-anchor:" + str(self.text_anchor) + "; "
         return result[:-1]
 
 
@@ -30,17 +43,14 @@ class Line(SVGElement):
         self.y1 = y1
         self.x2 = x2
         self.y2 = y2
+        self.style = Style(fill="none", stroke="#000000", stroke_width=1.0)
 
     def draw(self, file_) -> None:
-        x1 = self.x1
-        y1 = self.y1
-        x2 = self.x2
-        y2 = self.y2
-        file_.write("  <path d = \"M " + str(x1) + "," + str(y1) + " " +
-            str(x2) + "," + str(y2) + "\" ")
-        file_.write('style = "')
+        file_.write("  <path d = \"M " + str(self.x1) + "," + str(self.y1) +
+            " " + str(self.x2) + "," + str(self.y2) + "\" ")
+        file_.write("style = \"")
         file_.write(str(self.style))
-        file_.write('" />\n')
+        file_.write("\" />\n")
 
 
 class Circle(SVGElement):
@@ -48,6 +58,7 @@ class Circle(SVGElement):
         super().__init__()
         self.x = x
         self.y = y
+        self.style = Style(fill="none", stroke="#000000", stroke_width=1.0)
 
     def draw(self, file_) -> None:
         x = self.x
@@ -62,9 +73,27 @@ class Circle(SVGElement):
             y - d * c, x - d * c, y - d, x, y - d, x + d * c, y - d, x + d,
             y - d * c, x + d, y, x + d, y + d * c, x + d * c, y + d, x,
             y + d))
-        file_.write('style = "')
+        file_.write("style = \"")
         file_.write(str(self.style))
-        file_.write('" />\n')
+        file_.write("\" />\n")
+
+
+class Text(SVGElement):
+    def __init__(self, x: float, y: float, text: str) -> None:
+        super().__init__()
+        self.x = x
+        self.y = y
+        self.text = text
+        self.style = Style(fill="#000000", stroke="none")
+
+    def draw(self, file_) -> None:
+        file_.write("  <text x = \"" + str(self.x) + "\" y = \"" +
+            str(self.y) + "\" ")
+        file_.write("style = \"")
+        file_.write(str(self.style))
+        file_.write("\">")
+        file_.write(self.text)
+        file_.write("</text>\n")
 
 
 class SVG:
