@@ -1,5 +1,5 @@
 class Style:
-    def __init__(self, stroke="#000000", stroke_width=1.0, fill="none"):
+    def __init__(self, stroke="#000000", stroke_width=1.0, fill="none") -> None:
         self.stroke = stroke
         self.stroke_width = stroke_width
         self.fill = fill
@@ -16,22 +16,40 @@ class SVGElement:
     def __init__(self):
         self.style = Style()
 
+    def set_style(self, style: Style) -> None:
+        self.style = style
+
     def draw(self, file_):
         pass
 
 
 class Line(SVGElement):
-    def __init__(self, x1: float, y1: float, x2: float, y2: float):
+    def __init__(self, x1: float, y1: float, x2: float, y2: float) -> None:
         super().__init__()
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
+
+    def draw(self, file_) -> None:
+        x1 = self.x1
+        y1 = self.y1
+        x2 = self.x2
+        y2 = self.y2
+        file_.write("  <path d = \"M " + str(x1) + "," + str(y1) + " " +
+            str(x2) + "," + str(y2) + "\" ")
+        file_.write('style = "')
+        file_.write(str(self.style))
+        file_.write('" />\n')
 
 
 class Circle(SVGElement):
-    def __init__(self, x: float, y: float):
+    def __init__(self, x: float, y: float) -> None:
         super().__init__()
         self.x = x
         self.y = y
 
-    def draw(self, file_):
+    def draw(self, file_) -> None:
         x = self.x
         y = self.y
         d = 7.5
@@ -50,14 +68,14 @@ class Circle(SVGElement):
 
 
 class SVG:
-    def __init__(self, file_name: str):
+    def __init__(self, file_name: str) -> None:
         self.elements = []
         self.file_ = open(file_name, "w")
 
-    def add(self, element: SVGElement):
+    def add(self, element: SVGElement) -> None:
         self.elements.append(element)
 
-    def draw(self):
+    def draw(self) -> None:
         width = 600
         height = 400
         self.file_.write("<?xml version=\"1.0\" encoding=\"UTF-8\" "
@@ -69,6 +87,6 @@ class SVG:
         for element in self.elements:
             element.draw(self.file_)
 
-    def close(self):
+    def close(self) -> None:
         self.file_.write('</svg>\n')
         self.file_.close()

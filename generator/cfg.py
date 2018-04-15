@@ -13,17 +13,44 @@ class Node:
         output_svg.add(svg.Circle(2.5 + self.x * 5, 2.5 + self.y * 5))
 
 
+class Arrow:
+    def __init__(self, x1: float, y1: float, x2: float, y2: float):
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
+
+    def add(self, output_svg: svg.SVG):
+        x1 = self.x1
+        y1 = self.y1
+        x2 = self.x2
+        y2 = self.y2
+        output_svg.add(svg.Line(2.5 + x1 * 5, 2.5 + y1 * 5,
+                                2.5 + x2 * 5, 2.5 + y2 * 5))
+
+
 class CFG:
     def __init__(self):
         self.nodes = []
         self.arrows = []
 
-    def add_node(self, x: int, y: int, function_number: int):
-        self.nodes.append(Node(x, y, function_number))
+    def add_node(self, node: Node):
+        self.nodes.append(node)
+
+    def add_arrow(self, arrow: Arrow):
+        self.arrows.append(arrow)
 
     def add_chain(self, x: int, y: int, array: list, is_vertical=True):
-        for function_number in array:
-            self.add_node(x, y, function_number)
+        previous_x, previous_y = x, y
+
+        for index, function_number in enumerate(array):
+            self.add_node(Node(x, y, function_number))
+
+            if index > 0:
+                self.add_arrow(Arrow(previous_x, previous_y, x, y))
+
+            previous_x = x
+            previous_y = y
 
             if is_vertical:
                 y += 5
@@ -32,6 +59,8 @@ class CFG:
 
     def draw(self, file_name: str):
         output_svg = svg.SVG(file_name)
+        for arrow in self.arrows:
+            arrow.add(output_svg)
         for node in self.nodes:
             node.add(output_svg)
         output_svg.draw()
