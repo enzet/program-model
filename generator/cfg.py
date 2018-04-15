@@ -9,6 +9,9 @@ class Node:
         self.function_number = function_number
         self.is_terminal = is_terminal
 
+    def add(self, output_svg: svg.SVG):
+        output_svg.add(svg.Circle(2.5 + self.x * 5, 2.5 + self.y * 5))
+
 
 class CFG:
     def __init__(self):
@@ -30,7 +33,9 @@ class CFG:
     def draw(self, file_name: str):
         output_svg = svg.SVG(file_name)
         for node in self.nodes:
-            node.draw(output_svg)
+            node.add(output_svg)
+        output_svg.draw()
+        output_svg.close()
 
 
 if __name__ == "__main__":
