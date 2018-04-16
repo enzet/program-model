@@ -3,22 +3,38 @@ import math
 from typing import List
 
 from generator import svg
+from generator.vector import Vector
 
 
-class Node:
-    def __init__(self, x: int, y: int, function_number: str,
-            is_terminal: bool=False):
-        self.x = x
-        self.y = y
+class CFGElement:
+    def __init__(self):
+        pass
+
+    def add(self, output_svg: svg.SVG):
+        pass
+
+
+class Node(CFGElement):
+    def __init__(self, point: Vector, function_number: str,
+            is_terminal: bool = False):
+        super().__init__()
+        self.point = point
         self.function_number = function_number
         self.is_terminal = is_terminal
 
     def add(self, output_svg: svg.SVG):
         d = 7.5
-        circle = svg.Circle(2.5 + self.x * 5, 2.5 + self.y * 5, d)
+        circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, d)
         circle.style.stroke_width = 0.5
         output_svg.add(circle)
-        text = svg.Text(2.5 + self.x * 5, 5 + self.y * 5,
+
+        if self.is_terminal:
+            d = 6.5
+            circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, d)
+            circle.style.stroke_width = 0.5
+            output_svg.add(circle)
+
+        text = svg.Text(Vector(2.5, 4.5) + self.point * 5,
             "<tspan style=\"font-style:italic;\">f</tspan>" +
             "<tspan style=\"font-size:65%; baseline-shift:sub;\">" +
             self.function_number + "</tspan>")
@@ -28,94 +44,101 @@ class Node:
         output_svg.add(text)
 
 
-class Vector:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __add__(self, other):
-        return Vector(self.x + other.x, self.y + other.y)
-
-    def __sub__(self, other):
-        return Vector(self.x - other.x, self.y - other.y)
-
-    def __mul__(self, other):
-        return Vector(self.x * other, self.y * other)
-
-
-class Arrow:
-    def __init__(self, x1: float, y1: float, x2: float, y2: float):
-        self.x1 = x1
-        self.y1 = y1
-        self.x2 = x2
-        self.y2 = y2
+class Loop(CFGElement):
+    def __init__(self, point: Vector, angle: float):
+        super().__init__()
+        self.point = point
+        self.angle = angle
 
     def add(self, output_svg: svg.SVG):
-        x1 = 2.5 + self.x1 * 5
-        y1 = 2.5 + self.y1 * 5
-        x2 = 2.5 + self.x2 * 5
-        y2 = 2.5 + self.y2 * 5
-        d1 = 7.5
-        d2 = 7.5
-        A = Vector(x1, y1)
-        B = Vector(x2, y2)
-        lenAB = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-        print(lenAB)
-        n = Vector((x2 - x1) / lenAB, (y2 - y1) / lenAB)
-        print(n.x, n.y)
-        nA = A + (n * d1)
-        nB = B - (n * d2)
-        nx1 = nA.x
-        ny1 = nA.y
-        nx2 = nB.x
-        ny2 = nB.y
-        print(x1, y1, x2, y2)
-        print(nx1, ny1, nx2, ny2)
-        line = svg.Line(nx1, ny1, nx2, ny2)
+        x = 2.5 + self.point.x * 5
+        y = 2.5 + self.point.y * 5
+        r = 7.5
+        a1 = self.angle + math.pi / 9.0
+        a2 = self.angle - math.pi / 9.0
+        n1 = Vector(math.cos(a1), math.sin(a1))
+        n2 = Vector(math.cos(a2), math.sin(a2))
+        path = [[Vector(x, y) + n1 * 7.5,
+            Vector(x, y) + n1 * 20,
+            Vector(x, y) + n2 * 20,
+            Vector(x, y) + n2 * 7.5]]
+        curve = svg.Curve(path)
+        curve.style.stroke_width = 0.5
+        output_svg.add(curve)
+
+
+def create_v(point: Vector, n: Vector, m: Vector):
+    return [[point - n * 3 - m * 3, point - n * 2.5 - m * 1.5,
+            point - n * 1.5 - m * 0.5, point],
+        [point, point - n * 1.5 + m * 0.5, point - n * 2.5 + m * 1.5,
+            point - n * 3 + m * 3]]
+
+
+class Arrow(CFGElement):
+    def __init__(self, point1: Vector, point2: Vector):
+        super().__init__()
+        self.point1 = point1
+        self.point2 = point2
+
+    def add(self, output_svg: svg.SVG):
+        r1 = 7.5
+        r2 = 7.5
+        a = Vector(2.5, 2.5) + self.point1 * 5
+        b = Vector(2.5, 2.5) + self.point2 * 5
+        n = (b - a).norm()
+        na = a + (n * r1)
+        nb = b - (n * r2)
+        line = svg.Line(na.x, na.y, nb.x, nb.y)
         line.style.stroke_width = 0.5
         output_svg.add(line)
 
+        v = svg.Curve(create_v(nb, n, n.rotate(-math.pi / 2.0)))
+        v.style.stroke_width = 0.5
+        output_svg.add(v)
 
-class CFG:
+
+class CFGRepr:
     def __init__(self):
-        self.nodes = []
-        self.arrows = []
+        self.elements = []
 
-    def add_node(self, node: Node):
-        self.nodes.append(node)
+    def add_element(self, element: CFGElement):
+        self.elements.append(element)
 
-    def add_arrow(self, arrow: Arrow):
-        self.arrows.append(arrow)
-
-    def add_chain(self, x: int, y: int, array: List[str], is_vertical=True):
-        previous_x, previous_y = x, y
+    def add_chain(self, point: Vector, array: List[str], is_vertical=True):
+        previous = point
 
         for index, function_number in enumerate(array):
-            self.add_node(Node(x, y, function_number))
+            self.add_element(Node(point, function_number))
 
             if index > 0:
-                self.add_arrow(Arrow(previous_x, previous_y, x, y))
+                self.add_element(Arrow(previous, point))
 
-            previous_x = x
-            previous_y = y
+            previous = point
 
             if is_vertical:
-                y += 5
+                point = point + Vector(0, 5)
             else:
-                x += 5
+                point = point + Vector(5, 0)
 
     def draw(self, file_name: str):
         output_svg = svg.SVG(file_name)
-        for arrow in self.arrows:
-            arrow.add(output_svg)
-        for node in self.nodes:
-            node.add(output_svg)
+        for element in self.elements:
+            element.add(output_svg)
         output_svg.draw()
         output_svg.close()
 
 
-if __name__ == "__main__":
-    cfg = CFG()
+class CFG:
+    def __init__(self):
+        self.repr = CFGRepr()
+        self.vertices = []
+        self.edges = []
 
-    cfg.add_chain(2, 2, ["0", "1", "2"])
-    cfg.draw("test.svg")
+    def add_vertex(self, vertex_id):
+        self.vertices.append(vertex_id)
+
+    def add_edge(self, vertex_1_id, vertex_2_id):
+        self.edges.append([vertex_1_id, vertex_2_id])
+
+    def draw(self, file_name: str):
+        self.repr.draw(file_name)
