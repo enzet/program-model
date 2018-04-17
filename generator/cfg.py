@@ -75,10 +75,11 @@ def create_v(point: Vector, n: Vector, m: Vector):
 
 
 class Arrow(CFGElement):
-    def __init__(self, point1: Vector, point2: Vector):
+    def __init__(self, point1: Vector, point2: Vector, is_feasible: bool=True):
         super().__init__()
         self.point1 = point1
         self.point2 = point2
+        self.is_feasible = is_feasible
 
     def add(self, output_svg: svg.SVG):
         r1 = 7.5
@@ -90,6 +91,8 @@ class Arrow(CFGElement):
         nb = b - (n * r2)
         line = svg.Line(na.x, na.y, nb.x, nb.y)
         line.style.stroke_width = 0.5
+        if not self.is_feasible:
+            line.style.stroke_dasharray = "1,3"
         output_svg.add(line)
 
         v = svg.Curve(create_v(nb, n, n.rotate(-math.pi / 2.0)))

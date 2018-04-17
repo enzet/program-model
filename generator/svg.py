@@ -4,10 +4,12 @@ from generator.vector import Vector
 
 
 class Style:
-    def __init__(self, stroke=None, stroke_width=None, fill=None,
-            font_size=None, font_family=None, text_anchor=None) -> None:
+    def __init__(self, stroke=None, stroke_width=None, stroke_dasharray=None,
+            fill=None, font_size=None, font_family=None, text_anchor=None) \
+            -> None:
         self.stroke = stroke
         self.stroke_width = stroke_width
+        self.stroke_dasharray = stroke_dasharray
         self.fill = fill
         self.font_family = font_family
         self.text_anchor = text_anchor
@@ -19,6 +21,8 @@ class Style:
             result += "stroke:" + str(self.stroke) + "; "
         if self.stroke_width:
             result += "stroke-width:" + str(self.stroke_width) + "; "
+        if self.stroke_dasharray:
+            result += "stroke-dasharray:" + str(self.stroke_dasharray) + "; "
         if self.fill:
             result += "fill:" + str(self.fill) + "; "
         if self.font_size:
