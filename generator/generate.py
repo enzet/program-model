@@ -121,7 +121,7 @@ def main(directory_name):
     d("classic_paths")
 
     cfg_repr = CFGRepr()
-    x, y = 2, 80 + 2 - 2.5
+    x, y = 2, 70 + 2 - 2.5
 
     def dr(index, x, y, step, count, f):
         an(v(x, y), str(index), t=index == 10, f=f)
@@ -139,6 +139,6 @@ def main(directory_name):
             aa(v(x, y), v(x + 7, y), f=index < 8 or count == 4)
             dr(index + 1, x + 7, y, step, count, f=index < 8 or count == 4)
 
-    dr(0, x, y, 40, 0, True)
+    dr(0, x, y, 35, 0, True)
 
     d("classic_symbolic_tree")

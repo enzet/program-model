@@ -1,5 +1,13 @@
 #!/bin/bash
 
+python3.5 run.py
+if [ $? -eq 0 ]; then
+    echo "Images generated."
+else
+    echo "Images generation failed."
+    exit 1
+fi
+
 if [[ `uname` == "Darwin" ]]; then
     inkscape=/Applications/Inkscape.app/Contents/Resources/bin/inkscape
 elif [[ `uname` == "Linux" ]]; then
@@ -23,8 +31,6 @@ do
         echo "Image ${image_name} is up to date."
     fi
 done
-
-exit 0
 
 echo "TeX generation..."
 
