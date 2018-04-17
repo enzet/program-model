@@ -8,10 +8,17 @@ The main goal of the document is to propose a formal model of
   * dynamic symbolic (concolic) execution,
   * and taint tracking.
 
-## Build ##
+## Build (Linux and macOS) ##
 
 To create PDF run `./build.sh`.
 
 Requirements:
   * LaTeX,
-  * [Inkscape](https://inkscape.org/en/) to convert SVG images to PDF.
+  * Python 3 (for SVG graph generation),
+  * [Inkscape](https://inkscape.org/en/) (for image conversion from SVG to PDF).
+
+## Graph generation ##
+
+There is also simple graph drawing [Python module](generator).
+It is used to generate execution sequences, execution paths,
+control flow graphs, and symbolic execution trees.
