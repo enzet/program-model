@@ -16,22 +16,27 @@ class CFGElement:
 
 class Node(CFGElement):
     def __init__(self, point: Vector, function_number: str,
-            is_terminal: bool = False):
+            is_terminal: bool=False, is_feasible: bool=True):
         super().__init__()
         self.point = point
         self.function_number = function_number
         self.is_terminal = is_terminal
+        self.is_feasible = is_feasible
 
     def add(self, output_svg: svg.SVG):
-        d = 7.5
-        circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, d)
+        r = 8.5
+        circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, r)
         circle.style.stroke_width = 0.5
+        if not self.is_feasible:
+            circle.style.stroke_dasharray = "1,1"
         output_svg.add(circle)
 
         if self.is_terminal:
-            d = 6.5
-            circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, d)
+            r = 7.5
+            circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, r)
             circle.style.stroke_width = 0.5
+            if not self.is_feasible:
+                circle.style.stroke_dasharray = "1,1"
             output_svg.add(circle)
 
         text = svg.Text(Vector(2.5, 4.5) + self.point * 5,
@@ -53,15 +58,15 @@ class Loop(CFGElement):
     def add(self, output_svg: svg.SVG):
         x = 2.5 + self.point.x * 5
         y = 2.5 + self.point.y * 5
-        r = 7.5
+        r = 8.5
         a1 = self.angle + math.pi / 9.0
         a2 = self.angle - math.pi / 9.0
         n1 = Vector(math.cos(a1), math.sin(a1))
         n2 = Vector(math.cos(a2), math.sin(a2))
-        path = [[Vector(x, y) + n1 * 7.5,
+        path = [[Vector(x, y) + n1 * r,
             Vector(x, y) + n1 * 20,
             Vector(x, y) + n2 * 20,
-            Vector(x, y) + n2 * 7.5]]
+            Vector(x, y) + n2 * r]]
         curve = svg.Curve(path)
         curve.style.stroke_width = 0.5
         output_svg.add(curve)
@@ -82,8 +87,8 @@ class Arrow(CFGElement):
         self.is_feasible = is_feasible
 
     def add(self, output_svg: svg.SVG):
-        r1 = 7.5
-        r2 = 7.5
+        r1 = 8.5
+        r2 = 8.5
         a = Vector(2.5, 2.5) + self.point1 * 5
         b = Vector(2.5, 2.5) + self.point2 * 5
         n = (b - a).norm()
@@ -92,12 +97,28 @@ class Arrow(CFGElement):
         line = svg.Line(na.x, na.y, nb.x, nb.y)
         line.style.stroke_width = 0.5
         if not self.is_feasible:
-            line.style.stroke_dasharray = "1,3"
+            line.style.stroke_dasharray = "1,1"
         output_svg.add(line)
 
         v = svg.Curve(create_v(nb, n, n.rotate(-math.pi / 2.0)))
+        if not self.is_feasible:
+            v.style.stroke_dasharray = "1,1"
         v.style.stroke_width = 0.5
         output_svg.add(v)
+
+
+class Ellipsis(CFGElement):
+    def __init__(self, point: Vector, n: Vector):
+        super().__init__()
+        self.point = point
+        self.n = n
+
+    def add(self, output_svg):
+        for i in [-1, 0, 1]:
+            p = svg.Circle(self.point + self.n * i, 1)
+            p.style.stroke = "none"
+            p.style.fill = "#000000"
+            output_svg.add(p)
 
 
 class CFGRepr:
@@ -107,12 +128,15 @@ class CFGRepr:
     def add_element(self, element: CFGElement):
         self.elements.append(element)
 
-    def add_chain(self, point: Vector, array: List[str], is_vertical=True):
+    def add_chain(self, point: Vector, array: List[str], is_vertical=True,
+            is_terminated=False):
         previous = point
 
         for index, function_number in enumerate(array):
-            self.add_element(Node(point, function_number))
-
+            if is_terminated and index == len(array) - 1:
+                self.add_element(Node(point, function_number, is_terminal=True))
+            else:
+                self.add_element(Node(point, function_number))
             if index > 0:
                 self.add_element(Arrow(previous, point))
 

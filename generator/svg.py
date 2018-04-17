@@ -138,10 +138,10 @@ class SVG:
 
     def add(self, element: SVGElement) -> None:
         self.elements.append(element)
-        if element.boundary_box[2] + 10 > self.width:
-            self.width = element.boundary_box[2] + 10
-        if element.boundary_box[3] + 10 > self.height:
-            self.height = element.boundary_box[3] + 10
+        if element.boundary_box[2] + 5 > self.width:
+            self.width = element.boundary_box[2] + 5
+        if element.boundary_box[3] + 5 > self.height:
+            self.height = element.boundary_box[3] + 5
 
     def draw(self) -> None:
         self.file_.write("<?xml version=\"1.0\" encoding=\"UTF-8\" "
@@ -152,10 +152,6 @@ class SVG:
         self.file_.write("height=\"" + str(self.height) + "\">\n")
         for element in self.elements:
             element.draw(self.file_)
-        Line(0, 0, 0, self.height).draw(self.file_)
-        Line(0, 0, self.width, 0).draw(self.file_)
-        Line(0, self.height, self.width, self.height).draw(self.file_)
-        Line(self.width, 0, self.width, self.height).draw(self.file_)
 
     def close(self) -> None:
         self.file_.write('</svg>\n')

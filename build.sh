@@ -8,10 +8,11 @@ fi
 
 echo "Image converting..."
 
-for image_name in concrete_execution execution_branch execution_cycle
+for image_name in `ls image`
 do
-    if [[ $PWD/image/${image_name}.svg -nt $PWD/image/${image_name}.pdf ]]; then
-        $inkscape -z -A $PWD/image/${image_name}.pdf $PWD/image/${image_name}.svg
+    image_name=${image_name%.*}
+    if [[ $PWD/image/${image_name}.svg -nt $PWD/pdf/${image_name}.pdf ]]; then
+        $inkscape -z -A $PWD/pdf/${image_name}.pdf $PWD/image/${image_name}.svg
         if [ $? -eq 0 ]; then
             echo "Image ${image_name} converted."
         else
@@ -22,6 +23,8 @@ do
         echo "Image ${image_name} is up to date."
     fi
 done
+
+exit 0
 
 echo "TeX generation..."
 

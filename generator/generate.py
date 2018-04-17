@@ -1,23 +1,21 @@
 import math
+import os
 
 from generator.cfg import CFGRepr, Node, Arrow, Loop
 from generator.vector import Vector
 
 
-if __name__ == "__main__":
+def main(directory_name):
 
     # Useful abbreviations
 
     a3 = math.pi / 2
 
-    def add(element):
-        cfg_repr.add_element(element)
-
     def v(x, y):
         return Vector(x, y)
 
-    def an(point, id_, t=False):
-        cfg_repr.add_element(Node(point, id_, is_terminal=t))
+    def an(point, id_, t=False, f=True):
+        cfg_repr.add_element(Node(point, id_, is_terminal=t, is_feasible=f))
 
     def ant(point, id_):
         cfg_repr.add_element(Node(point, id_, is_terminal=True))
@@ -27,6 +25,9 @@ if __name__ == "__main__":
 
     def al(point, angle):
         cfg_repr.add_element(Loop(point, angle))
+
+    def d(name):
+        cfg_repr.draw(os.path.join(directory_name, name + ".svg"))
 
     # Branch program
 
@@ -49,7 +50,7 @@ if __name__ == "__main__":
     v0, v1, v2 = v(x, y), v(x - 4, y + 4), v(x + 4, y + 4)
     an(v0, "0"); ant(v1, "1"); ant(v2, "2"); aa(v0, v1); aa(v0, v2)
 
-    cfg_repr.draw("branch.svg")
+    d("branch")
 
     # Cycle program
 
@@ -79,12 +80,12 @@ if __name__ == "__main__":
         an(v0, "0"); ant(v1, "1"); aa(v0, v1); aa(v0, v2)
         v0 = v0 + v(4, 4); v1 = v1 + v(4, 4); v2 = v2 + v(4, 4)
 
-    cfg_repr.draw("cicle.svg")
+    d("circle")
 
     # Sequence comparison
 
     cfg_repr = CFGRepr()
-    x, y = 6, 40
+    x, y = 2, 2
 
     v0, v1, v2 = v(x, y), v(x + 4, y + 4), v(x, y + 8)
     for i in range(4):
@@ -95,41 +96,49 @@ if __name__ == "__main__":
         v2 = v2 + v(0, 8)
     ant(v0, "8")
 
-    x += 10
+    d("classic_cfg")
 
-    for i in range(16):
-        k = "0" * (6 - len(bin(i))) + bin(i)[2:]
+    cfg_repr = CFGRepr()
+    x, y = 2, 2
+
+    for i in range(32):
+        k = "0" * (7 - len(bin(i))) + bin(i)[2:]
         chain = ["0"]
-        if k[3] == "1": chain.append("1")
+        if k[4] == "1": chain.append("1")
         chain.append("2")
-        if k[2] == "1": chain.append("3")
+        if k[3] == "1": chain.append("3")
         chain.append("4")
-        if k[1] == "1": chain.append("5")
+        if k[2] == "1": chain.append("5")
         chain.append("6")
-        if k[0] == "1": chain.append("7")
+        if k[1] == "1": chain.append("7")
         chain.append("8")
-        cfg_repr.add_chain(v(x, y), chain, is_vertical=False)
-        y += 4
+        if k[0] == "1": chain.append("9")
+        chain.append("10")
+        cfg_repr.add_chain(v(x, y), chain, is_vertical=False,
+            is_terminated=True)
+        y += 5
 
-    x, y = 0, 0
+    d("classic_paths")
 
-    def dr(index, x, y, step, count):
-        an(v(x, y), str(index), t=index == 10)
+    cfg_repr = CFGRepr()
+    x, y = 2, 80 + 2 - 2.5
+
+    def dr(index, x, y, step, count, f):
+        an(v(x, y), str(index), t=index == 10, f=f)
         if index == 10:
             return
         if index in [1, 3, 5, 7]:
             count += 1
         if index % 2 == 0:
             aa(v(x, y), v(x + 7, y - step), f=count != 4)
-            dr(index + 2, x + 7, y - step, step / 2.0, count)
+            dr(index + 2, x + 7, y - step, step / 2.0, count, f=count != 4)
             aa(v(x, y), v(x + 7, y + step), f=index < 8 or count == 4)
-            dr(index + 1, x + 7, y + step, step / 2.0, count)
+            dr(index + 1, x + 7, y + step, step / 2.0, count,
+                f=index < 8 or count == 4)
         else:
             aa(v(x, y), v(x + 7, y), f=index < 8 or count == 4)
-            dr(index + 1, x + 7, y, step, count)
+            dr(index + 1, x + 7, y, step, count, f=index < 8 or count == 4)
 
-    dr(0, x, y, 30, 0)
+    dr(0, x, y, 40, 0, True)
 
-    cfg_repr.draw("classic_symbolic_tree.svg")
-
-    #print(open("test.svg", "r").read())
+    d("classic_symbolic_tree")
