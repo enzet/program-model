@@ -15,16 +15,17 @@ class CFGElement:
 
 
 class Node(CFGElement):
-    def __init__(self, point: Vector, function_number: str,
+    def __init__(self, point: Vector, name: str="f", index: str="",
             is_terminal: bool=False, is_feasible: bool=True):
         super().__init__()
         self.point = point
-        self.function_number = function_number
+        self.name = name
+        self.index = index
         self.is_terminal = is_terminal
         self.is_feasible = is_feasible
 
     def add(self, output_svg: svg.SVG):
-        r = 8.5
+        r = 7.5
         circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, r)
         circle.style.stroke_width = 0.5
         if not self.is_feasible:
@@ -32,7 +33,7 @@ class Node(CFGElement):
         output_svg.add(circle)
 
         if self.is_terminal:
-            r = 7.5
+            r = 6.5
             circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, r)
             circle.style.stroke_width = 0.5
             if not self.is_feasible:
@@ -40,9 +41,8 @@ class Node(CFGElement):
             output_svg.add(circle)
 
         text = svg.Text(Vector(2.5, 4.5) + self.point * 5,
-            "<tspan style=\"font-style:italic;\">f</tspan>" +
-            "<tspan style=\"font-size:65%; baseline-shift:sub;\">" +
-            self.function_number + "</tspan>")
+            svg.font_wrap(self.name, italic=True) +
+            svg.font_wrap(self.index, sub=True))
         text.style.font_size = "10px"
         text.style.font_family = "CMU Serif"
         text.style.text_anchor = "middle"
@@ -58,15 +58,13 @@ class Loop(CFGElement):
     def add(self, output_svg: svg.SVG):
         x = 2.5 + self.point.x * 5
         y = 2.5 + self.point.y * 5
-        r = 8.5
+        r = 7.5
         a1 = self.angle + math.pi / 9.0
         a2 = self.angle - math.pi / 9.0
         n1 = Vector(math.cos(a1), math.sin(a1))
         n2 = Vector(math.cos(a2), math.sin(a2))
-        path = [[Vector(x, y) + n1 * r,
-            Vector(x, y) + n1 * 20,
-            Vector(x, y) + n2 * 20,
-            Vector(x, y) + n2 * r]]
+        path = [[Vector(x, y) + n1 * r, Vector(x, y) + n1 * 20,
+            Vector(x, y) + n2 * 20, Vector(x, y) + n2 * r]]
         curve = svg.Curve(path)
         curve.style.stroke_width = 0.5
         output_svg.add(curve)
@@ -87,8 +85,8 @@ class Arrow(CFGElement):
         self.is_feasible = is_feasible
 
     def add(self, output_svg: svg.SVG):
-        r1 = 8.5
-        r2 = 8.5
+        r1 = 7.5
+        r2 = 7.5
         a = Vector(2.5, 2.5) + self.point1 * 5
         b = Vector(2.5, 2.5) + self.point2 * 5
         n = (b - a).norm()
@@ -114,8 +112,8 @@ class Ellipsis(CFGElement):
         self.n = n
 
     def add(self, output_svg):
-        for i in [-1, 0, 1]:
-            p = svg.Circle(self.point + self.n * i, 1)
+        for i in [-4, 0, 4]:
+            p = svg.Circle(Vector(2.5, 2.5) + self.point * 5 + self.n * i, 0.6)
             p.style.stroke = "none"
             p.style.fill = "#000000"
             output_svg.add(p)
@@ -125,7 +123,7 @@ class CFGRepr:
     def __init__(self):
         self.elements = []
 
-    def add_element(self, element: CFGElement):
+    def add(self, element: CFGElement):
         self.elements.append(element)
 
     def add_chain(self, point: Vector, array: List[str], is_vertical=True,
@@ -134,11 +132,12 @@ class CFGRepr:
 
         for index, function_number in enumerate(array):
             if is_terminated and index == len(array) - 1:
-                self.add_element(Node(point, function_number, is_terminal=True))
+                self.add(Node(point, index=function_number,
+                    is_terminal=True))
             else:
-                self.add_element(Node(point, function_number))
+                self.add(Node(point, index=function_number))
             if index > 0:
-                self.add_element(Arrow(previous, point))
+                self.add(Arrow(previous, point))
 
             previous = point
 

@@ -1,7 +1,7 @@
 import math
 import os
 
-from generator.cfg import CFGRepr, Node, Arrow, Loop
+from generator.cfg import CFGRepr, Node, Arrow, Loop, Ellipsis
 from generator.vector import Vector
 
 
@@ -14,24 +14,68 @@ def main(directory_name):
     def v(x, y):
         return Vector(x, y)
 
-    def an(point, id_, t=False, f=True):
-        cfg_repr.add_element(Node(point, id_, is_terminal=t, is_feasible=f))
+    def an(point, id_, l="f", t=False, f=True):
+        graph.add(Node(point, name=l, index=id_, is_terminal=t,
+            is_feasible=f))
 
-    def ant(point, id_):
-        cfg_repr.add_element(Node(point, id_, is_terminal=True))
+    def ant(point, id_, l="f"):
+        graph.add(Node(point, name=l, index=id_, is_terminal=True))
 
     def aa(point1, point2, f=True):
-        cfg_repr.add_element(Arrow(point1, point2, is_feasible=f))
+        graph.add(Arrow(point1, point2, is_feasible=f))
 
     def al(point, angle):
-        cfg_repr.add_element(Loop(point, angle))
+        graph.add(Loop(point, angle))
+
+    def el(point):
+        graph.add(Ellipsis(point, Vector(1, 0)))
 
     def d(name):
-        cfg_repr.draw(os.path.join(directory_name, name + ".svg"))
+        graph.draw(os.path.join(directory_name, name + ".svg"))
+
+    def line(graph: CFGRepr, x: float, y: float, name: str, indexes: list,
+             step: float=7, is_vertical: bool=False):
+        for i, index in enumerate(indexes):
+            if index == "...":
+                graph.add(Ellipsis(Vector(x, y), Vector(1, 0)))
+            else:
+                graph.add(Node(Vector(x, y), name=name, index=index))
+            if i != len(indexes) - 1:
+                graph.add(Arrow(Vector(x, y), Vector(x + step, y)))
+            if is_vertical:
+                y += step
+            else:
+                x += step
+
+    # Concrete execution
+
+    graph = CFGRepr()
+    line(graph, 2, 2, "s", ["0", "1", "...", "t", "..."])
+    line(graph, 2, 8, "s", ["0", "1", "...", "t"])
+    d("concrete_execution")
+
+    # Symbolic execution
+
+    graph = CFGRepr()
+    x, y = 2, 20
+
+    def se(x, y, step, vstep, level):
+        an(v(x, y), "", l="s")
+        aa(v(x, y), v(x + vstep, y - step))
+        aa(v(x, y), v(x + vstep, y + step))
+        aa(v(x, y), v(x + vstep, y))
+        graph.add(Ellipsis(v(x + vstep, y), v(0, 1)))
+        if level == 2:
+            return
+        se(x + vstep, y - step, step / 2.0, vstep, level + 1)
+        se(x + vstep, y + step, step / 2.0, vstep, level + 1)
+
+    se(2, 20, 8, 7, 0)
+    d("symbolic_execution")
 
     # Branch program
 
-    cfg_repr = CFGRepr()
+    graph = CFGRepr()
     x, y = 6, 2
 
     v0, v1, v2 = v(x, y), v(x - 4, y + 4), v(x + 4, y + 4)
@@ -54,7 +98,7 @@ def main(directory_name):
 
     # Cycle program
 
-    cfg_repr = CFGRepr()
+    graph = CFGRepr()
     x, y = 2, 2
 
     v0, v1 = v(x, y), v(x, y + 5)
@@ -80,11 +124,11 @@ def main(directory_name):
         an(v0, "0"); ant(v1, "1"); aa(v0, v1); aa(v0, v2)
         v0 = v0 + v(4, 4); v1 = v1 + v(4, 4); v2 = v2 + v(4, 4)
 
-    d("circle")
+    d("cycle")
 
     # Sequence comparison
 
-    cfg_repr = CFGRepr()
+    graph = CFGRepr()
     x, y = 2, 2
 
     v0, v1, v2 = v(x, y), v(x + 4, y + 4), v(x, y + 8)
@@ -98,7 +142,7 @@ def main(directory_name):
 
     d("classic_cfg")
 
-    cfg_repr = CFGRepr()
+    graph = CFGRepr()
     x, y = 2, 2
 
     for i in range(16):
@@ -112,13 +156,13 @@ def main(directory_name):
         chain.append("6")
         if k[0] == "1": chain.append("7")
         chain.append("8")
-        cfg_repr.add_chain(v(x, y), chain, is_vertical=True,
+        graph.add_chain(v(x, y), chain, is_vertical=True,
             is_terminated=True)
         x += 5
 
     d("classic_paths")
 
-    cfg_repr = CFGRepr()
+    graph = CFGRepr()
     x, y = 2, 40 + 2 - 2.5
 
     def dr(index, x, y, step, count, f):
@@ -140,3 +184,22 @@ def main(directory_name):
     dr(0, x, y, 20, 0, True)
 
     d("classic_symbolic_tree")
+
+    # Sequence comparison 2
+
+    graph = CFGRepr()
+    x, y = 2, 2
+
+    v0, v1, v2 = v(x, y), v(x + 4, y + 4), v(x + 4, y + 9)
+    v3 = v(x, y + 4 * 9)
+    for i in range(4):
+        an(v0, str(i * 2)); an(v1, str(i * 2 + 1))
+        aa(v0, v1); aa(v0, v3); aa(v1, v2)
+        v0 = v0 + v(4, 9)
+        v1 = v1 + v(4, 9)
+        v2 = v2 + v(4, 9)
+    an(v0, "8")
+    aa(v0, v3)
+    ant(v3, "9")
+
+    d("cascade_cfg")

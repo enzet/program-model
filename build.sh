@@ -37,5 +37,5 @@ done
 echo "TeX generation..."
 
 bibtex main
-pdflatex main
+pdflatex -interaction=nonstopmode main
 

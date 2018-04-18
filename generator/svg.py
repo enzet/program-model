@@ -156,3 +156,16 @@ class SVG:
     def close(self) -> None:
         self.file_.write('</svg>\n')
         self.file_.close()
+
+
+def font_wrap(text: str, italic: bool=False, sub: bool=False) -> str:
+    result = "<tspan style=\""
+
+    if italic:
+        result += "font-style:italic; "
+    if sub:
+        result += "font-size:65%; baseline-shift:sub; "
+
+    result += "\">" + text + "</tspan>"
+    return result
+
