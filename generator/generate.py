@@ -101,44 +101,42 @@ def main(directory_name):
     cfg_repr = CFGRepr()
     x, y = 2, 2
 
-    for i in range(32):
-        k = "0" * (7 - len(bin(i))) + bin(i)[2:]
+    for i in range(16):
+        k = "0" * (6 - len(bin(i))) + bin(i)[2:]
         chain = ["0"]
-        if k[4] == "1": chain.append("1")
+        if k[3] == "1": chain.append("1")
         chain.append("2")
-        if k[3] == "1": chain.append("3")
+        if k[2] == "1": chain.append("3")
         chain.append("4")
-        if k[2] == "1": chain.append("5")
+        if k[1] == "1": chain.append("5")
         chain.append("6")
-        if k[1] == "1": chain.append("7")
+        if k[0] == "1": chain.append("7")
         chain.append("8")
-        if k[0] == "1": chain.append("9")
-        chain.append("10")
-        cfg_repr.add_chain(v(x, y), chain, is_vertical=False,
+        cfg_repr.add_chain(v(x, y), chain, is_vertical=True,
             is_terminated=True)
-        y += 5
+        x += 5
 
     d("classic_paths")
 
     cfg_repr = CFGRepr()
-    x, y = 2, 70 + 2 - 2.5
+    x, y = 2, 40 + 2 - 2.5
 
     def dr(index, x, y, step, count, f):
-        an(v(x, y), str(index), t=index == 10, f=f)
-        if index == 10:
+        an(v(x, y), str(index), t=index == 8, f=f)
+        if index == 8:
             return
-        if index in [1, 3, 5, 7]:
+        if index in [1, 3, 5]:
             count += 1
         if index % 2 == 0:
-            aa(v(x, y), v(x + 7, y - step), f=count != 4)
-            dr(index + 2, x + 7, y - step, step / 2.0, count, f=count != 4)
-            aa(v(x, y), v(x + 7, y + step), f=index < 8 or count == 4)
+            aa(v(x, y), v(x + 7, y - step), f=count != 3)
+            dr(index + 2, x + 7, y - step, step / 2.0, count, f=count != 3)
+            aa(v(x, y), v(x + 7, y + step), f=index < 6 or count == 3)
             dr(index + 1, x + 7, y + step, step / 2.0, count,
-                f=index < 8 or count == 4)
+                f=index < 6 or count == 3)
         else:
-            aa(v(x, y), v(x + 7, y), f=index < 8 or count == 4)
-            dr(index + 1, x + 7, y, step, count, f=index < 8 or count == 4)
+            aa(v(x, y), v(x + 7, y), f=index < 6 or count == 3)
+            dr(index + 1, x + 7, y, step, count, f=index < 6 or count == 3)
 
-    dr(0, x, y, 35, 0, True)
+    dr(0, x, y, 20, 0, True)
 
     d("classic_symbolic_tree")

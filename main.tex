@@ -810,36 +810,31 @@ We will formalize this example as comparison of 3 bytes with
 values $(1, 1, 1)$.
 \begin{itemize}
     \item $\mathcal{P}_{\text{SC}} = \langle F, D \rangle =
-        \langle \{f_0, f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8, f_9, f_{10}\},
-        \{a, b, c, d, e\} \rangle$,
-    \item $a, b, c, d, e \in \overline{0, 255}$,
+        \langle \{f_0, f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8\},
+        \{x, y, z, c\} \rangle$,
+    \item $x, y, z, c \in \overline{0, 255}$,
 \end{itemize}
 
 Function elements will be defined as following.
-\[ f_0^F(\{a, b, c, d, e\}) =
+\[ f_0^F(\{x, y, z, c\}) =
     \begin{cases}
-        f_1 & \text{if }a = 1, \\
-        f_2 & \text{if }a \neq 1.
+        f_1 & \text{if }x = 1, \\
+        f_2 & \text{if }x \neq 1.
     \end{cases} \]
-\[ f_2^F(\{a, b, c, d, e\}) =
+\[ f_2^F(\{x, y, z, c\}) =
     \begin{cases}
-        f_3 & \text{if }b = 1, \\
-        f_4 & \text{if }b \neq 1.
+        f_3 & \text{if }y = 1, \\
+        f_4 & \text{if }y \neq 1.
     \end{cases} \]
-\[ f_4^F(\{a, b, c, d, e\}) =
+\[ f_4^F(\{x, y, z, c\}) =
     \begin{cases}
-        f_5 & \text{if }c = 1, \\
-        f_6 & \text{if }c \neq 1.
+        f_5 & \text{if }z = 1, \\
+        f_6 & \text{if }z \neq 1.
     \end{cases} \]
-\[ f_6^F(\{a, b, c, d, e\}) =
+\[ f_6^F(\{x, y, z, c\}) =
     \begin{cases}
-        f_7 & \text{if }d = 1, \\
-        f_8 & \text{if }d \neq 1.
-    \end{cases} \]
-\[ f_8^F(\{a, b, c, d, e\}) =
-    \begin{cases}
-        f_9 & \text{if }e = 4, \\
-        f_{10} & \text{if }e \neq 4.
+        f_7 & \text{if }c = 4, \\
+        f_8 & \text{if }c \neq 4.
     \end{cases} \]
 
 \begin{figure}[h!]
@@ -851,14 +846,14 @@ Function elements will be defined as following.
 
 \begin{figure}[h!]
     \begin{center}
-        \includegraphics[scale=0.90]{pdf/classic_paths.pdf}
+        \includegraphics[scale=1.25]{pdf/classic_paths.pdf}
     \end{center}
     \caption{Sequence comparison program possible execution paths}
 \end{figure}
 
 \begin{figure}[h!]
     \begin{center}
-        \includegraphics[scale=1.05]{pdf/classic_symbolic_tree.pdf}
+        \includegraphics[scale=1.25]{pdf/classic_symbolic_tree.pdf}
     \end{center}
     \caption{Sequence comparison program symbolic execution tree}
 \end{figure}

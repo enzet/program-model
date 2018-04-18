@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p pdf
+
 python3.5 run.py
 if [ $? -eq 0 ]; then
     echo "Images generated."
