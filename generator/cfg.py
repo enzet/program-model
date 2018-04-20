@@ -8,7 +8,7 @@ from generator.vector import Vector
 
 class CFGElement:
     def __init__(self):
-        pass
+        self.radius = 7.5
 
     def add(self, output_svg: svg.SVG):
         pass
@@ -25,16 +25,15 @@ class Node(CFGElement):
         self.is_feasible = is_feasible
 
     def add(self, output_svg: svg.SVG):
-        r = 7.5
-        circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, r)
+        circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, self.radius)
         circle.style.stroke_width = 0.5
         if not self.is_feasible:
             circle.style.stroke_dasharray = "1,1"
         output_svg.add(circle)
 
         if self.is_terminal:
-            r = 6.5
-            circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, r)
+            circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5,
+                self.radius - 1.0)
             circle.style.stroke_width = 0.5
             if not self.is_feasible:
                 circle.style.stroke_dasharray = "1,1"
@@ -85,13 +84,11 @@ class Arrow(CFGElement):
         self.is_feasible = is_feasible
 
     def add(self, output_svg: svg.SVG):
-        r1 = 7.5
-        r2 = 7.5
         a = Vector(2.5, 2.5) + self.point1 * 5
         b = Vector(2.5, 2.5) + self.point2 * 5
         n = (b - a).norm()
-        na = a + (n * r1)
-        nb = b - (n * r2)
+        na = a + (n * self.radius)
+        nb = b - (n * self.radius)
         line = svg.Line(na.x, na.y, nb.x, nb.y)
         line.style.stroke_width = 0.5
         if not self.is_feasible:
@@ -120,10 +117,12 @@ class Ellipsis(CFGElement):
 
 
 class CFGRepr:
-    def __init__(self):
+    def __init__(self, radius: float=7.5):
         self.elements = []
+        self.radius = radius
 
     def add(self, element: CFGElement):
+        element.radius = self.radius
         self.elements.append(element)
 
     def add_chain(self, point: Vector, array: List[str], is_vertical=True,

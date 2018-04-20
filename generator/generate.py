@@ -56,21 +56,21 @@ def main(directory_name):
 
     # Symbolic execution
 
-    graph = CFGRepr()
-    x, y = 2, 20
+    graph = CFGRepr(12.5)
 
-    def se(x, y, step, vstep, level):
-        an(v(x, y), "", l="s")
-        aa(v(x, y), v(x + vstep, y - step))
-        aa(v(x, y), v(x + vstep, y + step))
-        aa(v(x, y), v(x + vstep, y))
-        graph.add(Ellipsis(v(x + vstep, y), v(0, 1)))
+    def se(x, y, vstep, hstep, level, i):
+        an(v(x, y), i, l="s")
+        aa(v(x, y), v(x + hstep, y - vstep))
+        aa(v(x, y), v(x + hstep, y + vstep))
+        aa(v(x, y), v(x + hstep, y))
+        graph.add(Ellipsis(v(x + hstep, y), v(0, 1)))
         if level == 2:
             return
-        se(x + vstep, y - step, step / 2.0, vstep, level + 1)
-        se(x + vstep, y + step, step / 2.0, vstep, level + 1)
+        next = ",l" if i == "0" else (",m" if i == "0,0" else ",n")
+        se(x + hstep, y - vstep, vstep / 2.0, hstep, level + 1, i + ",0")
+        se(x + hstep, y + vstep, vstep / 2.0, hstep, level + 1, i + next)
 
-    se(2, 20, 8, 7, 0)
+    se(3, 20, 10, 9, 0, "0")
     d("symbolic_execution")
 
     # Branch program
