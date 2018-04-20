@@ -21,7 +21,7 @@
 \usepackage{mathtools}
 \usepackage{makeidx}
 \usepackage{multicol}
-\usepackage{tikz-cd}
+% \usepackage{tikz-cd}
 
 \hoffset = 0pt
 \voffset = 0pt
@@ -262,10 +262,10 @@ Any state $(f_t, d_t)$ such as $f_t \in F_T$ is \term{terminal state}.
 
 We consider that there is \term{execution function} $\mathcal{F}: S \ra S$
 that manages the execution process:
-$$\mathcal{F}(s_t) = \mathcal{F}\big((f_t, d_t)\big) =
+\[\mathcal{F}(s_t) = \mathcal{F}\big((f_t, d_t)\big) =
     f_t(d_t) =
     \big(f_t^F(d_t), f_t^D(d_t)\big) =
-    (f_{t + 1}, d_{t + 1}) = s_{t + 1}.$$
+    (f_{t + 1}, d_{t + 1}) = s_{t + 1}.\]
 
 Execution function $\mathcal{F}$ defines an \term{execution rule}:
 \begin{itemize}
@@ -278,20 +278,20 @@ on \term{input data} $d_0$, where $F_I = \{f_0\}$,
 is a chain of program states,
 starting with initial state $s_0 = (f_0, d_0)$,
 where next state is a function $\mathcal{F}$ of previous state:
-$$s_{t + 1} = (f_{t + 1}, d_{t + 1}) = \big(f_t^F(d_t), f_t^D(d_t)\big) =
-    \mathcal{F}(s_t), s_t \in S$$
+\[s_{t + 1} = (f_{t + 1}, d_{t + 1}) = \big(f_t^F(d_t), f_t^D(d_t)\big) =
+    \mathcal{F}(s_t), s_t \in S\]
 and either none of function elements.
 
 We consider that if program execution approaches state $s_t = (f_t, d_t)$,
 where $f_t \in F_T$, program execution is terminated.
 Hence, execution is either infinite chain
-$$E(d_0) = s_0 \ra s_1 \ra \cdots \ra s_t \ra \cdots =
-        (f_0, d_0) \ra (f_1, d_1) \ra \cdots \ra (f_t, d_t) \ra \cdots,$$
+\[E(d_0) = s_0 \ra s_1 \ra \cdots \ra s_t \ra \cdots =
+        (f_0, d_0) \ra (f_1, d_1) \ra \cdots \ra (f_t, d_t) \ra \cdots,\]
 where $\forall j \,\, f_j \notin F_T$ (in this case $d_t$ is an
 \term{output data} of program execution $E(d_0)$),
 or finite chain
-$$E(d_0) = s_0 \ra s_1 \ra \cdots \ra s_t =
-        (f_0, d_0) \ra (f_1, d_1) \ra \cdots \ra (f_t, d_t),$$
+\[E(d_0) = s_0 \ra s_1 \ra \cdots \ra s_t =
+        (f_0, d_0) \ra (f_1, d_1) \ra \cdots \ra (f_t, d_t),\]
 where $f_t \in F_T \land \forall j < t \,\, f_j \notin F_T$
 (in this case execution has no output data).
 For the first case we will use notation $E(d_0) \ra d_t$,
@@ -412,7 +412,6 @@ Some sets of program executions:
 \end{proof}
 
 \begin{lemma}
-    $|\mathds{P}_\mathcal{P}| = \infty$.
     $|\mathds{P}''_\mathcal{P}| \le |D| |\mathcal{B}|$.
 \end{lemma}
 
@@ -492,6 +491,10 @@ Data model with memory, registers, and array lengths.
     \end{itemize}
 \end{itemize}
 
+ \comment{We don't consider data element indices as entities.
+That's why they cannot be represented by symbolic variables (or can they?).
+There should be such a data model.}
+
 \sublevel{Execution}
 
 Symbolic execution unlike concrete execution is not an iterative process.
@@ -528,14 +531,21 @@ Definitions:
         symbolic execution.
 \end{itemize}
 
-\begin{tikzcd}
-    && \se{s}_{0,0,0} \arrow{r} & \cdots \\
-    & \se{s}_{0,0} \arrow{ru} \arrow{r} \arrow{rd} & \cdots \\
-    \se{E} = \se{s}_0 \arrow{r} \arrow{ru} \arrow{rd} & \cdots & 
-        \se{s}_{0,0,n_{0,0}}
-        \arrow{r} & \cdots \\
-    & \se{s}_{0,n_0} \arrow{r} & \cdots
-\end{tikzcd}
+% \begin{tikzcd}
+%     && \se{s}_{0,0,0} \arrow{r} & \cdots \\
+%     & \se{s}_{0,0} \arrow{ru} \arrow{r} \arrow{rd} & \cdots \\
+%     \se{E} = \se{s}_0 \arrow{r} \arrow{ru} \arrow{rd} & \cdots & 
+%         \se{s}_{0,0,n_{0,0}}
+%         \arrow{r} & \cdots \\
+%     & \se{s}_{0,n_0} \arrow{r} & \cdots
+% \end{tikzcd}
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[scale=1.25]{pdf/symbolic_execution.pdf}
+    \end{center}
+    \caption{Symbolic execution process.}
+\end{figure}
 
 Execution rule:
 \begin{itemize}
@@ -640,8 +650,8 @@ $\se{\mathcal{P}} = \langle \se{F}, \se{F_I}, \se{F_T}, \se{D} \rangle$
 is a chain of concolic states, starting with initial state
 $\dse{s}_0 = (f_0, d_0, \se{f}_0, \se{d}_0, \true)$,
 where the next state is a function $\dse{\mathcal{F}}$ of previous state:
-$$s_{t + 1} = (f_{t + 1}, d_{t + 1}) = (f_t^F(d_t), f_t^D(d_t)) =
-    \dse{\mathcal{F}}(s_t), s_t \in S$$
+\[s_{t + 1} = (f_{t + 1}, d_{t + 1}) = (f_t^F(d_t), f_t^D(d_t)) =
+    \dse{\mathcal{F}}(s_t), s_t \in S\]
 
 $\dse{E}(d_0) = \dse{s}_0 \ra \dse{s}_1 \ra \dots \ra \dse{s}_t \ra \dots$.
 
@@ -654,6 +664,26 @@ $\dse{E}(d_0) = \dse{s}_0 \ra \dse{s}_1 \ra \dots \ra \dse{s}_t \ra \dots$.
 There are states that we will call \term{branch states}:
 $\dse{S}_B = \{\dse{s}_t = (f_t, d_t, \se{f}_t, \se{d}_t, c_t) :
 f_t \in F_B\}$.
+For each branch state we can try to perform path alternation.
+
+Consider we have chose a branch state
+$\dse{s}_t = (f_t, d_t, \se{f}_t, \se{d}_t, c_t) \in \dse{S}_B$.
+As it is a branch state, $f_t \in F_B$.
+Hence, $|f_t[D]| > 1$.
+Suppose, $f_t(d_t) = f_u \Ra \exists f_v \neq f_u: f_v \in f_t[D]$.
+
+$(c_0, c_1, \dots, c_t), c_0 = \true$.
+
+$c_t = e_0 \land e_1 \land \dots \land e_t$.
+
+$c*_t = e_0 \land e_1 \land \dots \land \ol{e_t}$.
+
+\begin{lemma}
+    If $\exists d': c*_t(d')$,
+    $E(d') = (s'_0, s'_1, \dots, s'_t, \dots),
+    s'_t = (f'_t, d'_t, \se{f}'_t, \se{d}'_t, c'_t)$
+    \comment{TODO}
+\end{lemma}
 
  \comment{Divergence?}
 
@@ -669,8 +699,8 @@ to research their properties.
 Simplest program that performs some logical binary operation $\diamond$
 of two Boolean variables: $z = x \diamond y$ looks like:
 \begin{itemize}
-    \item $\mathcal{P}_{\diamond} = \langle F, D \rangle =
-        \langle \{f_0, f_1\}, \{x, y, z\} \rangle$,
+    \item $\mathcal{P}_{\diamond} = \langle F, F_I, F_T, D \rangle =
+        \langle \{f_0, f_1\}, \{f_0\}, \{f_1\}, \{x, y, z\} \rangle$,
     \item $x, y \in \mathcal{B} = \{\false, \true\}$,
     \item $f_0 = (f^F_0, f^D_0), f^F_0(\{x, y, z\}) = f_1,
         f^D_0(\{x, y, z\}) = \{x, y, x \diamond y\}$.
@@ -686,10 +716,10 @@ of two Boolean variables: $z = x \diamond y$ looks like:
 
 Simplest program that contains branch:
 \begin{itemize}
-    \item $\mathcal{P}_{\text{branch}} = \langle F, D \rangle =
-        \langle \{f_0, f_1, f_2\}, D \rangle$,
-    \item $f_0^F[D] = \{f_1, f_2\}$.
-        $f_1^F[D] = \{f_1\}$. $f_2^F[D] = \{f_2\}$.
+    \item $\mathcal{P}_{\text{branch}} = \langle F, F_I, F_T, D \rangle =
+        \langle \{f_0, f_1, f_2\}, \{f_0\}, \{f_1, f_2\}, D \rangle$,
+    \item $f_0^F[D] = \{f_1, f_2\}$,
+        $f_1^F[D] = \{f_1\}$, $f_2^F[D] = \{f_2\}$.
 \end{itemize}
 
 \begin{figure}[h!]
@@ -711,8 +741,8 @@ $1 \le |\mathds{P}''_\mathcal{P}| \le 2$.
 
 Simplest program that contains a cycle:
 \begin{itemize}
-    \item $\mathcal{P}_{\text{cycle}} = \langle F, D \rangle =
-        \langle \{f_0, f_1, f_2\}, D \rangle$,
+    \item $\mathcal{P}_{\text{cycle}} = \langle F, F_I, F_T, D \rangle =
+        \langle \{f_0, f_1, f_2\}, \{f_0\}, \{f_1\}, D \rangle$,
     \item $f_0^F[D] = \{f_0, f_1\}$. $f_1^F[D] = \{f_1\}$.
 \end{itemize}
 
@@ -783,7 +813,7 @@ dynamic symbolic execution tools.
 
 Example from SAGE paper~\cite{sage}: compare input string of 4 bytes length
 with string constant \texttt{"bad!"}, if it so, trigger an error state.
-\lstset{language=c,caption=Listing,label={lst:impl}}
+\lstset{language=c,caption=Listing,label={lst:sage}}
 \begin{lstlisting}[numbers=left,numberstyle=\scriptsize]
 void top(char input[4]) {
     int cnt=0;
@@ -798,7 +828,7 @@ void top(char input[4]) {
 Example from Veritesting paper~\cite{veritesting}: check input string of
 100 bytes length, if it contains exactly 75 symbols \texttt{'a'},
 trigger an error state.
-\lstset{language=c,caption=Listing,label={lst:impl}}
+\lstset{language=c,caption=Listing,label={lst:veritesting}}
 \begin{lstlisting}[numbers=left,numberstyle=\scriptsize]
 for (int i = 0; i < 100; i++) {
     if (input[i] == 'a') counter++;
@@ -809,7 +839,7 @@ if (counter == 75) abort();
 We will formalize this example as comparison of 3 bytes with
 values $(1, 1, 1)$.
 \begin{itemize}
-    \item $\mathcal{P}_{\text{SC}} = \langle F, D \rangle =
+    \item $\mathcal{P}_{\text{SC}} = \langle F, F_I, F_T, D \rangle =
         \langle \{f_0, f_1, f_2, f_3, f_4, f_5, f_6, f_7, f_8\},
         \{x, y, z, c\} \rangle$,
     \item $x, y, z, c \in \overline{0, 255}$,
@@ -857,6 +887,18 @@ Function elements will be defined as following.
     \end{center}
     \caption{Sequence comparison program symbolic execution tree}
 \end{figure}
+
+We can propose another variant of sequence comparison, as in \texttt{strcmp}.
+\lstset{language=c,caption=Listing,label={lst:sage}}
+\begin{lstlisting}[numbers=left,numberstyle=\scriptsize]
+void top(char input[4]) {
+    if (input[0] == 'b')
+        if (input[1] == 'a')
+            if (input[2] == 'd')
+                if (input[3] == '!')
+                    abort(); // error
+}
+\end{lstlisting}
 
 \level{Other models}
 
