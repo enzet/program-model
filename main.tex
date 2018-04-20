@@ -22,6 +22,7 @@
 \usepackage{makeidx}
 \usepackage{multicol}
 % \usepackage{tikz-cd}
+\usepackage{wrapfig}
 
 \hoffset = 0pt
 \voffset = 0pt
@@ -452,7 +453,7 @@ From definition:
         of the program $\mathcal{P}$.
     \item $\se{f}_j: \se{D} \times C \ra
         (\se{F} \times \se{D} \times C)*$~---
-        \term{symbolic function element model}:
+        \term{symbolic function element model}.
     % %%% Not sure we have to divide function $\se{f}_j$.
     % \begin{itemize}
     %     \item $\se{f}_j^F: \varnothing \ra \se{F}*$~---
@@ -464,6 +465,12 @@ From definition:
     % \end{itemize}
     % \end{itemize}
 \end{itemize}
+
+\subsublevel{Path condition}
+
+Set $C$ is called \term{path condition} or \term{path constraint}.
+It is a logical expression over boolean
+$X = \{x_k\}, x_k \in \mathcal{B}$~--- \term{symbolic variables}.
 
 \subsublevel{Data model}
 
@@ -520,16 +527,8 @@ that manages the symbolic execution process:
 &= (s_{k, \dots, l, m}, \dots, s_{k, \dots, l, n})
 \end{align*}
 
-Definitions:
-\begin{itemize}
-    \item $C$~--- \term{path condition} or \term{path constraint}.
-    \item $X = \{x_k\}, x_k \in \mathcal{B}$~--- \term{symbolic variables}.
-\end{itemize}
-
-\begin{itemize}
-    \item $\se{E} = \se{s}_0 \ra \cdots$ \comment{add picture}~--- pure
-        symbolic execution.
-\end{itemize}
+\term{Symbolic execution} $\se{E} = \se{s}_0 \ra \cdots$ can be visualized
+as following.
 
 % \begin{tikzcd}
 %     && \se{s}_{0,0,0} \arrow{r} & \cdots \\
@@ -674,15 +673,17 @@ Suppose, $f_t(d_t) = f_u \Ra \exists f_v \neq f_u: f_v \in f_t[D]$.
 
 $(c_0, c_1, \dots, c_t), c_0 = \true$.
 
+$\forall j = \ol{1, t} \,\, c_j = e_0 \land e_1 \land \dots \land e_j$.
+
 $c_t = e_0 \land e_1 \land \dots \land e_t$.
 
 $c*_t = e_0 \land e_1 \land \dots \land \ol{e_t}$.
 
 \begin{lemma}
     If $\exists d': c*_t(d')$,
-    $E(d') = (s'_0, s'_1, \dots, s'_t, \dots),
-    s'_t = (f'_t, d'_t, \se{f}'_t, \se{d}'_t, c'_t)$
-    \comment{TODO}
+    $\dse{E}(d') = (s'_0, s'_1, \dots, s'_t, \dots),
+    s'_t = (f_t, d'_t, \se{f}'_t, \se{d}'_t, c'_t),
+    f_t(d'_t) = f_v \neq f_u$.
 \end{lemma}
 
  \comment{Divergence?}
