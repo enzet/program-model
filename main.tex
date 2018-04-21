@@ -41,6 +41,7 @@
 % Some useful definitions.
 
 \newcommand{\comment}[1]{\textcolor{blue}{#1}}  % red
+\newcommand{\la}{\leftarrow}
 \newcommand{\Lra}{\Leftrightarrow}
 \newcommand{\nat}{\mathds{N}}
 \newcommand{\new}[1]{\textcolor{black}{#1}}  % blue
@@ -698,18 +699,24 @@ to research their properties.
 \subsublevel{Definition}
 
 Simplest program that performs some logical binary operation $\diamond$
-of two Boolean variables: $z = x \diamond y$ looks like:
+of two Boolean variables: $x \la x \diamond y$ looks like:
 \begin{itemize}
     \item $\mathcal{P}_{\diamond} = \langle F, F_I, F_T, D \rangle =
-        \langle \{f_0, f_1\}, \{f_0\}, \{f_1\}, \{x, y, z\} \rangle$,
+        \langle \{f_0, f_1\}, \{f_0\}, \{f_1\}, \{x, y\} \rangle$,
     \item $x, y \in \mathcal{B} = \{\false, \true\}$,
-    \item $f_0 = (f^F_0, f^D_0), f^F_0(\{x, y, z\}) = f_1,
-        f^D_0(\{x, y, z\}) = \{x, y, x \diamond y\}$.
-    \item $f_1 = (f^F_1, f^D_1), f^F_1(\{x, y, z\}) = f_1,
-        f^D_1(\{x, y, z\}) = \{x, y, z\}$.
+    \item $f_0 = (f^F_0, f^D_0), f^F_0(\{x, y\}) = f_1,
+        f^D_0(\{x, y\}) = \{x \diamond y, y\}$.
+    \item $f_1 = (f^F_1, f^D_1), f^F_1(\{x, y\}) = f_1,
+        f^D_1(\{x, y\}) = \{x, y\}$.
 \end{itemize}
 
- \comment{Add CFG.}
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[scale=1.25]{pdf/simple.pdf}
+    \end{center}
+    \caption{Control flow graph, execution paths,
+        and symbolic execution tree of a simple program.}
+\end{figure}
 
 \sublevel{Simplest branch program}
 

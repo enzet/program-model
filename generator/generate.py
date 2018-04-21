@@ -1,8 +1,9 @@
 import math
 import os
 
-from generator.cfg import CFGRepr, Node, Arrow, Loop, Ellipsis
+from generator.cfg import CFGRepr, Node, Arrow, Loop, Ellipsis, Text
 from generator.vector import Vector
+from generator import svg
 
 
 def main(directory_name):
@@ -34,14 +35,18 @@ def main(directory_name):
         graph.draw(os.path.join(directory_name, name + ".svg"))
 
     def line(graph: CFGRepr, x: float, y: float, name: str, indexes: list,
-             step: float=7, is_vertical: bool=False):
+             step: float=7, is_vertical: bool=False, is_terminated: bool=False):
         for i, index in enumerate(indexes):
             if index == "...":
                 graph.add(Ellipsis(Vector(x, y), Vector(1, 0)))
             else:
-                graph.add(Node(Vector(x, y), name=name, index=index))
+                graph.add(Node(Vector(x, y), name=name, index=index,
+                    is_terminal=is_terminated and i == len(indexes) - 1))
             if i != len(indexes) - 1:
-                graph.add(Arrow(Vector(x, y), Vector(x + step, y)))
+                if is_vertical:
+                    graph.add(Arrow(Vector(x, y), Vector(x, y + step)))
+                else:
+                    graph.add(Arrow(Vector(x, y), Vector(x + step, y)))
             if is_vertical:
                 y += step
             else:
@@ -72,6 +77,26 @@ def main(directory_name):
 
     se(3, 20, 10, 9, 0, "0")
     d("symbolic_execution")
+
+    # Simple program
+
+    graph = CFGRepr()
+    x, y = 2, 4
+
+    graph.add(Text(Vector(x, y), "CFG"))
+    line(graph, x, y + 4, "f", ["0", "1"], 5, True, True)
+
+    x += 12
+    graph.add(Text(Vector(x, y - 2), "symbolic"))
+    graph.add(Text(Vector(x, y), "execution tree"))
+    line(graph, x, y + 4, "f", ["0", "1"], 5, True, True)
+
+    x += 12
+    graph.add(Text(Vector(x, y), svg.font_wrap("P", italic=True) +
+                   svg.font_wrap("0", sub=True)))
+    line(graph, x, y + 4, "f", ["0", "1"], 5, True, True)
+
+    d("simple")
 
     # Branch program
 

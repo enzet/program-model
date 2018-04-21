@@ -48,6 +48,20 @@ class Node(CFGElement):
         output_svg.add(text)
 
 
+class Text(CFGElement):
+    def __init__(self, point: Vector, text: str):
+        super().__init__()
+        self.point = point
+        self.text = text
+
+    def add(self, output_svg: svg.SVG):
+        text = svg.Text(Vector(2.5, 4.5) + self.point * 5, self.text)
+        text.style.font_size = "10px"
+        text.style.font_family = "CMU Serif"
+        text.style.text_anchor = "middle"
+        output_svg.add(text)
+
+
 class Loop(CFGElement):
     def __init__(self, point: Vector, angle: float):
         super().__init__()
