@@ -37,7 +37,7 @@ class Style:
 class SVGElement:
     def __init__(self):
         self.style = Style()
-        self.boundary_box = [0, 0, 0, 0]
+        self.boundary_box = Box(Vector(0, 0), Vector(0, 0))
 
     def draw(self, file_):
         pass
@@ -51,7 +51,7 @@ class Line(SVGElement):
         self.x2 = x2
         self.y2 = y2
         self.style = Style(fill="none", stroke="#000000", stroke_width=1.0)
-        self.boundary_box = [x1, y1, x2, y2]
+        self.boundary_box = Box(Vector(x1, y1), Vector(x2, y2))
 
     def draw(self, file_) -> None:
         file_.write("    <path d=\"M " + str(self.x1) + "," + str(self.y1) +
@@ -67,8 +67,8 @@ class Circle(SVGElement):
         self.point = point
         self.r = r
         self.style = Style(fill="none", stroke="#000000", stroke_width=1.0)
-        self.boundary_box = [self.point.x - r, self.point.y - r,
-            self.point.x + r, self.point.y + r]
+        self.boundary_box = Box(self.point - Vector(r, r),
+            self.point + Vector(r, r))
 
     def draw(self, file_) -> None:
         x = self.point.x
@@ -92,11 +92,31 @@ def str_pair(pair: Vector) -> str:
     return str(pair.x) + " " + str(pair.y)
 
 
+class Box:
+    def __init__(self, point1, point2):
+        self.point1 = Vector(point1.x, point1.y)
+        self.point2 = Vector(point2.x, point2.y)
+
+    def resize(self, point: Vector):
+        if point.x < self.point1.x:
+            self.point1.x = point.x
+        if point.y < self.point1.y:
+            self.point1.y = point.y
+        if point.x > self.point2.x:
+            self.point2.x = point.x
+        if point.y > self.point2.y:
+            self.point2.y = point.y
+
+
 class Curve(SVGElement):
     def __init__(self, description: List[List[Vector]]):
         super().__init__()
         self.description = description
         self.style = Style(fill="none", stroke="#000000", stroke_width=1.0)
+        self.boundary_box = Box(description[0][0], description[0][0])
+        for segment in self.description:
+            for point in segment:
+                self.boundary_box.resize(point)
 
     def draw(self, file_) -> None:
         path = self.description
@@ -110,6 +130,13 @@ class Curve(SVGElement):
         file_.write(str(self.style))
         file_.write("\" />\n")
 
+        # p1 = self.boundary_box.point1
+        # p2 = self.boundary_box.point2
+        # file_.write("<path "
+        #     "style=\"fill:none; stroke:#FF0000; stroke-width:1;\" "
+        #     "d=\"M %f,%f L %f,%f L %f,%f L %f,%f Z\" />\n" %
+        #     (p1.x, p1.y, p1.x, p2.y, p2.x, p2.y, p2.x, p1.y))
+
 
 class Text(SVGElement):
     def __init__(self, point: Vector, text: str) -> None:
@@ -117,7 +144,7 @@ class Text(SVGElement):
         self.point = point
         self.text = text
         self.style = Style(fill="#000000", stroke="none")
-        self.boundary_box = [point.x, point.y, point.x, point.y]
+        self.boundary_box = Box(point, point)
 
     def draw(self, file_) -> None:
         file_.write("    <text x=\"" + str(self.point.x) + "\" y=\"" +
@@ -138,10 +165,10 @@ class SVG:
 
     def add(self, element: SVGElement) -> None:
         self.elements.append(element)
-        if element.boundary_box[2] + 5 > self.width:
-            self.width = element.boundary_box[2] + 5
-        if element.boundary_box[3] + 5 > self.height:
-            self.height = element.boundary_box[3] + 5
+        if element.boundary_box.point2.x + 5 > self.width:
+            self.width = element.boundary_box.point2.x + 5
+        if element.boundary_box.point2.y + 5 > self.height:
+            self.height = element.boundary_box.point2.y + 5
 
     def draw(self) -> None:
         self.file_.write("<?xml version=\"1.0\" encoding=\"UTF-8\" "
@@ -168,4 +195,3 @@ def font_wrap(text: str, italic: bool=False, sub: bool=False) -> str:
 
     result += "\">" + text + "</tspan>"
     return result
-

@@ -35,13 +35,16 @@ def main(directory_name):
         graph.draw(os.path.join(directory_name, name + ".svg"))
 
     def line(graph: CFGRepr, x: float, y: float, name: str, indexes: list,
-             step: float=7, is_vertical: bool=False, is_terminated: bool=False):
+             step: float=7, is_vertical: bool=False, is_terminated: bool=False,
+             is_looped: bool=False):
         for i, index in enumerate(indexes):
             if index == "...":
                 graph.add(Ellipsis(Vector(x, y), Vector(1, 0)))
             else:
                 graph.add(Node(Vector(x, y), name=name, index=index,
                     is_terminal=is_terminated and i == len(indexes) - 1))
+                if is_looped and i == len(indexes) - 1:
+                    graph.add(Loop(Vector(x, y), math.pi / 2.0))
             if i != len(indexes) - 1:
                 if is_vertical:
                     graph.add(Arrow(Vector(x, y), Vector(x, y + step)))
@@ -84,7 +87,7 @@ def main(directory_name):
     x, y = 2, 4
 
     graph.add(Text(Vector(x, y), "CFG"))
-    line(graph, x, y + 4, "f", ["0", "1"], 5, True, True)
+    line(graph, x, y + 4, "f", ["0", "1"], 5, True, True, True)
 
     x += 12
     graph.add(Text(Vector(x, y - 2), "symbolic"))
