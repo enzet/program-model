@@ -718,6 +718,24 @@ of two Boolean variables: $x \la x \diamond y$ looks like:
         and symbolic execution tree of a simple program.}
 \end{figure}
 
+\subsublevel{Properties}
+
+Since the program has no branches, symbolic execution tree is the same as
+control flow graph and there is only one execution path.
+Since its data contains only two Boolean variables,
+there are 4 possible executions.
+For example, if operation $\diamond$ is logical and ($\land$):
+
+\begin{itemize}
+    \item $E(\false, \false) \ra (\false, \false),$
+    \item $E(\false, \true) \ra (\false, \true),$
+    \item $E(\true, \false) \ra (\false, \false),$
+    \item $E(\true, \true) \ra (\true, \true).$
+\end{itemize}
+
+We can write a static symbolic execution formula of this program:
+\[(x, y) \ra (x \diamond y, y)\]
+
 \sublevel{Simplest branch program}
 
 \subsublevel{Definition}
@@ -787,6 +805,17 @@ if (b == 0) {
 \end{lstlisting}
 
 \subsublevel{Definition}
+
+We can formalize it as following.
+\begin{itemize}
+    \item $\mathcal{P}_{\diamond} = \langle F, F_I, F_T, D \rangle =
+    \langle \{f_0, f_1\}, \{f_0\}, \{f_1\}, \{x, y\} \rangle$,
+    \item $x, y \in \mathcal{B} = \{\false, \true\}$,
+    % \item $f_0 = (f^F_0, f^D_0), f^F_0(\{x, y\}) = f_1,
+    %     f^D_0(\{x, y\}) = \{x \diamond y, y\}$.
+    % \item $f_1 = (f^F_1, f^D_1), f^F_1(\{x, y\}) = f_1,
+    %     f^D_1(\{x, y\}) = \{x, y\}$.
+\end{itemize}
 
 \sublevel{Table values}
 
