@@ -248,6 +248,11 @@ as usual.
 We assume that either there is a single initial element $f_0$,
 or initial elements are represented by vertices that has no incoming edges.
 
+\subsublevel{Concrete semantics}
+
+\term{Concrete semantics} is a definition of all data function elements $f^D_j$
+used in program. \comment{Add connection with a system of commands.}
+
 \sublevel{Execution}
 
 We consider that program execution is an iterative process with steps.
@@ -470,8 +475,8 @@ From definition:
 \subsublevel{Path condition}
 
 Set $C$ is called \term{path condition} or \term{path constraint}.
-It is a logical expression over boolean
-$X = \{x_k\}, x_k \in \mathcal{B}$~--- \term{symbolic variables}.
+It is a logical expression over Boolean variables
+$X = \{x_k\}, x_k \in \mathcal{B}$ called \term{symbolic variables}.
 
 \subsublevel{Data model}
 
@@ -559,6 +564,12 @@ Execution rule:
 
 Execution path $P = \{\se{f}_0, \se{f}_1, \dots, \se{f}_t\}$ is
 \term{feasible in symbolic model} iff $c_{0, 1, \dots, t}$ is true.
+
+\sublevel{Symbolic semantics}
+
+The major part of symbolic program model is a symbolic semantics.
+We should define symbolic semantics for each function element from the original
+program.
 
 \sublevel{Symbolic execution and concrete execution}
 
@@ -808,14 +819,22 @@ if (b == 0) {
 
 We can formalize it as following.
 \begin{itemize}
-    \item $\mathcal{P}_{\diamond} = \langle F, F_I, F_T, D \rangle =
-    \langle \{f_0, f_1\}, \{f_0\}, \{f_1\}, \{x, y\} \rangle$,
+    \item $\mathcal{P}_\text{IF} = \langle F, F_I, F_T, D \rangle =
+    \langle \{f_0, f_1, f_2, f_3, f_4, f_5\},
+        \{f_0\}, \{f_5\}, \{x, y\} \rangle$,
     \item $x, y \in \mathcal{B} = \{\false, \true\}$,
     % \item $f_0 = (f^F_0, f^D_0), f^F_0(\{x, y\}) = f_1,
     %     f^D_0(\{x, y\}) = \{x \diamond y, y\}$.
     % \item $f_1 = (f^F_1, f^D_1), f^F_1(\{x, y\}) = f_1,
     %     f^D_1(\{x, y\}) = \{x, y\}$.
 \end{itemize}
+
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[scale=1.25]{pdf/implicit.pdf}
+    \end{center}
+    \caption{Implicit flow program control flow graph}
+\end{figure}
 
 \sublevel{Table values}
 

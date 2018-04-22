@@ -178,14 +178,21 @@ class CFGRepr:
 class CFG:
     def __init__(self):
         self.repr = CFGRepr()
-        self.vertices = []
+        self.vertices = {}
         self.edges = []
 
-    def add_vertex(self, vertex_id):
-        self.vertices.append(vertex_id)
+    def add_vertex(self, vertex_id, x: int, y: int):
+        self.vertices[vertex_id] = Vector(x, y)
+        self.repr.add(Node(Vector(x, y), index=vertex_id))
 
-    def add_edge(self, vertex_1_id, vertex_2_id):
-        self.edges.append([vertex_1_id, vertex_2_id])
+    def add_vertices(self, vertices: list):
+        for id_, x, y in vertices:
+            self.add_vertex(id_, x, y)
+
+    def add_edges(self, array: list):
+        for id_1, id_2 in array:
+            self.edges.append([id_1, id_2])
+            self.repr.add(Arrow(self.vertices[id_1], self.vertices[id_2]))
 
     def draw(self, file_name: str):
         self.repr.draw(file_name)

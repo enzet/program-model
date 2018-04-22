@@ -1,7 +1,7 @@
 import math
 import os
 
-from generator.cfg import CFGRepr, Node, Arrow, Loop, Ellipsis, Text
+from generator.cfg import CFG, CFGRepr, Node, Arrow, Loop, Ellipsis, Text
 from generator.vector import Vector
 from generator import svg
 
@@ -153,6 +153,15 @@ def main(directory_name):
         v0 = v0 + v(4, 4); v1 = v1 + v(4, 4); v2 = v2 + v(4, 4)
 
     d("cycle")
+
+    # Control flow dependence
+
+    g = CFG()
+    g.add_vertices([("0", 6, 2), ("1", 2, 6), ("2", 2, 11), ("3", 10, 6),
+                    ("4", 10, 11), ("5", 6, 15)])
+    g.add_edges([("0", "1"), ("1", "2"), ("0", "3"), ("3", "4"), ("2", "5"),
+                 ("4", "5")])
+    g.draw("image/implicit.svg")
 
     # Sequence comparison
 
