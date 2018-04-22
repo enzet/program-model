@@ -76,11 +76,19 @@ class Loop(CFGElement):
         a2 = self.angle - math.pi / 9.0
         n1 = Vector(math.cos(a1), math.sin(a1))
         n2 = Vector(math.cos(a2), math.sin(a2))
-        path = [[Vector(x, y) + n1 * r, Vector(x, y) + n1 * 20,
-            Vector(x, y) + n2 * 20, Vector(x, y) + n2 * r]]
+        p1 = Vector(x, y) + n1 * r
+        p2 = Vector(x, y) + n1 * 20
+        p3 = Vector(x, y) + n2 * 20
+        p4 = Vector(x, y) + n2 * r
+        path = [[p1, p2, p3, p4]]
         curve = svg.Curve(path)
         curve.style.stroke_width = 0.5
         output_svg.add(curve)
+
+        n = (p4 - p3).norm()
+        v = svg.Curve(create_v(p4, n, n.rotate(-math.pi / 2.0)))
+        v.style.stroke_width = 0.5
+        output_svg.add(v)
 
 
 def create_v(point: Vector, n: Vector, m: Vector):
