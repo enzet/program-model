@@ -24,13 +24,18 @@
 % \usepackage{tikz-cd}
 \usepackage{wrapfig}
 
+\hypersetup{
+    colorlinks=false,
+    pdfborder={0 0 0},
+}
+
 \hoffset = 0pt
 \voffset = 0pt
 \oddsidemargin = 0pt
 \evensidemargin = 0pt
 \topmargin = 0pt
 \headsep = 0pt
-\textheight = 650pt
+\textheight = 600pt
 \textwidth = 450pt
 
 % Soft colors.
@@ -51,6 +56,7 @@
 \newcommand{\Ra}{\Rightarrow}
 \newcommand{\ra}{\rightarrow}
 \newcommand{\term}[1]{\textit{#1}\index{#1}}
+\newcommand{\altterm}[2]{\textit{#1}\index{#2}}
 % \newcommand{\term}[1]{\textcolor{magenta}{#1}}
 \newcommand{\true}{\textbf{true}}
 \newcommand{\false}{\textbf{false}}
@@ -77,7 +83,7 @@
 \newcommand{\rblock}{ \end{array} \right. }
 
 \renewcommand{\arraystretch}{1.5}
-\renewcommand\qedsymbol{$\blacksquare$}
+% \renewcommand\qedsymbol{$\blacksquare$}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
@@ -104,10 +110,10 @@
 
 \maketitle
 
-% \setlength{\parskip}{0em}
-%
-% \tableofcontents
-%
+\setlength{\parskip}{0em}
+
+\tableofcontents
+
 % \pagebreak
 
 \setlength{\parskip}{0.5em}
@@ -118,7 +124,11 @@ some program analysis terms, such as execution (concrete execution),
 dynamic symbolic execution (concolic execution),
 feasibility, and taint analysis.
 
-\level{Concrete program execution}
+We will start with a program definition.
+In order to separate program execution from
+symbolic and dynamic symbolic execution, which will be discussed later,
+we will use a term concrete program and concrete program execution
+since it processes concrete data.
 
 \sublevel{Program definition}
 
@@ -248,10 +258,40 @@ as usual.
 We assume that either there is a single initial element $f_0$,
 or initial elements are represented by vertices that has no incoming edges.
 
-\subsublevel{Concrete semantics}
+\subsublevel*{Semantics}
 
-\term{Concrete semantics} is a definition of all data function elements $f^D_j$
-used in program. \comment{Add connection with a system of commands.}
+\begin{wraptable}{r}{6cm}
+    \begin{center}
+        \begin{tabular}{| c | c |}
+            \hline
+            $(x, y)$         & $f^D_\land(x, y)$ \\ \hline \hline
+            (\false, \false) & (\false, \true)   \\ \hline
+            (\false, \true)  & (\false, \true)   \\ \hline
+            (\true, \false)  & (\false, \true)   \\ \hline
+            (\true, \true)   & (\true, \true)    \\ \hline
+        \end{tabular}
+        \label{tbl:conjunction}
+    \end{center}
+    \caption{Conjunction truth table.}
+\end{wraptable}
+
+\altterm{Concrete semantics}{concrete semantics} is a set of all data function
+elements $f^D_j$ used in program: $F^D$.
+In other words, concrete semantics defines
+possible ways to transform data in program.
+It could be considered as an instruction set, or a system of commands.
+
+Semantics cannot be defined without data $D$ definition.
+For example, let's take a look at logical conjunction.
+It is a binary logical operator, which means it uses two Boolean operands
+and returns Boolean result.
+But to define an operation $f^D_\land$, that performs logical conjunction,
+we should also define data $D$ and how this operation transform data.
+Let's define its semantics as $f^D_\land(x, y) = (x \land y, y)$,
+where $x, y \in B$.
+It could be represented in the form of assignment $x \la x \land y$.
+It could also be represented in the form of truth table
+(see Table \ref{tbl:conjunction}).
 
 \sublevel{Execution}
 
@@ -508,6 +548,32 @@ Data model with memory, registers, and array lengths.
 That's why they cannot be represented by symbolic variables (or can they?).
 There should be such a data model.}
 
+\subsublevel*{Symbolic function element models}
+
+Symbolic function element models are constructed from function elements of the
+original program:
+$F \xrightarrow[]{R_\text{SE}} \se{F}$, and
+$\forall j \,\, f_j \xrightarrow[]{R_\text{SE}} \se{f}_j$.
+
+\[ \se{f}_t(d_t, c_t) =
+    \begin{cases}
+        (\se{f}, \se{d}, c), \\
+        (\se{f}, \se{d}, c), \\
+        \dots \\
+        (\se{f}, \se{d}, c).
+    \end{cases} \]
+
+Symbolic function element models are multivalued functions.
+Number of values for each $\se{f}_j$ is predefined and doesn't depend on
+its arguments.
+
+\subsublevel*{Path condition}
+
+Set $C$ is called \term{path condition} or \term{path constraint}.
+It is a logical expression over Boolean variables
+$X = \{x_k\}, x_k \in \mathcal{B}$ called
+\altterm{symbolic variables}{symbolic variable}.
+
 \sublevel{Execution}
 
 Symbolic execution unlike concrete execution is not an iterative process.
@@ -600,17 +666,15 @@ Binary taint tracking:
 
 \level{Dynamic symbolic (concolic) execution model}
 
+Dynamic symbolic execution or, in other words, concolic execution,
+is an execution of a program along with execution of its symbolic model
+(that means construction of a path condition) but for the particular
+execution path that is defined by initial input data $d_0$.
+
 \sublevel{Model}
 
 Definitions:
 \begin{itemize}
-    \item $\dse{\mathcal{P}} = \langle F, F_I, F_T, D,
-        \se{F}, \se{F}_I, \se{F}_T, \se{D} \rangle$~---
-        concolic model of program
-        $\mathcal{P} = \langle F, F_I, F_T, D \rangle$
-        and its symbolic model
-        $\se{\mathcal{P}} =
-            \langle \se{F}, \se{F}_I, \se{F}_T, \se{D} \rangle$.
         \item $Y = \{Y_i\}$~--- \term{taint sources}.
               $Y_i = (\{y_{i_j}\}, \new{y_{i_L}})$,
               $y_{i_j} \in \mathcal{B}$~--- \term{taint source elements},
@@ -618,11 +682,6 @@ Definitions:
 \end{itemize}
 
 \sublevel{Execution}
-
-Dynamic symbolic execution or, in other words, concolic execution,
-is an execution of a program along with execution of its symbolic model
-(that means construction of a path condition) but for the particular
-execution path that is defined by initial input data $d_0$.
 
 As a concrete execution, it is iterative process with steps.
 We will also use variable $t \in \nat$ as execution step.
@@ -997,7 +1056,7 @@ Statement is:
 
 % \listoffigures
 % \listoftables
-% \printindex
+\printindex
 
 \bibliography{paper}{}
 \bibliographystyle{plain}
