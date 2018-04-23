@@ -134,12 +134,12 @@ since it processes concrete data.
 
 \sublevel{Program definition}
 
-\term{Program} is defined by functional elements and data:
-    $\mathcal{P} = \langle F, F_I, F_T, D \rangle$.
-Where function elements and data defined as followed:
+\altterm{Program}{program} is defined by functional elements and data:
+    $\mathcal{P} = \langle F, F_I, F_T, D \rangle$,
+where function elements and data are defined as follows:
 \begin{itemize}
-    \item $F = \{f_j\} = \{(f^F_j, f^D_j)\}$~is \term{function element} set.
-        $f_j: D \ra F \times D$~is \term{function element}.
+    \item $F = \{f_j\} = \{(f^F_j, f^D_j)\}$~is a \term{function element set}.
+        $f_j: D \ra F \times D$~is a \term{function element}.
         $f_j = (f^F_j, f^D_j)$:
         \begin{itemize}
             \item $f^F_j: D \ra F$~is
@@ -196,7 +196,7 @@ possible data and data set definitions.
 
 Binary data:
 \begin{itemize}
-    \item $B = \{0, 1\}, \mathcal{B}_2 = B^8$.
+    \item $B = \{\false, \true\}, \mathcal{B}_2 = B^8$.
 \end{itemize}
 
 Data model definition with registers and memory:
@@ -235,10 +235,10 @@ and external knowledge about array allocation:
 
 \subsublevel*{Control flow graph}
 
-Set of next possible function elements for function element $f$ is
-$f[D] = \{f_j \in F | f_j = f^D(d), d \in D\}$.
-\term{Control flow graph} is a directed graph where vertices
-are function elements and there is an edge from
+Set of all possible next function elements for function element $f$ is
+$f[D] = \{f_j \in F | f_j = f_j^F(d), d \in D\}$.
+\altterm{Control flow graph}{control flow graph} is a directed graph where
+vertices are function elements and there is an edge from
 vertex $f_i$ to vertex $f_j$ iff $f_j \in f_i[D]$.
 Function element $f_j = (f_j^F, f_j^D)$ is \term{branch} iff $|f_j[D]| > 1$.
 Otherwise (if range of the control flow function
@@ -246,8 +246,8 @@ element has exactly one element),
 function element is \term{operation},
 i.e. iff $\exists f_k: f_j^D(d) = f_k, \forall d \in D$.
 
-The set of all branches is $F_B: \{f_j \in F: |f_j[D]| > 1\}$.
-The set of all operations is $F_O: \{f_j \in F: |f_j[D]| = 1\}$.
+The set of all branches is $F_B = \{f_j \in F | |f_j[D]| > 1\}$.
+The set of all operations is $F_O = \{f_j \in F | |f_j[D]| = 1\}$.
 Since $|f_j[D]|$ by definition is either equals to 1, or greater than 1,
 $F = F_B \cup F_O$ and $F_B \cap F_O = \varnothing$.
 
@@ -322,7 +322,8 @@ Execution function $\mathcal{F}$ defines an \term{execution rule}:
     \item $d_{t + 1} = f_t^D(d_t)$.
 \end{itemize}
 
-\term{Execution of a program} $\mathcal{P} = \langle F, F_I, F_T, D \rangle$
+\altterm{Execution of a program}{program execution}
+$\mathcal{P} = \langle F, F_I, F_T, D \rangle$
 on \term{input data} $d_0$, where $F_I = \{f_0\}$,
 is a chain of program states,
 starting with initial state $s_0 = (f_0, d_0)$,
@@ -475,17 +476,17 @@ Execution is performed using symbolic variables instead of concrete data.
 
 \sublevel{Model}
 
-$\se{\mathcal{P}} = \langle \se{F}, \se{F}_I, \se{F}_T, \se{D} \rangle$~---
-\term{symbolic model} of program
+$\se{\mathcal{P}} = \langle \se{F}, \se{F}_I, \se{F}_T, \se{D} \rangle$
+is a \term{symbolic model} of program
 $\mathcal{P} = \langle F, F_I, F_T, D \rangle$.
-There are a lot of ways to create a symbolic model from the program,
+There are a lot of ways to create a symbolic model of a program,
 therefore we will use some particular set of rules $R_\text{SE}$.
 We can write it as
 $\mathcal{P} \xrightarrow[]{R_\text{SE}} \se{\mathcal{P}}$.
 It denotes that for all $\mathcal{P}$ exists only one symbolic model
 $\se{\mathcal{P}}$ constructed using the set of rules $R_\text{SE}$.
 
-From definition:
+Function elements and data is defines as follows.
 \begin{itemize}
     \item $\se{F} = \{\se{f}_j\} =
         \{(\se{f}_j^F, \se{f}_j^D, \se{f}_j^C)\}$~---
@@ -516,37 +517,34 @@ From definition:
 
 \subsublevel*{Data model}
 
-Set $C$ is called \term{path condition} or \term{path constraint}.
-It is a logical expression over Boolean variables
-$X = \{x_k\}, x_k \in \mathcal{B}$ called \term{symbolic variables}.
-
-\subsublevel{Data model}
+Symbolic data model $\se{D}$ is a symbolic model of program data $D$:
+$D \xrightarrow[]{R_\text{SE}} \se{D}$.
 
 Data model with memory, registers, and array lengths.
 
 \begin{itemize}
     \item $\se{D} = \{\se{d}_j\} = \se{R} \cup \new{\se{M}} \cup \se{L}$~---
         \term{symbolic data model}.
-    \begin{itemize}
-        \item $\se{R} = \{\se{r}_j\}, \se{r}_j = x_r, x_r \in X_R$~---
-            \term{symbolic registers model}.
-        \item $\se{M} = \{\se{m}_j\}, \se{m}_j = x_m, x_m \in X_M$~---
-            \term{symbolic memory model}.
-        \item $\se{L} = \{\se{l}_j\}, \se{l}_j = x_l, x_l \in X_L$~---
-            \term{symbolic length model}.
-    \end{itemize}
+        \begin{itemize}
+            \item $\se{R} = \{\se{r}_j\}, \se{r}_j = x_r, x_r \in X_R$~---
+                \term{symbolic registers model}.
+            \item $\se{M} = \{\se{m}_j\}, \se{m}_j = x_m, x_m \in X_M$~---
+                \term{symbolic memory model}.
+            \item $\se{L} = \{\se{l}_j\}, \se{l}_j = x_l, x_l \in X_L$~---
+                \term{symbolic length model}.
+        \end{itemize}
     \item $X = X_M \cup \new{X_L} \cup X_R$.
-    \begin{itemize}
-        \item $X_M = \{x_m\}$~---
-            \term{memory symbolic variables}. $x_m \in \mathcal{B}$.
-        \item \new{$X_L = \{x_l\}$~--- \term{length symbolic variables}.
-            $x_l \in \mathcal{B}$.}
-        \item $X_R = \{x_r\}$~---
-            \term{register symbolic variables}. $x_r \in \mathcal{B}$.
-    \end{itemize}
+        \begin{itemize}
+            \item $X_M = \{x_m\}$~---
+                \term{memory symbolic variables}. $x_m \in \mathcal{B}$.
+            \item \new{$X_L = \{x_l\}$~--- \term{length symbolic variables}.
+                $x_l \in \mathcal{B}$.}
+            \item $X_R = \{x_r\}$~---
+                \term{register symbolic variables}. $x_r \in \mathcal{B}$.
+        \end{itemize}
 \end{itemize}
 
- \comment{We don't consider data element indices as entities.
+\comment{We don't consider data element indices as entities.
 That's why they cannot be represented by symbolic variables (or can they?).
 There should be such a data model.}
 
@@ -601,8 +599,9 @@ that manages the symbolic execution process:
 &= (s_{k, \dots, l, m}, \dots, s_{k, \dots, l, n})
 \end{align*}
 
-\term{Symbolic execution} $\se{E} = \se{s}_0 \ra \cdots$ can be visualized
-as following.
+\altterm{Symbolic execution}{symbolic execution}
+$\se{E} = \se{s}_0 \ra \cdots$ visualization is
+presented on Figure \ref{img:symbolic_execution}.
 
 % \begin{tikzcd}
 %     && \se{s}_{0,0,0} \arrow{r} & \cdots \\
@@ -618,6 +617,7 @@ as following.
         \includegraphics[scale=1.25]{pdf/symbolic_execution.pdf}
     \end{center}
     \caption{Symbolic execution process.}
+    \label{img:symbolic_execution}
 \end{figure}
 
 Execution rule:
@@ -632,6 +632,9 @@ Execution rule:
 
 Execution path $P = \{\se{f}_0, \se{f}_1, \dots, \se{f}_t\}$ is
 \term{feasible in symbolic model} iff $c_{0, 1, \dots, t}$ is true.
+
+ \comment{Difference between forward and backward symbolic execution?
+What is exactly backward symbolic execution?}
 
 \sublevel{Symbolic semantics}
 
@@ -649,21 +652,31 @@ program.
 
 \level{Taint tracking}
 
+\altterm{Taint tracking}{taint tracking} is a technique used to track data
+flow in program during its execution.
+To use taint tracking we should define a set that will be used to mark data
+elements, initial taint marks distribution (or taint sources),
+and taint policy---rules that describes taint propagation.
+
 \sublevel{Model}
 
-Binary taint tracking:
+The set of a possible taint marks will be denote as $\mathcal{T}$.
+Simplest useful taint set is $B = \{\false, \true\}$,
+that divides data elements into two disjoint sets:
+what is tainted and what is not.
+
+\altterm{Taint data model}{taint data model} is
+$\te{D} = \{\te{d}_j\}, \te{d}_j \in \mathcal{T}$.
+
+Taint semantics is called \term{taint policy}.
+
+\subsublevel*{Possible data model definitions}
 
 \begin{itemize}
-    \item $\mathcal{T}$ is a set of possible taint marks.
-        E.g. $\{\textbf{false}, \textbf{true}\}, \nat$, etc.
-    \item $T = \{\tau_j\}$~--- taint set.
-    \item $\te{D}$~--- taint data model.
-    \begin{itemize}
-        \item $\te{M} = \{\te{m}_j\}, \te{m}_j \in \mathcal{T}$~---
-            \term{taint memory model},
-        \item $\te{R} = \{\te{r}_j\}, \te{r}_j \in \mathcal{T}$~---
-            \term{taint registers model}.
-    \end{itemize}
+    \item $\te{M} = \{\te{m}_j\}, \te{m}_j \in \mathcal{T}$~---
+        \term{taint memory model},
+    \item $\te{R} = \{\te{r}_j\}, \te{r}_j \in \mathcal{T}$~---
+        \term{taint registers model}.
 \end{itemize}
 
 \level{Dynamic symbolic (concolic) execution model}
@@ -675,7 +688,13 @@ execution path that is defined by initial input data $d_0$.
 
 \sublevel{Model}
 
-Definitions:
+Model for dynamic symbolic execution consists of program model
+$\mathcal{P} = \langle F, F_I, F_T, D \rangle$ and its symbolic model
+$\se{\mathcal{P}} = \langle \se{F}, \se{F}_I, \se{F}_T, \se{D} \rangle$.
+Dynamic symbolic execution program model could we presented as
+\[\dse{\mathcal{P}} = \langle F, F_I, F_T, D,
+\se{F}, \se{F}_I, \se{F}_T, \se{D} \rangle.\]
+
 \begin{itemize}
         \item $Y = \{Y_i\}$~--- \term{taint sources}.
               $Y_i = (\{y_{i_j}\}, \new{y_{i_L}})$,
@@ -715,7 +734,8 @@ Execution function $\dse{\mathcal{F}}$ defines an \term{execution rule}:
     \item $c_{t + 1} = \comment{?}$.
 \end{itemize}
 
-\term{Dynamic symbolic execution} (or \term{concolic execution})
+\altterm{Dynamic symbolic execution}{dynamic symbolic execution}
+(or \term{concolic execution})
 of a program $\mathcal{P} = \langle F, F_I, F_T, D \rangle$
 and a symbolic model
 $\se{\mathcal{P}} = \langle \se{F}, \se{F_I}, \se{F_T}, \se{D} \rangle$
@@ -729,11 +749,11 @@ $\dse{E}(d_0) = \dse{s}_0 \ra \dse{s}_1 \ra \dots \ra \dse{s}_t \ra \dots$.
 
 \sublevel{Path alternation}
 
-\term{Path alternation} is a technique to construct new execution paths
-using dynamic symbolic execution.
+\altterm{Path alternation}{path alternation}is a technique
+to construct new execution paths using dynamic symbolic execution.
 Assume, that we have dynamic symbolic execution path
 $\dse{E}(d_0) = \dse{s}_0 \ra \dse{s}_1 \ra \dots \ra \dse{s}_t \ra \dots$.
-There are states that we will call \term{branch states}:
+There are states that we will call \altterm{branch states}{branch state}:
 $\dse{S}_B = \{\dse{s}_t = (f_t, d_t, \se{f}_t, \se{d}_t, c_t) :
 f_t \in F_B\}$.
 For each branch state we can try to perform path alternation.
@@ -760,6 +780,8 @@ $c*_t = e_0 \land e_1 \land \dots \land \ol{e_t}$.
 \end{lemma}
 
  \comment{Divergence?}
+
+ \comment{Selective symbolic execution.}
 
 \level{Examples}
 
@@ -876,7 +898,7 @@ y += 1;
 
 \subsublevel*{Definition}
 
-We can formalize it as following.
+We can formalize it as follows.
 \begin{itemize}
     \item $\mathcal{P}_\text{IF} = \langle F, F_I, F_T, D \rangle =
     \langle \{f_0, f_1, f_2, f_3, f_4, f_5\},
