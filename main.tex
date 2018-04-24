@@ -21,6 +21,7 @@
 \usepackage{mathtools}
 \usepackage{makeidx}
 \usepackage{multicol}
+\usepackage{soul}
 % \usepackage{tikz-cd}
 \usepackage{wrapfig}
 
@@ -45,7 +46,7 @@
 
 % Some useful definitions.
 
-\newcommand{\comment}[1]{\textcolor{blue}{#1}}  % red
+\newcommand{\comment}[1]{\hl{#1}}
 \newcommand{\la}{\leftarrow}
 \newcommand{\Lra}{\Leftrightarrow}
 \newcommand{\nat}{\mathds{N}}
@@ -548,6 +549,13 @@ Data model with memory, registers, and array lengths.
 That's why they cannot be represented by symbolic variables (or can they?).
 There should be such a data model.}
 
+\subsublevel*{Path condition}
+
+Set $C$ is called \term{path condition} or \term{path constraint}.
+It is a logical expression over Boolean variables
+$X = \{x_k\}, x_k \in \mathcal{B}$ called
+\altterm{symbolic variables}{symbolic variable}.
+
 \subsublevel*{Symbolic function element models}
 
 Symbolic function element models are constructed from function elements of the
@@ -566,13 +574,6 @@ $\forall j \,\, f_j \xrightarrow[]{R_\text{SE}} \se{f}_j$.
 Symbolic function element models are multivalued functions.
 Number of values for each $\se{f}_j$ is predefined and doesn't depend on
 its arguments.
-
-\subsublevel*{Path condition}
-
-Set $C$ is called \term{path condition} or \term{path constraint}.
-It is a logical expression over Boolean variables
-$X = \{x_k\}, x_k \in \mathcal{B}$ called
-\altterm{symbolic variables}{symbolic variable}.
 
 \sublevel{Execution}
 
@@ -672,12 +673,17 @@ Taint semantics is called \term{taint policy}.
 
 \subsublevel*{Possible data model definitions}
 
+If original data model consists of memory and registers $D = (M, R)$,
+taint data model could be defined as $\te{D} = (\te{M}, \te{R})$:
+
 \begin{itemize}
     \item $\te{M} = \{\te{m}_j\}, \te{m}_j \in \mathcal{T}$~---
         \term{taint memory model},
     \item $\te{R} = \{\te{r}_j\}, \te{r}_j \in \mathcal{T}$~---
         \term{taint registers model}.
 \end{itemize}
+
+ \comment{Definitions of undertainting and overtainting.}
 
 \level{Dynamic symbolic (concolic) execution model}
 
