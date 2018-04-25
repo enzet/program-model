@@ -152,8 +152,7 @@ where function elements and data are defined as follows:
         and modifies data \{$f^D_j$\}.
     \item $F_I$ is a set of \term{initial function elements}.
     \item $F_T$ is a set of \term{terminal function elements}.
-    \item $D = \{d_j\}$ is \term{data}, $d_j \in \mathcal{B}$, which is
-        \term{data set}.
+    \item $D = \{d_j\}$ is a set of possible \term{data} values.
 \end{itemize}
 
 Additionally, we will assume the following.
@@ -191,9 +190,20 @@ Concrete program execution means normal program execution on given binary data.
 
 \subsublevel*{Possible data model definition}
 
-Data ($D$) and data set ($\mathcal{B}$) are abstract sets.
-But for further consideration we will use a number of
-possible data and data set definitions.
+Data set $D$ is a set of all possible values that can be arguments of
+function elements $f_j$: $D = \{d_j\}$.
+Data $d \in D$ is an abstract entity and it can be anything.
+The simplest data definition is a set of values: $d = \{d^j\}, d \in D$
+(we will use superscript for data elements because it is more convenient to use
+subscript for data instances), where $d^j$ is a Boolean variable,
+Boolean vector, natural, integer, real number, or anything else.
+
+As we want to model real computer programs we can notice,
+that simplest definition of data as a Boolean variables is useful enough
+for majority of computer systems, which operates limited binary memory.
+
+However it is convenient to use more complicated data definitions to simplify
+modeling.
 
 Binary data:
 \begin{itemize}
