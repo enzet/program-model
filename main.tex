@@ -271,6 +271,8 @@ as usual.
 We assume that either there is a single initial element $f_0$,
 or initial elements are represented by vertices that has no incoming edges.
 
+\altterm{Basic blocks}{basic block} are sets of \comment{continue...}
+
 \subsublevel*{Semantics}
 
 \begin{wraptable}{r}{6cm}
@@ -339,9 +341,9 @@ on \term{input data} $d_0$, where $F_I = \{f_0\}$,
 is a chain of program states,
 starting with initial state $s_0 = (f_0, d_0)$,
 where next state is a function $\mathcal{F}$ of previous state:
-\[s_{t + 1} = (f_{t + 1}, d_{t + 1}) = \big(f_t^F(d_t), f_t^D(d_t)\big) =
-    \mathcal{F}(s_t), s_t \in S\]
-and either none of function elements.
+$s_{t + 1} = \mathcal{F}(s_t), s_t \in S$.
+Therefore execution can be represented as iterative use of execution function:
+$\mathcal{F}(\mathcal{F}(\dots\mathcal{F}(d_0)\dots))$.
 
 We consider that if program execution approaches state $s_t = (f_t, d_t)$,
 where $f_t \in F_T$, program execution is terminated.
