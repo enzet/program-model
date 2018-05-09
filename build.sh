@@ -2,7 +2,17 @@
 
 mkdir -p pdf
 
-python3.5 run.py
+python=python
+
+if [ -x "$(command -v python3.5)" ]; then
+    python=python3.5
+fi
+if [ -x "$(command -v python3.7)" ]; then
+    python=python3.7
+fi
+
+${python} run.py
+
 if [ $? -eq 0 ]; then
     echo "Images generated."
 else

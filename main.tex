@@ -157,7 +157,7 @@ where function elements and data are defined as follows:
 
 Additionally, we will assume the following.
 \begin{itemize}
-    \item Program is not empty: $F \neq \varnothing$.
+    \item Function element set is not empty: $F \neq \varnothing$.
     \item $\forall j \,\, f^F_j$ is a total function.
     \begin{itemize}
         \item If $f_j \notin F_T$,
@@ -168,9 +168,16 @@ Additionally, we will assume the following.
     \item To simplify considering, we will assume that unless otherwise stated
         there is one and only one initial function element $f_0$:
         $F_I = \{f_0\}$.
-    \item Program has at least one terminal function elements:
+    \item Program has at least one terminal function element:
         $F_T \neq \varnothing$.
 \end{itemize}
+
+\subsublevel*{Instruction counter}
+
+We can assume, that there is a integer variable, that is a part of data
+$i \in D$, that is \term{instruction counter}.
+In this case, $f: D \ra D$, so
+we have no $f_j^F$ component and $f_j = f^D_j$ only.
 
 \subsublevel*{Limitations}
 
