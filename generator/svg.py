@@ -15,6 +15,23 @@ class Style:
         self.text_anchor = text_anchor
         self.font_size = font_size
 
+    def __mul__(self, other):
+        if other.stroke:
+            self.stroke = other.stroke
+        if other.stroke_width:
+            self.stroke_width = other.stroke_width
+        if other.stroke_dasharray:
+            self.stroke_dasharray = other.stroke_dasharray
+        if other.fill:
+            self.fill = other.fill
+        if other.font_family:
+            self.font_family = other.font_family
+        if other.text_anchor:
+            self.text_anchor = other.text_anchor
+        if other.font_size:
+            self.font_self= other.font_size
+        return self
+
     def __repr__(self) -> str:
         result = ""
         if self.stroke:
@@ -37,7 +54,7 @@ class Style:
 class SVGElement:
     def __init__(self):
         self.style = Style()
-        self.boundary_box = Box(Vector(0, 0), Vector(0, 0))
+        self.boundary_box = Box(Vector(), Vector())
 
     def draw(self, file_):
         pass
@@ -59,6 +76,7 @@ class Line(SVGElement):
         file_.write("style = \"")
         file_.write(str(self.style))
         file_.write("\" />\n")
+        file_.write(self.boundary_box.to_path())
 
 
 class Circle(SVGElement):
@@ -86,6 +104,7 @@ class Circle(SVGElement):
         file_.write("style = \"")
         file_.write(str(self.style))
         file_.write("\" />\n")
+        file_.write(self.boundary_box.to_path())
 
 
 def str_pair(pair: Vector) -> str:
@@ -106,6 +125,27 @@ class Box:
             self.point2.x = point.x
         if point.y > self.point2.y:
             self.point2.y = point.y
+
+    def __mul__(self, other):
+        if other.point1.x < self.point1.x:
+            self.point1.x = other.point1.x
+        if other.point1.y < self.point1.y:
+            self.point1.y = other.point1.y
+        if other.point2.x > self.point2.x:
+            self.point2.x = other.point2.x
+        if other.point2.y > self.point2.y:
+            self.point2.y = other.point2.y
+        return self
+
+    def to_path(self):
+        p1 = self.point1
+        p2 = self.point2
+
+        return ("<path "
+            "style=\"fill:none; stroke:#FF0000; stroke-width:0.2;\" "
+            "d=\"M %f,%f L %f,%f L %f,%f L %f,%f Z\" />\n" %
+            (p1.x, p1.y, p1.x, p2.y, p2.x, p2.y, p2.x, p1.y))
+
 
 
 class Curve(SVGElement):
@@ -129,22 +169,61 @@ class Curve(SVGElement):
         file_.write("style=\"")
         file_.write(str(self.style))
         file_.write("\" />\n")
+        file_.write(self.boundary_box.to_path())
 
-        # p1 = self.boundary_box.point1
-        # p2 = self.boundary_box.point2
-        # file_.write("<path "
-        #     "style=\"fill:none; stroke:#FF0000; stroke-width:1;\" "
-        #     "d=\"M %f,%f L %f,%f L %f,%f L %f,%f Z\" />\n" %
-        #     (p1.x, p1.y, p1.x, p2.y, p2.x, p2.y, p2.x, p1.y))
+
+class TextWrap:
+    def __init__(self, text=None):
+        self.elements = []
+        if text:
+            self.add(text)
+
+    def add(self, text: str, italic: bool=False, sub: bool=False):
+        result = "<tspan style=\""
+        if italic:
+            result += "font-style:italic; "
+        if sub:
+            result += "font-size:65%; baseline-shift:sub; "
+        result += "\">" + text + "</tspan>"
+
+        self.elements.append((text, result))
+        return self
+
+    def __len__(self) -> int:
+        length = 0
+        for text, _ in self.elements:
+            length += len(text)
+        return length
+
+    def __repr__(self) -> str:
+        repr = ""
+        for _, r in self.elements:
+            repr += r
+        return repr
 
 
 class Text(SVGElement):
-    def __init__(self, point: Vector, text: str) -> None:
+    def __init__(self, point: Vector, text: TextWrap, style: Style) -> None:
         super().__init__()
         self.point = point
         self.text = text
-        self.style = Style(fill="#000000", stroke="none")
+        self.style = Style(fill="#000000", stroke="none", font_size=10) * style
         self.boundary_box = Box(point, point)
+
+        a1 = 0
+        a2 = 1
+        if self.style.text_anchor == "middle":
+            a1 = 0.5
+            a2 = 0.5
+        if self.style.text_anchor == "rigth":
+            a1 = 1
+            a2 = 0
+
+        self.boundary_box = Box(
+            Vector(point.x - self.style.font_size * len(text) * a1 * 0.45,
+                point.y - self.style.font_size * 0.8),
+            Vector(point.x + self.style.font_size * len(text) * a2 * 0.45,
+                point.y + self.style.font_size * 0.2))
 
     def draw(self, file_) -> None:
         file_.write("    <text x=\"" + str(self.point.x) + "\" y=\"" +
@@ -152,46 +231,37 @@ class Text(SVGElement):
         file_.write("style=\"")
         file_.write(str(self.style))
         file_.write("\">")
-        file_.write(self.text)
+        file_.write(str(self.text))
         file_.write("</text>\n")
+        file_.write(self.boundary_box.to_path())
 
 
 class SVG:
-    def __init__(self, file_name: str) -> None:
+    def __init__(self) -> None:
         self.elements = []
-        self.file_ = open(file_name, "w")
-        self.height = 10
-        self.width = 10
+        self.boundary_box = Box(Vector(), Vector())
 
     def add(self, element: SVGElement) -> None:
         self.elements.append(element)
-        if element.boundary_box.point2.x + 5 > self.width:
-            self.width = element.boundary_box.point2.x + 5
-        if element.boundary_box.point2.y + 5 > self.height:
-            self.height = element.boundary_box.point2.y + 5
+        self.boundary_box = self.boundary_box * element.boundary_box
 
-    def draw(self) -> None:
-        self.file_.write("<?xml version=\"1.0\" encoding=\"UTF-8\" "
+    def draw(self, file_name: str) -> None:
+        width = self.boundary_box.point2.x
+        height = self.boundary_box.point2.y
+
+        file_ = open(file_name, "w+")
+        file_.write("<?xml version=\"1.0\" encoding=\"UTF-8\" "
             "standalone=\"no\"?>\n\n")
-        self.file_.write("<svg version=\"1.1\" baseProfile=\"full\" ")
-        self.file_.write("xmlns=\"http://www.w3.org/2000/svg\" ")
-        self.file_.write("width=\"" + str(self.width) + "\" ")
-        self.file_.write("height=\"" + str(self.height) + "\">\n")
+        file_.write("<svg version=\"1.1\" baseProfile=\"full\" ")
+        file_.write("xmlns=\"http://www.w3.org/2000/svg\" ")
+        file_.write("width=\"" + str(width) + "\" ")
+        file_.write("height=\"" + str(height) + "\">\n")
+
         for element in self.elements:
-            element.draw(self.file_)
+            element.draw(file_)
 
-    def close(self) -> None:
-        self.file_.write('</svg>\n')
-        self.file_.close()
+        file_.write('</svg>\n')
+        file_.close()
 
 
-def font_wrap(text: str, italic: bool=False, sub: bool=False) -> str:
-    result = "<tspan style=\""
 
-    if italic:
-        result += "font-style:italic; "
-    if sub:
-        result += "font-size:65%; baseline-shift:sub; "
-
-    result += "\">" + text + "</tspan>"
-    return result

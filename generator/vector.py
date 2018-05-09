@@ -5,7 +5,7 @@ class Vector:
     """
     2D vector.
     """
-    def __init__(self, x: float, y: float):
+    def __init__(self, x: float=0, y: float=0):
         self.x = x
         self.y = y
 

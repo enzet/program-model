@@ -1,9 +1,10 @@
 import math
 import os
 
-from generator.cfg import CFG, CFGRepr, Node, Arrow, Loop, Ellipsis, Text
+from generator.cfg import CFG, CFGRepr, Node, Arrow, Loop, Ellipsis, Text, \
+    Edge, Vertex
 from generator.vector import Vector
-from generator import svg
+from generator.svg import SVG, TextWrap
 
 
 def main(directory_name):
@@ -86,20 +87,35 @@ def main(directory_name):
     graph = CFGRepr()
     x, y = 2, 4
 
-    graph.add(Text(Vector(x, y), "CFG"))
+    graph.add(Text(Vector(x, y), TextWrap().add("CFG")))
     line(graph, x, y + 4, "f", ["0", "1"], 5, True, True, True)
 
     x += 12
-    graph.add(Text(Vector(x, y - 2), "symbolic"))
-    graph.add(Text(Vector(x, y), "execution tree"))
+    graph.add(Text(Vector(x, y - 2), TextWrap().add("symbolic")))
+    graph.add(Text(Vector(x, y), TextWrap().add("execution tree")))
     line(graph, x, y + 4, "f", ["0", "1"], 5, True, True)
 
     x += 12
-    graph.add(Text(Vector(x, y), svg.font_wrap("P", italic=True) +
-                   svg.font_wrap("0", sub=True)))
+    text_wrap = TextWrap().add("P", italic=True).add("0", sub=True)
+    graph.add(Text(Vector(x, y), text_wrap))
     line(graph, x, y + 4, "f", ["0", "1"], 5, True, True)
 
     d("simple")
+
+    # Branch program
+
+    c = CFG()
+    s = SVG()
+    x, y = 2, 6
+    c.add_vertex(Vertex("0", Vector(x + 4, y)))
+    c.add_vertex(Vertex("1", Vector(x, y + 4), is_terminal=True))
+    c.add_vertex(Vertex("2", Vector(x + 8, y + 4), is_terminal=True))
+    c.add_edges([("0", "1"), ("0", "2")])
+    c.draw_cfg(s, title=(TextWrap().add("CFG"), Vector(6, 2)))
+    x += 10
+    c.draw_paths(s, Vector(x, y))
+
+    s.draw(os.path.join(directory_name, "branch_paths.svg"))
 
     # Branch program
 
@@ -122,7 +138,7 @@ def main(directory_name):
     v0, v1, v2 = v(x, y), v(x - 4, y + 4), v(x + 4, y + 4)
     an(v0, "0"); ant(v1, "1"); ant(v2, "2"); aa(v0, v1); aa(v0, v2)
 
-    d("branch")
+    d("branch2")
 
     # Cycle program
 
@@ -161,7 +177,9 @@ def main(directory_name):
                     ("4", 10, 11), ("5", 6, 15)])
     g.add_edges([("0", "1"), ("1", "2"), ("0", "3"), ("3", "4"), ("2", "5"),
                  ("4", "5")])
-    g.draw("image/implicit.svg")
+    s = SVG()
+    g.draw_cfg(s)
+    s.draw(os.path.join(directory_name, "implicit.svg"))
 
     # Sequence comparison
 

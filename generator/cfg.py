@@ -39,26 +39,26 @@ class Node(CFGElement):
                 circle.style.stroke_dasharray = "1,1"
             output_svg.add(circle)
 
-        text = svg.Text(Vector(2.5, 4.5) + self.point * 5,
-            svg.font_wrap(self.name, italic=True) +
-            svg.font_wrap(self.index, sub=True))
-        text.style.font_size = "10px"
-        text.style.font_family = "CMU Serif"
-        text.style.text_anchor = "middle"
+        text_wrap = svg.TextWrap()
+        text_wrap.add(self.name, italic=True)
+        text_wrap.add(self.index, sub=True)
+
+        text = svg.Text(Vector(2.5, 4.5) + self.point * 5, text_wrap,
+                style=svg.Style(font_size="10px", font_family="CMU Serif",
+                    text_anchor="middle"))
         output_svg.add(text)
 
 
 class Text(CFGElement):
-    def __init__(self, point: Vector, text: str):
+    def __init__(self, point: Vector, text: svg.TextWrap):
         super().__init__()
         self.point = point
         self.text = text
 
     def add(self, output_svg: svg.SVG):
-        text = svg.Text(Vector(2.5, 4.5) + self.point * 5, self.text)
-        text.style.font_size = "10px"
-        text.style.font_family = "CMU Serif"
-        text.style.text_anchor = "middle"
+        text = svg.Text(Vector(2.5, 4.5) + self.point * 5, self.text,
+            style=svg.Style(font_size="10px", font_family="CMU Serif",
+                text_anchor="middle"))
         output_svg.add(text)
 
 
@@ -168,11 +168,30 @@ class CFGRepr:
                 point = point + Vector(5, 0)
 
     def draw(self, file_name: str):
-        output_svg = svg.SVG(file_name)
+        output_svg = svg.SVG()
+        self.create_svg(output_svg)
+        output_svg.draw(file_name)
+
+    def create_svg(self, drawing: svg.SVG):
         for element in self.elements:
-            element.add(output_svg)
-        output_svg.draw()
-        output_svg.close()
+            element.add(drawing)
+
+
+class Vertex:
+    def __init__(self, id_, point: Vector, is_terminal=False):
+        self.id_ = id_
+        self.point = point
+        self.is_terminal = is_terminal
+        self.children = []
+
+    def add_child(self, child):
+        self.children.append(child)
+
+
+class Edge:
+    def __init__(self, vertex_id_1, vertex_id_2):
+        self.vertex_id_1 = vertex_id_1
+        self.vertex_id_2 = vertex_id_2
 
 
 class CFG:
@@ -180,19 +199,61 @@ class CFG:
         self.repr = CFGRepr()
         self.vertices = {}
         self.edges = []
+        self.init_id = None
 
-    def add_vertex(self, vertex_id, x: int, y: int):
-        self.vertices[vertex_id] = Vector(x, y)
-        self.repr.add(Node(Vector(x, y), index=vertex_id))
+    def add_vertex(self, vertex: Vertex):
+        self.vertices[vertex.id_] = vertex
+        self.repr.add(Node(vertex.point, index=vertex.id_,
+            is_terminal=vertex.is_terminal))
+
+        if vertex.is_terminal:
+            self.repr.add(Loop(vertex.point, angle=math.pi * 0.5))
+
+        if not self.init_id:
+            self.init_id = vertex.id_
 
     def add_vertices(self, vertices: list):
         for id_, x, y in vertices:
-            self.add_vertex(id_, x, y)
+            self.add_vertex(Vertex(id_, Vector(x, y)))
 
     def add_edges(self, array: list):
         for id_1, id_2 in array:
-            self.edges.append([id_1, id_2])
-            self.repr.add(Arrow(self.vertices[id_1], self.vertices[id_2]))
+            self.edges.append(Edge(id_1, id_2))
+            self.repr.add(Arrow(self.vertices[id_1].point,
+                self.vertices[id_2].point))
 
-    def draw(self, file_name: str):
-        self.repr.draw(file_name)
+            self.vertices[id_1].add_child(self.vertices[id_2])
+
+    def draw_cfg(self, drawing: svg.SVG, title=None):
+        if title:
+            title_text, title_point = title
+            self.repr.add(Text(title_point, title_text))
+
+        self.repr.create_svg(drawing)
+
+    def draw_paths(self, drawing: svg.SVG, point: Vector):
+        repr = CFGRepr()
+
+        queue = [self.vertices[self.init_id]]
+
+        def draw(queue, x, y, wstep, hstep, index):
+            if len(queue[-1].children) == 0:
+                repr.add(Text(Vector(x, y),
+                    svg.TextWrap().add("P", italic=True)
+                        .add(str(index), sub=True)))
+                yy = y + 4
+                for inx, child in enumerate(queue):
+                    repr.add(Node(Vector(x, yy), index=child.id_,
+                        is_terminal=child.is_terminal))
+                    if inx != len(queue) - 1:
+                        repr.add(Arrow(Vector(x, yy), Vector(x, yy + hstep)))
+                    yy += hstep
+            else:
+                for child in queue[-1].children:
+                    x += wstep
+                    draw(queue + [child], x, y, wstep, hstep, index)
+                    index += 1
+
+        draw(queue, point.x, point.y, 5, 5, 0)
+
+        repr.create_svg(drawing)
