@@ -135,6 +135,25 @@ since it processes concrete data.
 
 \sublevel{Program definition}
 
+\subsublevel*{Knuth}
+
+Classical program definition could be found in
+Donald Knuth's \textit{The Art of Computer Programming}~\cite{knuth}:
+\term{program} is $\langle Q, I, \Omega, f \rangle$,
+where $f: Q \ra Q$, $Q$~--- states, $\Omega$~--- terminal states,
+$I$~--- input states.
+Here we have a 
+
+% $\forall x \in I$ path is $x_0, x_1, \dots, x_k, \dots$.
+% $x_0 = x, x_{k + 1} = f(x_k)$.
+
+It is convenient to use slightly different notation for further considerations:
+$\mathcal{P} = \langle \mathcal{F}, D_I, D_T, D \rangle$,
+where $\mathcal{F}: D \ra D$, $D$~--- states, $D_I$~--- initial states,
+$D_T$~--- terminal states.
+
+\subsublevel*{Split function elements}
+
 \altterm{Program}{program} is defined by functional elements and data:
     $\mathcal{P} = \langle F, F_I, F_T, D \rangle$,
 where function elements and data are defined as follows:
