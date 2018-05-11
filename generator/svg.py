@@ -29,7 +29,7 @@ class Style:
         if other.text_anchor:
             self.text_anchor = other.text_anchor
         if other.font_size:
-            self.font_self= other.font_size
+            self.font_self = other.font_size
         return self
 
     def __repr__(self) -> str:
@@ -56,8 +56,9 @@ class SVGElement:
         self.style = Style()
         self.boundary_box = Box(Vector(), Vector())
 
-    def draw(self, file_):
-        pass
+    def draw(self, file_, show_boundary: bool=False):
+        if show_boundary:
+            file_.write(self.boundary_box.to_path())
 
 
 class Line(SVGElement):
@@ -70,13 +71,13 @@ class Line(SVGElement):
         self.style = Style(fill="none", stroke="#000000", stroke_width=1.0)
         self.boundary_box = Box(Vector(x1, y1), Vector(x2, y2))
 
-    def draw(self, file_) -> None:
+    def draw(self, file_, show_boundary: bool=False) -> None:
         file_.write("    <path d=\"M " + str(self.x1) + "," + str(self.y1) +
             " " + str(self.x2) + "," + str(self.y2) + "\" ")
         file_.write("style = \"")
         file_.write(str(self.style))
         file_.write("\" />\n")
-        file_.write(self.boundary_box.to_path())
+        super().draw(file_, show_boundary)
 
 
 class Circle(SVGElement):
@@ -88,7 +89,7 @@ class Circle(SVGElement):
         self.boundary_box = Box(self.point - Vector(r, r),
             self.point + Vector(r, r))
 
-    def draw(self, file_) -> None:
+    def draw(self, file_, show_boundary: bool=False) -> None:
         x = self.point.x
         y = self.point.y
         r = self.r
@@ -104,7 +105,7 @@ class Circle(SVGElement):
         file_.write("style = \"")
         file_.write(str(self.style))
         file_.write("\" />\n")
-        file_.write(self.boundary_box.to_path())
+        super().draw(file_, show_boundary)
 
 
 def str_pair(pair: Vector) -> str:
@@ -137,7 +138,7 @@ class Box:
             self.point2.y = other.point2.y
         return self
 
-    def to_path(self):
+    def to_path(self) -> str:
         p1 = self.point1
         p2 = self.point2
 
@@ -145,7 +146,6 @@ class Box:
             "style=\"fill:none; stroke:#FF0000; stroke-width:0.2;\" "
             "d=\"M %f,%f L %f,%f L %f,%f L %f,%f Z\" />\n" %
             (p1.x, p1.y, p1.x, p2.y, p2.x, p2.y, p2.x, p1.y))
-
 
 
 class Curve(SVGElement):
@@ -158,7 +158,7 @@ class Curve(SVGElement):
             for point in segment:
                 self.boundary_box.resize(point)
 
-    def draw(self, file_) -> None:
+    def draw(self, file_, show_boundary: bool=False) -> None:
         path = self.description
         file_.write("    <path d=\"")
         file_.write("M " + str_pair(path[0][0]))
@@ -169,7 +169,7 @@ class Curve(SVGElement):
         file_.write("style=\"")
         file_.write(str(self.style))
         file_.write("\" />\n")
-        file_.write(self.boundary_box.to_path())
+        super().draw(file_, show_boundary)
 
 
 class TextWrap:
@@ -196,10 +196,10 @@ class TextWrap:
         return length
 
     def __repr__(self) -> str:
-        repr = ""
+        representation = ""
         for _, r in self.elements:
-            repr += r
-        return repr
+            representation += r
+        return representation
 
 
 class Text(SVGElement):
@@ -225,7 +225,7 @@ class Text(SVGElement):
             Vector(point.x + self.style.font_size * len(text) * a2 * 0.45,
                 point.y + self.style.font_size * 0.2))
 
-    def draw(self, file_) -> None:
+    def draw(self, file_, show_boundary: bool=False) -> None:
         file_.write("    <text x=\"" + str(self.point.x) + "\" y=\"" +
             str(self.point.y) + "\" ")
         file_.write("style=\"")
@@ -233,7 +233,7 @@ class Text(SVGElement):
         file_.write("\">")
         file_.write(str(self.text))
         file_.write("</text>\n")
-        file_.write(self.boundary_box.to_path())
+        super().draw(file_, show_boundary)
 
 
 class SVG:
