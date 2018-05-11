@@ -17,8 +17,12 @@ Requirements:
   * Python 3 (for SVG graph generation),
   * [Inkscape](https://inkscape.org/en/) (for image conversion from SVG to PDF).
 
-## Graph generation ##
+## Graph drawing ##
 
 There is also simple graph drawing [Python module](generator).
 It is used to generate execution sequences, execution paths,
 control flow graphs, and symbolic execution trees.
+
+Generated symbolic tree example:
+
+![Preview](https://raw.github.com/enzet/program-model/master/image/symbolic_tree.png)
