@@ -2,11 +2,27 @@
 \newcommand{\level}{\section}
 \newcommand{\sublevel}{\subsection}
 \newcommand{\subsublevel}{\subsubsection}
+\hoffset = 0pt
+\voffset = 0pt
+\oddsidemargin = 0pt
+\evensidemargin = 0pt
+\topmargin = 0pt
+\headsep = 0pt
+\textheight = 600pt
+\textwidth = 450pt
 
 % \documentclass[fleqn,oneside,a4]{book}
 % \newcommand{\level}{\chapter}
 % \newcommand{\sublevel}{\section}
 % \newcommand{\subsublevel}{\subsection}
+% \usepackage[paperwidth=14.5cm, paperheight=21.5cm]{geometry}
+% \hoffset = -35pt
+% \voffset = -50pt
+% \oddsidemargin = 0pt
+% \evensidemargin = 0pt
+% \topmargin = 0pt
+% \textheight = 530pt
+% \textwidth = 340pt
 
 \usepackage{algorithm2e}
 \usepackage{amsmath}
@@ -29,15 +45,6 @@
     colorlinks=false,
     pdfborder={0 0 0},
 }
-
-\hoffset = 0pt
-\voffset = 0pt
-\oddsidemargin = 0pt
-\evensidemargin = 0pt
-\topmargin = 0pt
-\headsep = 0pt
-\textheight = 600pt
-\textwidth = 450pt
 
 % Soft colors.
 
@@ -142,7 +149,6 @@ Donald Knuth's \textit{The Art of Computer Programming}~\cite{knuth}:
 \term{program} is $\langle Q, I, \Omega, f \rangle$,
 where $f: Q \ra Q$, $Q$~--- states, $\Omega$~--- terminal states,
 $I$~--- input states.
-Here we have a 
 
 % $\forall x \in I$ path is $x_0, x_1, \dots, x_k, \dots$.
 % $x_0 = x, x_{k + 1} = f(x_k)$.
@@ -233,7 +239,7 @@ modeling.
 
 Binary data:
 \begin{itemize}
-    \item $B = \{\false, \true\}, \mathcal{B}_2 = B^8$.
+    \item $B = (\false, \true), \mathcal{B}_2 = B^8$.
 \end{itemize}
 
 Data model definition with registers and memory:
@@ -558,6 +564,15 @@ Function elements and data is defines as follows.
 
 Symbolic data model $\se{D}$ is a symbolic model of program data $D$:
 $D \xrightarrow[]{R_\text{SE}} \se{D}$.
+To build a symbolic data model $\se{D}$ of a program, we should choose,
+which items of the original data $D$ to be symbolized.
+Let's assume out original data $D$ is a set of elements ($D = {d_j}$)
+and we want to symbolize all of them in our model.
+
+Firstly, we have to define a set of
+\altterm{symbolic variables}{symbolic variable}
+as a sequence of variables $X = (x_j)$.
+And let us symboilc data model $\se{D}$ be a
 
 Data model with memory, registers, and array lengths.
 
@@ -767,7 +782,44 @@ that manages the execution process:
     &= \dse{s}_{t + 1}.
 \end{align*}
 
- \comment{Add function to produce $c_{t + 1}$ from $c_t$.}
+$c_{t + 1} = c_t \land e_t$.
+
+We will define $e_t$ as follows.
+
+If $f_t$ is an operation ($f_t \in F_O \Ra f_{t + 1} = \text{const}$):
+
+% \begin{align*}
+%     & \forall d', d'' \in D \,\, \\
+%     & f_t^D(d') = d'' \Ra e_t \bigg\rvert_{\substack{
+%         \se{d}^0_t = d'^0, \se{d}^0_{t + 1} = d''^0 \\
+%         \dots \\
+%         \se{d}^n_t = d'^n, \se{d}^n_{t + 1} = d''^n
+%     }} = \true \\
+%     & f_t^D(d') \neq d'' \Ra e_t \bigg\rvert_{\substack{
+%         \se{d}^0_t = d'^0, \se{d}^0_{t + 1} = d''^0 \\
+%         \dots \\
+%         \se{d}^n_t = d'^n, \se{d}^n_{t + 1} = d''^n
+%     }} = \false \\
+% \end{align*}
+
+\begin{align*}
+    & \forall d', d'' \in D \,\, \\
+    & f_t^D(d') = d'' \Ra e_t \bigg\rvert_{
+        \, \se{d}_t = d', \se{d}_{t + 1} = d''} = \true \\
+    & f_t^D(d') \neq d'' \Ra e_t \bigg\rvert_{
+        \, \se{d}_t = d', \se{d}_{t + 1} = d''} = \false \\
+\end{align*}
+
+If $f_t$ is a branch
+($df_t \in F_B \Ra _{t + 1} = d_t, f_{t + 1} = f' or f ''$):
+
+\begin{align*}
+    & \forall d', \in D \,\, \\
+    & f_t^D(d') = d'' \Ra e_t \bigg\rvert_{
+        \, \se{d}_t = d', \se{d}_{t + 1} = d'} = \true \\
+    & f_t^D(d') \neq d'' \Ra e_t \bigg\rvert_{
+        \, \se{d}_t = d', \se{d}_{t + 1} = d'} = \false \\
+\end{align*}
 
 Execution function $\dse{\mathcal{F}}$ defines an \term{execution rule}:
 \begin{itemize}
