@@ -1,4 +1,5 @@
-\documentclass[fleqn,oneside,a4]{article}
+\documentclass[oneside,a4]{article}
+% \documentclass[fleqn,oneside,a4]{article}
 \newcommand{\level}{\section}
 \newcommand{\sublevel}{\subsection}
 \newcommand{\subsublevel}{\subsubsection}
@@ -173,10 +174,9 @@ where $\mathcal{F}: D \ra D$ is an \term{execution function},
 $D$~--- states, $D_I$~--- initial states,
 $D_T$~--- terminal states.
 
-Without any doubts, any real-world program execution process can be described
+This definition is concise and theoretically
+any real-world program execution process can be described
 by this definition.
-% We can consider all accessible memory (including ) as $D$,
-
 However, we want to highlight some particular aspects of modern programs and
 computer systems.
 
@@ -184,7 +184,47 @@ computer systems.
 
 Firstly, execution function $\mathcal{F}$ is too complex.
 It is a single function that manages the whole execution process.
-To write a program we should
+To write a program we should somehow split this function into set of more simple
+functions.
+
+Let assume that set $D$ is finite: $|D| = n$.
+We can compute function result for each value $d_i$ from $D$.
+
+\begin{align}
+\mathcal{F}(d) =
+    \begin{cases}
+        d^1, \, \text{if } d = d_1, \\
+        d^2, \, \text{if } d = d_2, \\
+        \dots \\
+        d^n, \, \text{if } d = d_n. \\
+    \end{cases}
+\end{align}
+
+For each result $d^i$ we can create another function $\phi_i$,
+that returns $d^i$ if its argument is $d_i$ and anything otherwise.
+
+\begin{align}
+\mathcal{F}(d) =
+    \begin{cases}
+        \phi_1(d), \, \text{if } d = d_1, \\
+        \phi_2(d), \, \text{if } d = d_2, \\
+        \dots \\
+        \phi_n(d), \, \text{if } d = d_n. \\
+    \end{cases}
+\end{align}
+
+\begin{align}
+\mathcal{F}(d) =
+    \begin{cases}
+        f_1(d), \, \text{if } d \in D_1, \\
+        f_2(d), \, \text{if } d \in D_2, \\
+        \dots \\
+        f_n(d), \, \text{if } d \in D_n. \\
+    \end{cases}
+\end{align}
+
+Now we can say that our program has a number of possible states:
+$s_1 = D_1, s_2 = D_2, s_3 = D_3$.
 
 \altterm{Program}{program} is defined by functional elements and data:
     $\mathcal{P} = \langle F, F_I, F_T, D \rangle$,
@@ -638,13 +678,15 @@ original program:
 $F \xrightarrow[]{R_\text{SE}} \se{F}$, and
 $\forall j \,\, f_j \xrightarrow[]{R_\text{SE}} \se{f}_j$.
 
-\[ \se{f}_t(d_t, c_t) =
+\begin{align}
+\se{f}_t(d_t, c_t) =
     \begin{cases}
         (\se{f}, \se{d}, c), \\
         (\se{f}, \se{d}, c), \\
         \dots \\
         (\se{f}, \se{d}, c).
-    \end{cases} \]
+    \end{cases}
+\end{align}
 
 Symbolic function element models are multivalued functions.
 Number of values for each $\se{f}_j$ is predefined and doesn't depend on
@@ -666,14 +708,14 @@ We consider that there is a \term{symbolic execution function}
 $\se{\mathcal{F}}: \se{S} \ra \se{S}$
 that manages the symbolic execution process:
 
-\begin{align*}
+\begin{align}
 \se{\mathcal{F}}(s_{k, \dots, l})
 &= \se{\mathcal{F}}
     \big((f_{k, \dots, l}, d_{k, \dots, l}, c_{k, \dots, l})\big) = \\
 &= \big((f_{k, \dots, l, m}, d_{k, \dots, l, m}, c_{k, \dots, l, m}), \dots, 
        (f_{k, \dots, l, n}, d_{k, \dots, l, n}, c_{k, \dots, l, n})\big) = \\
 &= (s_{k, \dots, l, m}, \dots, s_{k, \dots, l, n})
-\end{align*}
+\end{align}
 
 \altterm{Symbolic execution}{symbolic execution}
 $\se{E} = \se{s}_0 \ra \cdots$ visualization is
@@ -790,14 +832,14 @@ $\dse{s}_t = (f_t, d_t, \se{f}_t, \se{d}_t, c_t)$.
 We consider that there is dynamic symbolic execution function
 $\dse{\mathcal{F}}: \dse{S} \ra \dse{S}$
 that manages the execution process:
-\begin{align*}
+\begin{align}
 \dse{\mathcal{F}}(\dse{s}_t) &=
     \dse{\mathcal{F}}\big((f_t, d_t, \se{f}_t, \se{d}_t, c_t)\big) = \\
     &= (f_t^F(d_t), f_t^D(d_t),
         \se{f}_t^F(\se{d_t}), \se{f}_t^D(\se{d_t}), c_{t + 1}) = \\
     &= (f_{t + 1}, d_{t + 1}, \se{f}_{t + 1}, \se{d}_{t + 1}, c_{t + 1}) = \\
     &= \dse{s}_{t + 1}.
-\end{align*}
+\end{align}
 
 $c_{t + 1} = c_t \land e_t$.
 
@@ -805,7 +847,7 @@ We will define $e_t$ as follows.
 
 If $f_t$ is an operation ($f_t \in F_O \Ra f_{t + 1} = \text{const}$):
 
-% \begin{align*}
+% \begin{align}
 %     & \forall d', d'' \in D \,\, \\
 %     & f_t^D(d') = d'' \Ra e_t \bigg\rvert_{\substack{
 %         \se{d}^0_t = d'^0, \se{d}^0_{t + 1} = d''^0 \\
@@ -817,26 +859,26 @@ If $f_t$ is an operation ($f_t \in F_O \Ra f_{t + 1} = \text{const}$):
 %         \dots \\
 %         \se{d}^n_t = d'^n, \se{d}^n_{t + 1} = d''^n
 %     }} = \false \\
-% \end{align*}
+% \end{align}
 
-\begin{align*}
+\begin{align}
     & \forall d', d'' \in D \,\, \\
     & f_t^D(d') = d'' \Ra e_t \bigg\rvert_{
         \, \se{d}_t = d', \se{d}_{t + 1} = d''} = \true \\
     & f_t^D(d') \neq d'' \Ra e_t \bigg\rvert_{
-        \, \se{d}_t = d', \se{d}_{t + 1} = d''} = \false \\
-\end{align*}
+        \, \se{d}_t = d', \se{d}_{t + 1} = d''} = \false
+\end{align}
 
 If $f_t$ is a branch
 ($df_t \in F_B \Ra _{t + 1} = d_t, f_{t + 1} = f' or f ''$):
 
-\begin{align*}
+\begin{align}
     & \forall d', \in D \,\, \\
     & f_t^D(d') = d'' \Ra e_t \bigg\rvert_{
         \, \se{d}_t = d', \se{d}_{t + 1} = d'} = \true \\
     & f_t^D(d') \neq d'' \Ra e_t \bigg\rvert_{
-        \, \se{d}_t = d', \se{d}_{t + 1} = d'} = \false \\
-\end{align*}
+        \, \se{d}_t = d', \se{d}_{t + 1} = d'} = \false
+\end{align}
 
 Execution function $\dse{\mathcal{F}}$ defines an \term{execution rule}:
 \begin{itemize}
