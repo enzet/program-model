@@ -93,6 +93,18 @@
 \renewcommand{\arraystretch}{1.5}
 % \renewcommand\qedsymbol{$\blacksquare$}
 
+% Images.
+
+\newcommand{\centerimage}[2]{
+\begin{figure}[h!]
+    \begin{center}
+        \includegraphics[scale=1.25]{pdf/#1.pdf}
+    \end{center}
+    \caption{#2}
+    \label{img:#1}
+\end{figure}
+}
+
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{claim}{Claim}
@@ -133,9 +145,6 @@ some program analysis terms, such as execution (concrete execution),
 (pure) symbolic execution,
 dynamic symbolic execution (concolic execution),
 feasibility, and taint analysis.
-
-We want to propose as formal as possible definition of all terms we will use,
-
 
 \sublevel{Program definition}
 
@@ -439,12 +448,8 @@ for program states connected by arrows which depicts function $\mathcal{F}$.
 If program execution is finite, the last state will be depicted by
 a circle with double stroke.
 
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[scale=1.25]{pdf/concrete_execution.pdf}
-    \end{center}
-    \caption{Infinite and finite concrete program execution}
-\end{figure}
+\centerimage{concrete_execution}
+    {Infinite and finite concrete program execution.}
 
 We will also define \term{execution path} as either any finite sequence
 $P = (f_0, f_1, \dots, f_t)$, where
@@ -615,7 +620,7 @@ Data model with memory, registers, and array lengths.
         \end{itemize}
 \end{itemize}
 
-\comment{We don't consider data element indices as entities.
+ \comment{We don't consider data element indices as entities.
 That's why they cannot be represented by symbolic variables (or can they?).
 There should be such a data model.}
 
@@ -683,13 +688,8 @@ presented on Figure \ref{img:symbolic_execution}.
 %     & \se{s}_{0,n_0} \arrow{r} & \cdots
 % \end{tikzcd}
 
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[scale=1.25]{pdf/symbolic_execution.pdf}
-    \end{center}
-    \caption{Symbolic execution process.}
-    \label{img:symbolic_execution}
-\end{figure}
+\centerimage{symbolic_execution}
+    {Symbolic execution process.}
 
 Execution rule:
 \begin{itemize}
@@ -917,13 +917,9 @@ of two Boolean variables: $x \la x \diamond y$ looks like:
         f^D_1(\{x, y\}) = \{x, y\}$.
 \end{itemize}
 
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[scale=1.25]{pdf/simple.pdf}
-    \end{center}
-    \caption{Control flow graph, execution paths,
+\centerimage{simple}
+    {Control flow graph, execution paths,
         and symbolic execution tree of a simple program.}
-\end{figure}
 
 \subsublevel*{Properties}
 
@@ -955,13 +951,9 @@ Simplest program that contains branch:
         $f_1^F[D] = \{f_1\}$, $f_2^F[D] = \{f_2\}$.
 \end{itemize}
 
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[scale=1.25]{pdf/execution_branch.pdf}
-    \end{center}
-    \caption{Control flow graph, execution paths,
+\centerimage{execution_branch}
+    {Control flow graph, execution paths,
         and symbolic execution tree of a program with one branch.}
-\end{figure}
 
 \subsublevel*{Properties}
 
@@ -979,13 +971,9 @@ Simplest program that contains a cycle:
     \item $f_0^F[D] = \{f_0, f_1\}$. $f_1^F[D] = \{f_1\}$.
 \end{itemize}
 
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[scale=1.25]{pdf/execution_cycle.pdf}
-    \end{center}
-    \caption{Control flow graph, execution paths,
+\centerimage{execution_cycle}
+    {Control flow graph, execution paths,
         and symbolic execution tree of a program with one cycle.}
-\end{figure}
 
 \subsublevel*{Properties}
 
@@ -1023,12 +1011,8 @@ We can formalize it as follows.
     %     f^D_1(\{x, y\}) = \{x, y\}$.
 \end{itemize}
 
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[scale=1.25]{pdf/implicit.pdf}
-    \end{center}
-    \caption{Implicit flow program control flow graph}
-\end{figure}
+\centerimage{implicit}
+    {Implicit flow program control flow graph.}
 
 \sublevel{Table values}
 
@@ -1130,19 +1114,11 @@ And alternative definition of element $f_6$:
         f_8, & \text{if }c \neq 2.
     \end{cases} \]
 
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[scale=1.25]{pdf/classic_paths.pdf}
-    \end{center}
-    \caption{Sequence comparison program possible execution paths}
-\end{figure}
+\centerimage{classic_paths}
+    {Sequence comparison program possible execution paths.}
 
-\begin{figure}[h!]
-    \begin{center}
-        \includegraphics[scale=1.25]{pdf/classic_symbolic_tree.pdf}
-    \end{center}
-    \caption{Sequence comparison program symbolic execution tree}
-\end{figure}
+\centerimage{classic_symbolic_tree}
+    {Sequence comparison program symbolic execution tree.}
 
 We can propose another variant of sequence comparison, as in \texttt{strcmp}.
 \lstset{language=c,caption=Listing,label={lst:sage}}
