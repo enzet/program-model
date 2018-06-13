@@ -134,31 +134,48 @@ some program analysis terms, such as execution (concrete execution),
 dynamic symbolic execution (concolic execution),
 feasibility, and taint analysis.
 
+We want to propose as formal as possible definition of all terms we will use,
+
+
+\sublevel{Program definition}
+
 We will start with a program definition.
 In order to separate program execution from
 symbolic and dynamic symbolic execution, which will be discussed later,
 we will use a term concrete program and concrete program execution
 since it processes concrete data.
 
-\sublevel{Program definition}
-
 \subsublevel*{Knuth}
 
-Classical program definition could be found in
-Donald Knuth's \textit{The Art of Computer Programming}~\cite{knuth}:
-\term{program} is $\langle Q, I, \Omega, f \rangle$,
+We can find classical definition of a \term{computational method} in
+Donald Knuth's \textit{The Art of Computer Programming}~\cite{knuth}.
+Computational method is $\langle Q, I, \Omega, f \rangle$,
 where $f: Q \ra Q$, $Q$~--- states, $\Omega$~--- terminal states,
 $I$~--- input states.
 
-% $\forall x \in I$ path is $x_0, x_1, \dots, x_k, \dots$.
-% $x_0 = x, x_{k + 1} = f(x_k)$.
+Execution:
+$\forall x \in I$ path is $x_0, x_1, \dots, x_k, \dots$.
+$x_0 = x, x_{k + 1} = f(x_k)$.
 
-It is convenient to use slightly different notation for further considerations:
+For the sake of convenience, we will use slightly different notation
+because it will interfere with our further considerations:
 $\mathcal{P} = \langle \mathcal{F}, D_I, D_T, D \rangle$,
-where $\mathcal{F}: D \ra D$, $D$~--- states, $D_I$~--- initial states,
+where $\mathcal{F}: D \ra D$ is an \term{execution function},
+$D$~--- states, $D_I$~--- initial states,
 $D_T$~--- terminal states.
 
-\subsublevel*{Split function elements}
+Without any doubts, any real-world program execution process can be described
+by this definition.
+% We can consider all accessible memory (including ) as $D$,
+
+However, we want to highlight some particular aspects of modern programs and
+computer systems.
+
+\subsublevel*{Split execution function}
+
+Firstly, execution function $\mathcal{F}$ is too complex.
+It is a single function that manages the whole execution process.
+To write a program we should
 
 \altterm{Program}{program} is defined by functional elements and data:
     $\mathcal{P} = \langle F, F_I, F_T, D \rangle$,
@@ -566,13 +583,13 @@ Symbolic data model $\se{D}$ is a symbolic model of program data $D$:
 $D \xrightarrow[]{R_\text{SE}} \se{D}$.
 To build a symbolic data model $\se{D}$ of a program, we should choose,
 which items of the original data $D$ to be symbolized.
-Let's assume out original data $D$ is a set of elements ($D = {d_j}$)
+Let's assume out original data $D$ is a set of elements ($D = \{d_j\}$)
 and we want to symbolize all of them in our model.
 
 Firstly, we have to define a set of
 \altterm{symbolic variables}{symbolic variable}
-as a sequence of variables $X = (x_j)$.
-And let us symboilc data model $\se{D}$ be a
+as a set of variables $X = \{x_j\}$.
+And let symbolic data model $\se{D}$ be a
 
 Data model with memory, registers, and array lengths.
 

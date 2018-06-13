@@ -262,6 +262,3 @@ class SVG:
 
         file_.write('</svg>\n')
         file_.close()
-
-
-

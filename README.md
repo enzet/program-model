@@ -1,6 +1,6 @@
 # Program execution formal model #
 
-:warning: This is a very rough draft. Use it on your own risk.
+This is a very rough draft. Use it on your own risk.
 
 The main goal of the document is to propose a formal model of
   * concrete execution,
@@ -10,7 +10,7 @@ The main goal of the document is to propose a formal model of
 
 ## Build (Linux and macOS) ##
 
-To create PDF run `./build.sh`.
+To create main PDF file (`main.pdf`), please run `./build.sh`.
 
 Requirements:
   * LaTeX,

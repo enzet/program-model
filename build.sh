@@ -2,16 +2,12 @@
 
 mkdir -p pdf
 
-python=python
-
-if [ -x "$(command -v python3.5)" ]; then
-    python=python3.5
+if [ -x "$(command -v python3)" ]; then
+    python3 run.py
+else
+    echo "No Python 3 found."
+    exit 1
 fi
-if [ -x "$(command -v python3.7)" ]; then
-    python=python3.7
-fi
-
-${python} run.py
 
 if [ $? -eq 0 ]; then
     echo "Images generated."
@@ -45,9 +41,11 @@ do
     fi
 done
 
-echo "TeX generation..."
-
-makeindex main
-bibtex main
-pdflatex -interaction=nonstopmode main
-
+if [[ main.tex -nt main.pdf ]]; then
+    echo "TeX generation..."
+    makeindex main
+    bibtex main
+    pdflatex -interaction=nonstopmode main
+else
+    echo "PDF is up to date."
+fi
