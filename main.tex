@@ -1,5 +1,6 @@
-\documentclass[oneside,a4]{article}
-% \documentclass[fleqn,oneside,a4]{article}
+% To compile as an article.
+
+\documentclass[oneside,a4]{article}  % fleqn
 \newcommand{\level}{\section}
 \newcommand{\sublevel}{\subsection}
 \newcommand{\subsublevel}{\subsubsection}
@@ -11,6 +12,8 @@
 \headsep = 0pt
 \textheight = 600pt
 \textwidth = 450pt
+
+% To compile as a book.
 
 % \documentclass[fleqn,oneside,a4]{book}
 % \newcommand{\level}{\chapter}
@@ -131,21 +134,19 @@
 
 \maketitle
 
-\setlength{\parskip}{0em}
-
-\tableofcontents
-
+% \setlength{\parskip}{0em}
+% \tableofcontents
 % \pagebreak
 
 \setlength{\parskip}{0.5em}
-
-\level{Concrete program execution}
 
 The main goal of this document is to propose a formal definition of
 some program analysis terms, such as execution (concrete execution),
 (pure) symbolic execution,
 dynamic symbolic execution (concolic execution),
 feasibility, and taint analysis.
+
+\level{Concrete program execution}
 
 \sublevel{Program definition}
 
@@ -169,7 +170,7 @@ $x_0 = x, x_{k + 1} = f(x_k)$.
 
 For the sake of convenience, we will use slightly different notation
 because it will interfere with our further considerations:
-$\mathcal{P} = \langle \mathcal{F}, D_I, D_T, D \rangle$,
+$\mathcal{P} = \langle \mathcal{F}, D, D_I, D_T \rangle$,
 where $\mathcal{F}: D \ra D$ is an \term{execution function},
 $D$~--- states, $D_I$~--- initial states,
 $D_T$~--- terminal states.
@@ -193,38 +194,49 @@ We can compute function result for each value $d_i$ from $D$.
 \begin{align}
 \mathcal{F}(d) =
     \begin{cases}
-        d^1, \, \text{if } d = d_1, \\
-        d^2, \, \text{if } d = d_2, \\
+        d^1, & \text{if } d = d_1, \\
+        d^2, & \text{if } d = d_2, \\
         \dots \\
-        d^n, \, \text{if } d = d_n. \\
+        d^n, & \text{if } d = d_n. \\
     \end{cases}
 \end{align}
 
-For each result $d^i$ we can create another function $\phi_i$,
-that returns $d^i$ if its argument is $d_i$ and anything otherwise.
+We can split set $D$ into a number of disjoint sets:
+$D = D_0 \cup D_1 \cup \dots \cup D_m,
+    \forall i, j \,\, i \neq j \Ra D_i \cap D_j = \varnothing$.
+Now for each set $D_i$ we can define function $f_i$.
+$\forall d \in D_i \,\, f_i(d) = \mathcal{F}(d)$.
 
 \begin{align}
 \mathcal{F}(d) =
     \begin{cases}
-        \phi_1(d), \, \text{if } d = d_1, \\
-        \phi_2(d), \, \text{if } d = d_2, \\
+        f_0(d), & \text{if } d \in D_0, \\
+        f_1(d), & \text{if } d \in D_1, \\
         \dots \\
-        \phi_n(d), \, \text{if } d = d_n. \\
+        f_m(d), & \text{if } d \in D_m. \\
     \end{cases}
 \end{align}
 
-\begin{align}
-\mathcal{F}(d) =
-    \begin{cases}
-        f_1(d), \, \text{if } d \in D_1, \\
-        f_2(d), \, \text{if } d \in D_2, \\
-        \dots \\
-        f_n(d), \, \text{if } d \in D_n. \\
-    \end{cases}
-\end{align}
+These functions we will call \altterm{function elements}{function element}.
+It will be a representation of instruction or operation.
+Also, we can treat sets $D_i$ as program \altterm{states}{state}.
 
-Now we can say that our program has a number of possible states:
-$s_1 = D_1, s_2 = D_2, s_3 = D_3$.
+For the sake of convenience, we will require that $D_0 = D_I$
+so we can treat $D_0$ as an initial state
+and that there is a superset $\{D_j\}$ that form $D_T$
+so we can treat them as terminal states: $D_T = \bigcup_{j} D_j$.
+
+Now we can propose another definition of the program:
+$\mathcal{P} = \langle F, D, D_I, D_T \rangle$,
+where
+\begin{itemize}
+    \item $F = \{f_i\}$ is a set of function elements,
+    \item $D = \{D_j\}$ is a superset of states,
+    \item $D_I = D_0$ is a initial state,
+    \item $D_T = \{D_k\}$ is a superset of terminal states.
+\end{itemize}
+
+\subsublevel*{Split data flow and control flow}
 
 \altterm{Program}{program} is defined by functional elements and data:
     $\mathcal{P} = \langle F, F_I, F_T, D \rangle$,
@@ -1008,7 +1020,7 @@ $1 \le |\mathds{P}''_\mathcal{P}| \le 2$.
 
 Simplest program that contains a cycle:
 \begin{itemize}
-    \item $\mathcal{P}_{\text{cycle}} = \langle F, F_I, F_T, D \rangle =
+    \item $\mathcal{P}_{\circlearrowleft} = \langle F, F_I, F_T, D \rangle =
         \langle \{f_0, f_1, f_2\}, \{f_0\}, \{f_1\}, D \rangle$,
     \item $f_0^F[D] = \{f_0, f_1\}$. $f_1^F[D] = \{f_1\}$.
 \end{itemize}
@@ -1212,6 +1224,12 @@ Statement is:
     \item $l := \textbf{malloc}(k)$, $k$ --- size,
     \item $\textbf{free}(e)$, $e$ --- address.
 \end{enumerate}
+
+\setlength{\parskip}{0em}
+\pagebreak
+\tableofcontents
+\pagebreak
+\setlength{\parskip}{0.5em}
 
 % \listoffigures
 % \listoftables
