@@ -275,23 +275,36 @@ where
     \item $S_T = \{s_k\}$ is a set of terminal program states.
 \end{itemize}
 
-Set $D$ we will also call \term{data}.
+Note, that current program state defines the next function element to be
+used to proceed program execution.
 
- \comment{Connection between our definitions and real-world entities.}
-
-\subsublevel*{Program state designator}
-
-If we can divide every process state $d_i$ into two parts
-$d_i = (a_i, b_i)$ in such a way that we can propose a function
-$g$ with the next feature:
-$d_i \in s_j \Lra g(b_i) = j$,
-then we will call $b_i$ a \term{program state designator}.
-It can be treated as \term{instruction pointer} or \term{program counter}.
+Here $F$ can be treated as a \term{instruction set},
+set of operations, or set of possible \altterm{statements}{statement}.
 
 \subsublevel*{Split data flow and control flow}
 
-\altterm{Program}{program} is defined by functional elements and data:
-    $\mathcal{P} = \langle F, F_I, F_T, D \rangle$,
+Assume, that we can divide every process state $d_i$ into two parts
+    $d_i = (d^D_i, d^F_i)$.
+So now there are two sets $D^D = \{d^D_i\}$ and 
+    $D^F = \{d^F_i\}$.
+Assume also, that for every $f_i$
+    there is a function $f^F_i$ such as
+    $d_i \in s_j \Lra f^F(d^F_i) = j$ and
+    and function $f^D_i$ such as
+    $(d^D_k, d^F_k) = f_t\big((d^D_i, d^F_i)\big) \Lra
+        d^D_k = \varphi_t(d^D_i)$.
+
+Then we will call $d^D_i$ a \term{data element} and $d^D$ a \term{data},
+and $d^F_i$ a \term{program state designator}.
+It can be treated as \term{instruction pointer} or \term{program counter}.
+
+As was said before, current program state defines the next function element.
+Therefore we can
+define initial function element instead of initial program state,
+terminal function elements instead of terminal program states,
+and remove program state designator from the process state,
+but make our function elements return new process state \bftext{and}
+next function element: $\mathcal{P} = \langle F, F_I, F_T, D \rangle$,
 where function elements and data are defined as follows:
 \begin{itemize}
     \item $F = \{f_j\} = \{(f^F_j, f^D_j)\}$~is a \term{function element set}.

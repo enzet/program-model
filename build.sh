@@ -29,7 +29,7 @@ do
     image_name=${image_name%.*}
     if [[ $PWD/image/${image_name}.svg -nt $PWD/pdf/${image_name}.pdf ]]; then
         ${inkscape} -z -A $PWD/pdf/${image_name}.pdf \
-            $PWD/image/${image_name}.svg
+            $PWD/image/${image_name}.svg &> log
         if [ $? -eq 0 ]; then
             echo "Image ${image_name} converted."
         else
@@ -42,6 +42,6 @@ do
 done
 
 echo "TeX generation..."
-makeindex main
-bibtex main
-pdflatex -interaction=nonstopmode main
+makeindex main &> log
+bibtex main &> log
+pdflatex -interaction=nonstopmode main &> log
