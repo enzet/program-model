@@ -1,31 +1,32 @@
 % To compile as an article.
 
-\documentclass[oneside,a4]{article}  % fleqn
+\documentclass[oneside,a4paper]{article}  % fleqn
 \newcommand{\level}{\section}
 \newcommand{\sublevel}{\subsection}
 \newcommand{\subsublevel}{\subsubsection}
-\hoffset = 0pt
-\voffset = 0pt
-\oddsidemargin = 0pt
-\evensidemargin = 0pt
-\topmargin = 0pt
-\headsep = 0pt
-\textheight = 600pt
-\textwidth = 450pt
+% \hoffset = 0pt
+% \voffset = 0pt
+% \oddsidemargin = 0pt
+% \evensidemargin = 0pt
+% \topmargin = 0pt
+% \headsep = 0pt
+% \textheight = 600pt
+% \textwidth = 450pt
+\usepackage[a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
 
 % To compile as a book.
 
-% \documentclass[fleqn,oneside,a4]{book}
+% \documentclass[oneside,a4]{book}
 % \newcommand{\level}{\chapter}
 % \newcommand{\sublevel}{\section}
 % \newcommand{\subsublevel}{\subsection}
 % \usepackage[paperwidth=14.5cm, paperheight=21.5cm]{geometry}
 % \hoffset = -35pt
-% \voffset = -50pt
+% \voffset = -40pt
 % \oddsidemargin = 0pt
 % \evensidemargin = 0pt
 % \topmargin = 0pt
-% \textheight = 530pt
+% \textheight = 500pt
 % \textwidth = 340pt
 
 \usepackage{algorithm2e}
@@ -97,6 +98,9 @@
 \renewcommand{\arraystretch}{1.5}
 % \renewcommand\qedsymbol{$\blacksquare$}
 
+\setlength{\skip\footins}{0.7cm}
+\setlength{\footnotesep}{0.3cm}
+
 % Images.
 
 \newcommand{\centerimage}[2]{
@@ -162,7 +166,11 @@ We want to start from the classical definition of a
 \term{computational method} from
 Donald Knuth's \textit{The Art of Computer Programming}~\cite{knuth}.
 Computational method is $\langle Q, I, \Omega, f \rangle$,
-where $f: Q \ra Q$, $Q$~--- states, $\Omega$~--- terminal states,
+where $f: Q \ra Q$, $Q$~--- states\footnote{
+    Note, that there is no requrement, that all states should be reachable.
+    We can have state $q \in Q$ that is not initial and
+    for all initial states $q$ is not in it's computation.
+}, $\Omega$~--- terminal states,
 $I$~--- input states.
 In this model execution of a computational method is
 $\forall x \in I \,\, x_0, x_1, \dots, x_k, \dots$.
@@ -237,12 +245,15 @@ There are two different meanings.
         or designator of instruction.
 \end{enumerate}
 
-To the sake of disambiguity, from now for the first meaning we will use term
+For the sake of disambiguity, from now for the first meaning we will use term
 \term{process state}, and for the second---\term{program state},
 and will never use the term \textit{state} without a specifier.
 For the process state we will use small letter $d$,
 for the set of process states---capital letter $D$,
-for the program state---small letter $s$,
+for the program state---small letter $s$\footnote{
+    $D$ and $s$ are both sets of $d$ and formally the same.
+    But we will use them in different situations.
+},
 for the set of program states---capital letter $S$.
 
 \centerimage{states}{Process state and program state specifiers.}
@@ -252,7 +263,8 @@ so we can treat $s_0$ as an initial program state
 and that there is a superset $\{s_j\}$ that form $D_T$
 so we can treat them as terminal program states: $D_T = \bigcup_{j} s_j$.
 
-Now we can move our partition of a data set propose another definition of the program:
+Now we can move our partition of a state set
+propose another definition of the program:
 $\mathcal{P} = \langle F, D, S, s_0, S_T \rangle$,
 where
 \begin{itemize}
@@ -262,6 +274,19 @@ where
     \item $s_0$ is a initial program state,
     \item $S_T = \{s_k\}$ is a set of terminal program states.
 \end{itemize}
+
+Set $D$ we will also call \term{data}.
+
+ \comment{Connection between our definitions and real-world entities.}
+
+\subsublevel*{Program state designator}
+
+If we can divide every process state $d_i$ into two parts
+$d_i = (a_i, b_i)$ in such a way that we can propose a function
+$g$ with the next feature:
+$d_i \in s_j \Lra g(b_i) = j$,
+then we will call $b_i$ a \term{program state designator}.
+It can be treated as \term{instruction pointer} or \term{program counter}.
 
 \subsublevel*{Split data flow and control flow}
 
@@ -301,13 +326,6 @@ Additionally, we will assume the following.
     \item Program has at least one terminal function element:
         $F_T \neq \varnothing$.
 \end{itemize}
-
-\subsublevel*{Instruction counter}
-
-We can assume, that there is a integer variable, that is a part of data
-$i \in D$, that is \term{instruction counter}.
-In this case, $f: D \ra D$, so
-we have no $f_j^F$ component and $f_j = f^D_j$ only.
 
 \subsublevel*{Limitations}
 
@@ -1225,14 +1243,6 @@ program execution models.
     \item Distributed Programming: Theory and Practice.
         By A. Udaya Shankar.
 \end{itemize}
-
-\sublevel{Knuth}
-
-In Knuth model~\cite{knuth} program is $\langle Q, I, \Omega, f \rangle$,
-where $f: Q \ra Q$, $Q$~--- states, $\Omega$~--- terminal states,
-$I$~--- input states.
-$\forall x \in I$ path is $x_0, x_1, \dots, x_k, \dots$.
-$x_0 = x, x_{k + 1} = f(x_k)$.
 
 \sublevel{Schwartz}
 
