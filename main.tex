@@ -103,8 +103,8 @@
 \begin{figure}[h!]
     \begin{center}
         \includegraphics[scale=1.25]{pdf/#1.pdf}
+        \caption{#2}
     \end{center}
-    \caption{#2}
     \label{img:#1}
 \end{figure}
 }
@@ -168,17 +168,6 @@ In this model execution of a computational method is
 $\forall x \in I \,\, x_0, x_1, \dots, x_k, \dots$.
 $x_0 = x, x_{k + 1} = f(x_k)$.
 
-In order to clarify what is meant by a term \term{state},
-we have to turn to the definition of
-Turing's machine~\cite{turing_computable_numbers}.
-There are two different meanings:
-\begin{enumerate}
-    \item state of progress, state of the system, state formula,
-    \item record of \textit{m}-configuration, value of state register,
-          designator of instruction.
-\end{enumerate}
-In the Knuth's definition the term state is used in the first meaning.
-
 For the sake of convenience, we will use slightly different notation
 because it will interfere with our further considerations:
 $\mathcal{P} = \langle \mathcal{F}, D, D_I, D_T \rangle$,
@@ -213,39 +202,65 @@ We can compute function result for each value $d_i$ from $D$.
 \end{align}
 
 We can split set $D$ into a number of disjoint sets:
-$D = D_0 \cup D_1 \cup \dots \cup D_m,
-    \forall i, j \,\, i \neq j \Ra D_i \cap D_j = \varnothing$.
-Now for each set $D_i$ we can define function $f_i$.
-$\forall d \in S_i \,\, f_i(d) = \mathcal{F}(d)$.
+$D = s_0 \cup s_1 \cup \dots \cup s_m,
+    \forall i, j \,\, i \neq j \Ra s_i \cap s_j = \varnothing$.
+Now for each set $s_i$ we can define function $f_i$.
+$\forall d \in s_i \,\, f_i(d) = \mathcal{F}(d)$.
 
 \begin{align}
 \mathcal{F}(d) =
     \begin{cases}
-        f_0(d), & \text{if } d \in D_0, \\
-        f_1(d), & \text{if } d \in D_1, \\
+        f_0(d), & \text{if } d \in s_0, \\
+        f_1(d), & \text{if } d \in s_1, \\
         \dots \\
-        f_m(d), & \text{if } d \in D_m. \\
+        f_m(d), & \text{if } d \in s_m. \\
     \end{cases}
 \end{align}
 
 These functions we will call \altterm{function elements}{function element}.
 It will be a representation of instruction or operation.
-Also, we can treat sets $D_i$ as program \altterm{states}{state}.
+Also, we can treat sets $s_i$ as state.
 
-For the sake of convenience, we will require that $D_0 = D_I$
-so we can treat $D_0$ as an initial state
-and that there is a superset $\{D_j\}$ that form $D_T$
-so we can treat them as terminal states: $D_T = \bigcup_{j} D_j$.
+In order to clarify what is meant by a term \term{state},
+we have to turn to the definition of
+Turing's machine~\cite{turing_computable_numbers}.
+There are two different meanings.
+\begin{enumerate}
+    \item First meaning is the one used in Knuth's definition.
+        It is a whole program execution state in some particular moment of
+        time.
+        In~\cite{turing_computable_numbers} it also called state of progress, 
+        or state of the system, or state formula.
+    \item The second one is the one we used.
+        In~\cite{turing_computable_numbers} it also called 
+        record of \textit{m}-configuration, or value of state register,
+        or designator of instruction.
+\end{enumerate}
+
+To the sake of disambiguity, from now for the first meaning we will use term
+\term{process state}, and for the second---\term{program state},
+and will never use the term \textit{state} without a specifier.
+For the process state we will use small letter $d$,
+for the set of process states---capital letter $D$,
+for the program state---small letter $s$,
+for the set of program states---capital letter $S$.
+
+\centerimage{states}{Process state and program state specifiers.}
+
+For the sake of convenience, we will require that $s_0 = D_I$
+so we can treat $s_0$ as an initial program state
+and that there is a superset $\{s_j\}$ that form $D_T$
+so we can treat them as terminal program states: $D_T = \bigcup_{j} s_j$.
 
 Now we can move our partition of a data set propose another definition of the program:
-$\mathcal{P} = \langle F, D, \mathcal{D}, D_I, \mathcal{D}_T \rangle$,
+$\mathcal{P} = \langle F, D, S, s_0, S_T \rangle$,
 where
 \begin{itemize}
     \item $F = \{f_i\}, f_i: D \ra D$ is a set of function elements,
-    \item $D$ is a data set,
-    \item $\mathcal{D} = \{D_j\}$ is a superset of states,
-    \item $D_I = D_0$ is a initial state,
-    \item $\mathcal{D}_T = \{D_k\}$ is a superset of terminal states.
+    \item $D$ is a set of all possible process states,
+    \item $S = \{s_j\}$ is a set of program states,
+    \item $s_0$ is a initial program state,
+    \item $S_T = \{s_k\}$ is a set of terminal program states.
 \end{itemize}
 
 \subsublevel*{Split data flow and control flow}
