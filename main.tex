@@ -122,7 +122,7 @@
 
 \setlength{\parindent}{0em}
 
-\title{Formal model of concrete, symbolic,
+\title{Formal model of program execution, symbolic,
     dynamic symbolic execution (concolic execution),
     and taint tracking}
 \author{Sergey Vartanov \\
@@ -140,6 +140,8 @@
 
 \setlength{\parskip}{0.5em}
 
+
+
 The main goal of this document is to propose a formal definition of
 some program analysis terms, such as execution (concrete execution),
 (pure) symbolic execution,
@@ -156,17 +158,26 @@ symbolic and dynamic symbolic execution, which will be discussed later,
 we will use a term concrete program and concrete program execution
 since it processes concrete data.
 
-\subsublevel*{Knuth}
-
-We can find classical definition of a \term{computational method} in
+We want to start from the classical definition of a
+\term{computational method} from
 Donald Knuth's \textit{The Art of Computer Programming}~\cite{knuth}.
 Computational method is $\langle Q, I, \Omega, f \rangle$,
 where $f: Q \ra Q$, $Q$~--- states, $\Omega$~--- terminal states,
 $I$~--- input states.
-
-Execution:
-$\forall x \in I$ path is $x_0, x_1, \dots, x_k, \dots$.
+In this model execution of a computational method is
+$\forall x \in I \,\, x_0, x_1, \dots, x_k, \dots$.
 $x_0 = x, x_{k + 1} = f(x_k)$.
+
+In order to clarify what is meant by a term \term{state},
+we have to turn to the definition of
+Turing's machine~\cite{turing_computable_numbers}.
+There are two different meanings:
+\begin{enumerate}
+    \item state of progress, state of the system, state formula,
+    \item record of \textit{m}-configuration, value of state register,
+          designator of instruction.
+\end{enumerate}
+In the Knuth's definition the term state is used in the first meaning.
 
 For the sake of convenience, we will use slightly different notation
 because it will interfere with our further considerations:
@@ -205,7 +216,7 @@ We can split set $D$ into a number of disjoint sets:
 $D = D_0 \cup D_1 \cup \dots \cup D_m,
     \forall i, j \,\, i \neq j \Ra D_i \cap D_j = \varnothing$.
 Now for each set $D_i$ we can define function $f_i$.
-$\forall d \in D_i \,\, f_i(d) = \mathcal{F}(d)$.
+$\forall d \in S_i \,\, f_i(d) = \mathcal{F}(d)$.
 
 \begin{align}
 \mathcal{F}(d) =
@@ -226,14 +237,15 @@ so we can treat $D_0$ as an initial state
 and that there is a superset $\{D_j\}$ that form $D_T$
 so we can treat them as terminal states: $D_T = \bigcup_{j} D_j$.
 
-Now we can propose another definition of the program:
-$\mathcal{P} = \langle F, D, D_I, D_T \rangle$,
+Now we can move our partition of a data set propose another definition of the program:
+$\mathcal{P} = \langle F, D, \mathcal{D}, D_I, \mathcal{D}_T \rangle$,
 where
 \begin{itemize}
-    \item $F = \{f_i\}$ is a set of function elements,
-    \item $D = \{D_j\}$ is a superset of states,
+    \item $F = \{f_i\}, f_i: D \ra D$ is a set of function elements,
+    \item $D$ is a data set,
+    \item $\mathcal{D} = \{D_j\}$ is a superset of states,
     \item $D_I = D_0$ is a initial state,
-    \item $D_T = \{D_k\}$ is a superset of terminal states.
+    \item $\mathcal{D}_T = \{D_k\}$ is a superset of terminal states.
 \end{itemize}
 
 \subsublevel*{Split data flow and control flow}
@@ -1236,6 +1248,6 @@ Statement is:
 \printindex
 
 \bibliography{paper}{}
-\bibliographystyle{plain}
+\bibliographystyle{unsrt}
 
 \end{document}

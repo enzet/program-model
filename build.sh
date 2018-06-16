@@ -41,11 +41,7 @@ do
     fi
 done
 
-if [[ main.tex -nt main.pdf ]]; then
-    echo "TeX generation..."
-    makeindex main
-    bibtex main
-    pdflatex -interaction=nonstopmode main
-else
-    echo "PDF is up to date."
-fi
+echo "TeX generation..."
+makeindex main
+bibtex main
+pdflatex -interaction=nonstopmode main
