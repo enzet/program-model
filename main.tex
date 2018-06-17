@@ -289,17 +289,26 @@ new properties of the program definition.
 
 Firstly, assume, that the partition $\{s_j\}$ was made in such a way,
 that every process state $d_i$ can be divided into two parts:
-$d_i = (d^D_i, d^F_i)$
+$d_i = (d^D_i, d^F_i)$.
 (so now there are two sets $D^D = \{d^D_i\}$ and $D^F = \{d^F_i\}$)
-and for every $f_i$ there is a function $f^F_i$ such as
-$d_i \in s_j \Lra f^F(d^F_i) = j$.
+where the second part only defines its state.
+I.e. $\exists g: g(d^F_i) = j \Lra d_i \in s_j$.
 In that case we can say that $d^F_i$ is a \term{program state designator}.
 It can be treated as \term{instruction pointer} or \term{program counter}.
 
-Assume also, that for every $f_i$
-    there is a function $f^D_i$ such as
-    $(d^D_k, d^F_k) = f_t\big((d^D_i, d^F_i)\big) \Lra
-        d^D_k = \varphi_t(d^D_i)$.
+ \comment{We never said $D$ is homogeneous. Why do we think it is so here?}
+
+Secondly, assume, that for every $f_i$ there are functions $f^D_i$ and $f^F_i$
+such as if $f_i(d_j) = d_k$,
+$f^D_i(d^D_j) = d^D_k$ and $f^F_i(d^F_j) = d^F_k$
+(where $d_j = (d^D_j, d^F_j)$ and $d_k = (d^D_k, d^F_k)$).
+
+In that case we divided our process state into a control flow and data parts.
+
+%Assume also, that for every $f_i$
+%    there is a function $f^D_i$ such as
+%    $(d^D_k, d^F_k) = f_t\big((d^D_i, d^F_i)\big) \Lra
+%        d^D_k = \varphi_t(d^D_i)$.
 
 As was said before, current program state defines the next function element.
 Therefore we can
