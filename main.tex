@@ -283,20 +283,23 @@ set of operations, or set of possible \altterm{statements}{statement}.
 
 \subsublevel*{Split data flow and control flow}
 
-Assume, that we can divide every process state $d_i$ into two parts
-    $d_i = (d^D_i, d^F_i)$.
-So now there are two sets $D^D = \{d^D_i\}$ and 
-    $D^F = \{d^F_i\}$.
+$S = \{s_j\}$ was described as an arbitrary partition of $D$.
+However, with some assumptions about that partition we can get
+new properties of the program definition.
+
+Firstly, assume, that the partition $\{s_j\}$ was made in such a way,
+that every process state $d_i$ can be divided into two parts:
+$d_i = (d^D_i, d^F_i)$
+(so now there are two sets $D^D = \{d^D_i\}$ and $D^F = \{d^F_i\}$)
+and for every $f_i$ there is a function $f^F_i$ such as
+$d_i \in s_j \Lra f^F(d^F_i) = j$.
+In that case we can say that $d^F_i$ is a \term{program state designator}.
+It can be treated as \term{instruction pointer} or \term{program counter}.
+
 Assume also, that for every $f_i$
-    there is a function $f^F_i$ such as
-    $d_i \in s_j \Lra f^F(d^F_i) = j$ and
-    and function $f^D_i$ such as
+    there is a function $f^D_i$ such as
     $(d^D_k, d^F_k) = f_t\big((d^D_i, d^F_i)\big) \Lra
         d^D_k = \varphi_t(d^D_i)$.
-
-Then we will call $d^D_i$ a \term{data element} and $d^D$ a \term{data},
-and $d^F_i$ a \term{program state designator}.
-It can be treated as \term{instruction pointer} or \term{program counter}.
 
 As was said before, current program state defines the next function element.
 Therefore we can
