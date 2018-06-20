@@ -4,14 +4,6 @@
 \newcommand{\level}{\section}
 \newcommand{\sublevel}{\subsection}
 \newcommand{\subsublevel}{\subsubsection}
-% \hoffset = 0pt
-% \voffset = 0pt
-% \oddsidemargin = 0pt
-% \evensidemargin = 0pt
-% \topmargin = 0pt
-% \headsep = 0pt
-% \textheight = 600pt
-% \textwidth = 450pt
 \usepackage[a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
 
 % To compile as a book.
@@ -51,6 +43,13 @@
     pdfborder={0 0 0},
 }
 
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{\textcolor{red}{This is a rough draft!}}
+\rhead{}
+\renewcommand{\headrulewidth}{0pt}
+
 % Soft colors.
 
 % \definecolor{red}{rgb}{0.8,0.1,0.1}
@@ -58,7 +57,8 @@
 
 % Some useful definitions.
 
-\newcommand{\comment}[1]{\hl{#1}}
+% \newcommand{\note}[1]{\hl{#1}}
+\newcommand{\note}[1]{\textcolor{red}{#1}}
 \newcommand{\la}{\leftarrow}
 \newcommand{\Lra}{\Leftrightarrow}
 \newcommand{\nat}{\mathds{N}}
@@ -97,6 +97,7 @@
 
 \renewcommand{\arraystretch}{1.5}
 % \renewcommand\qedsymbol{$\blacksquare$}
+\setcounter{secnumdepth}{0}
 
 \setlength{\skip\footins}{0.7cm}
 \setlength{\footnotesep}{0.3cm}
@@ -144,13 +145,13 @@
 
 \setlength{\parskip}{0.5em}
 
-
-
+\begin{abstract}
 The main goal of this document is to propose a formal definition of
 some program analysis terms, such as execution (concrete execution),
 (pure) symbolic execution,
 dynamic symbolic execution (concolic execution),
 feasibility, and taint analysis.
+\end{abstract}
 
 \level{Concrete program execution}
 
@@ -175,14 +176,12 @@ $I$~--- input states.
 In this model execution of a computational method is
 $\forall x \in I \,\, x_0, x_1, \dots, x_k, \dots$.
 $x_0 = x, x_{k + 1} = f(x_k)$.
-
 For the sake of convenience, we will use slightly different notation
 because it will interfere with our further considerations:
-$\mathcal{P} = \langle \mathcal{F}, D, D_I, D_T \rangle$,
+\begin{align}\mathcal{P} = \langle \mathcal{F}, D, D_I, D_T \rangle,\end{align}
 where $\mathcal{F}: D \ra D$ is an \term{execution function},
 $D$~--- states, $D_I$~--- initial states,
 $D_T$~--- terminal states.
-
 This definition is concise and theoretically
 any real-world program execution process can be described
 by this definition.
@@ -195,24 +194,23 @@ Firstly, execution function $\mathcal{F}$ is too complex.
 It is a single function that manages the whole execution process.
 To write a program we should somehow split this function into set of more simple
 functions.
-
 Let assume that set $D$ is finite: $|D| = n$.
 We can compute function result for each value $d_i$ from $D$.
 
 \begin{align}
 \mathcal{F}(d) =
     \begin{cases}
-        d^1, & \text{if } d = d_1, \\
-        d^2, & \text{if } d = d_2, \\
+        d_1', & \text{if } d = d_1, \\
+        d_2', & \text{if } d = d_2, \\
         \dots \\
-        d^n, & \text{if } d = d_n. \\
+        d_n', & \text{if } d = d_n. \\
     \end{cases}
 \end{align}
 
 We can split set $D$ into a number of disjoint sets:
 $D = s_0 \cup s_1 \cup \dots \cup s_m,
     \forall i, j \,\, i \neq j \Ra s_i \cap s_j = \varnothing$.
-Now for each set $s_i$ we can define function $f_i$.
+Now for each set $s_i$ we can define function $f_i: s_i \ra D$ such as
 $\forall d \in s_i \,\, f_i(d) = \mathcal{F}(d)$.
 
 \begin{align}
@@ -225,9 +223,14 @@ $\forall d \in s_i \,\, f_i(d) = \mathcal{F}(d)$.
     \end{cases}
 \end{align}
 
-These functions we will call \altterm{function elements}{function element}.
+These functions we will call function elements or
+for short \altterm{function elements}{function element}.
 It will be a representation of instruction or operation.
 Also, we can treat sets $s_i$ as state.
+It is very importaint to emphasize, that we defined function elements and
+states in such a way that two statements
+``next function element to be executed is $f_i$'' and
+``current state is $s_i$'' mean the same.
 
 In order to clarify what is meant by a term \term{state},
 we have to turn to the definition of
@@ -265,23 +268,28 @@ so we can treat them as terminal program states: $D_T = \bigcup_{j} s_j$.
 
 Now we can move our partition of a state set
 propose another definition of the program:
-$\mathcal{P} = \langle F, D, S, s_0, S_T \rangle$,
+\begin{align}\mathcal{P} = \langle F, D, S, s_0, S_T \rangle,\end{align}
 where
-\begin{itemize}
-    \item $F = \{f_i\}, f_i: D \ra D$ is a set of function elements,
-    \item $D$ is a set of all possible process states,
-    \item $S = \{s_j\}$ is a set of program states,
-    \item $s_0$ is a initial program state,
-    \item $S_T = \{s_k\}$ is a set of terminal program states.
-\end{itemize}
+$F = \{f_i\}, f_i: D \ra D$ is a set of function elements,
+$D$ is a set of all possible process states,
+$S = \{s_j\}$ is a set of program states,
+$s_0$ is a initial program state,
+$S_T = \{s_k\}$ is a set of terminal program states.
 
 Note, that current program state defines the next function element to be
 used to proceed program execution.
+Therefore we can
+define initial function element instead of initial program state,
+terminal function elements instead of terminal program states:
+\begin{align}\mathcal{P} = \langle F, D, S, f_0, F_T \rangle\end{align}
+where
+$f_0$ is a initial function element,
+$F_T = \{f_k\}$ is a set of terminal function elements.
 
 Here $F$ can be treated as a \term{instruction set},
 set of operations, or set of possible \altterm{statements}{statement}.
 
-\subsublevel*{Split data flow and control flow}
+\subsublevel*{Program counter}
 
 $S = \{s_j\}$ was described as an arbitrary partition of $D$.
 However, with some assumptions about that partition we can get
@@ -290,42 +298,40 @@ new properties of the program definition.
 Firstly, assume, that the partition $\{s_j\}$ was made in such a way,
 that every process state $d_i$ can be divided into two parts:
 $d_i = (d^D_i, d^F_i)$.
-(so now there are two sets $D^D = \{d^D_i\}$ and $D^F = \{d^F_i\}$)
+So now there are two sets $D^D = \{d^D_i\}$ and $D^F = \{d^F_i\}$,
 where the second part only defines its state.
 I.e. $\exists g: g(d^F_i) = j \Lra d_i \in s_j$.
 In that case we can say that $d^F_i$ is a \term{program state designator}.
 It can be treated as \term{instruction pointer} or \term{program counter}.
+\note{We never said $D$ is homogeneous. Why do we assume it here?}
 
- \comment{We never said $D$ is homogeneous. Why do we think it is so here?}
+\subsublevel*{Split data flow and control flow}
 
-Secondly, assume, that for every $f_i$ there are functions $f^D_i$ and $f^F_i$
-such as if $f_i(d_j) = d_k$,
-$f^D_i(d^D_j) = d^D_k$ and $f^F_i(d^F_j) = d^F_k$
-(where $d_j = (d^D_j, d^F_j)$ and $d_k = (d^D_k, d^F_k)$).
+% Secondly, assume, that for every $f_i$ there are functions $f^D_i$ and $f^F_i$
+% such as if $f_i(d_j) = d_k$,
+% $f^D_i(d^D_j) = d^D_k$ and $f^F_i(d^F_j) = d^F_k$
+% (where $d_j = (d^D_j, d^F_j)$ and $d_k = (d^D_k, d^F_k)$).
 
-In that case we divided our process state into a control flow and data parts.
+% In that case we divided our process state into a control flow and data parts.
 
 %Assume also, that for every $f_i$
 %    there is a function $f^D_i$ such as
 %    $(d^D_k, d^F_k) = f_t\big((d^D_i, d^F_i)\big) \Lra
 %        d^D_k = \varphi_t(d^D_i)$.
 
-As was said before, current program state defines the next function element.
-Therefore we can
-define initial function element instead of initial program state,
-terminal function elements instead of terminal program states,
-and remove program state designator from the process state,
-but make our function elements return new process state \bftext{and}
+% remove program state designator from the process state, but
+We can a bit redefine function elements and make them return
+new process state \textbf{and}
 next function element: $\mathcal{P} = \langle F, F_I, F_T, D \rangle$,
 where function elements and data are defined as follows:
 \begin{itemize}
     \item $F = \{f_j\} = \{(f^F_j, f^D_j)\}$~is a \term{function element set}.
-        $f_j: D \ra F \times D$~is a \term{function element}.
+        $f_j: s_j \ra F \times D$~is a \term{function element}.
         $f_j = (f^F_j, f^D_j)$:
         \begin{itemize}
-            \item $f^F_j: D \ra F$~is
+            \item $f^F_j: s_j \ra F$~is
                 \term{control flow function element}.
-            \item $f^D_j: D \ra D$~is \term{data flow function element}.
+            \item $f^D_j: s_j \ra D$~is \term{data flow function element}.
         \end{itemize}
         Function element could be considered as program instruction, that
         computes next program instruction \{$f^F_j$\}
@@ -451,11 +457,11 @@ as usual.
 We assume that either there is a single initial element $f_0$,
 or initial elements are represented by vertices that has no incoming edges.
 
-\altterm{Basic blocks}{basic block} are sets of \comment{continue...}
+\altterm{Basic blocks}{basic block} are sets of \note{continue...}
 
 \subsublevel*{Semantics}
 
-\begin{wraptable}{r}{6cm}
+\begin{table}
     \begin{center}
         \begin{tabular}{| c | c |}
             \hline
@@ -468,7 +474,7 @@ or initial elements are represented by vertices that has no incoming edges.
         \label{tbl:conjunction}
     \end{center}
     \caption{Conjunction truth table.}
-\end{wraptable}
+\end{table}
 
 \altterm{Concrete semantics}{concrete semantics} is a set of all data function
 elements $f^D_j$ used in program: $F^D$.
@@ -614,7 +620,7 @@ We can denote this fact as $P \Ra P_B$.
 \end{lemma}
 
 \begin{proof}
-    \comment{Add proof.}
+    \note{Add proof.}
 \end{proof}
 
 Therefore, we can write $P \Lra P_B$.
@@ -742,7 +748,7 @@ Data model with memory, registers, and array lengths.
         \end{itemize}
 \end{itemize}
 
- \comment{We don't consider data element indices as entities.
+\note{We don't consider data element indices as entities.
 That's why they cannot be represented by symbolic variables (or can they?).
 There should be such a data model.}
 
@@ -828,7 +834,7 @@ Execution rule:
 Execution path $P = \{\se{f}_0, \se{f}_1, \dots, \se{f}_t\}$ is
 \term{feasible in symbolic model} iff $c_{0, 1, \dots, t}$ is true.
 
- \comment{Difference between forward and backward symbolic execution?
+\note{Difference between forward and backward symbolic execution?
 What is exactly backward symbolic execution?}
 
 \sublevel{Symbolic semantics}
@@ -839,11 +845,11 @@ program.
 
 \sublevel{Symbolic execution and concrete execution}
 
- \comment{Feasibility in concrete model vs feasibility in symbolic model.}
+\note{Feasibility in concrete model vs feasibility in symbolic model.}
 
 \sublevel{Static symbolic execution}
 
- \comment{Some thoughts goes here.}
+\note{Some thoughts goes here.}
 
 \level{Taint tracking}
 
@@ -877,7 +883,7 @@ taint data model could be defined as $\te{D} = (\te{M}, \te{R})$:
         \term{taint registers model}.
 \end{itemize}
 
- \comment{Definitions of undertainting and overtainting.}
+\note{Definitions of undertainting and overtainting.}
 
 \level{Dynamic symbolic (concolic) execution model}
 
@@ -966,9 +972,9 @@ Execution function $\dse{\mathcal{F}}$ defines an \term{execution rule}:
 \begin{itemize}
     \item $f_{t + 1} = f_t^F(d_t)$,
     \item $d_{t + 1} = f_t^D(d_t)$,
-    \item $\se{f}_{t + 1} = \comment{?}$,
-    \item $\se{d}_{t + 1} = \comment{?}$,
-    \item $c_{t + 1} = \comment{?}$.
+    \item $\se{f}_{t + 1} = \note{?}$,
+    \item $\se{d}_{t + 1} = \note{?}$,
+    \item $c_{t + 1} = \note{?}$.
 \end{itemize}
 
 \altterm{Dynamic symbolic execution}{dynamic symbolic execution}
@@ -1016,9 +1022,9 @@ $c*_t = e_0 \land e_1 \land \dots \land \ol{e_t}$.
     f_t(d'_t) = f_v \neq f_u$.
 \end{lemma}
 
- \comment{Divergence?}
+\note{Divergence?}
 
- \comment{Selective symbolic execution.}
+\note{Selective symbolic execution.}
 
 \level{Examples}
 
@@ -1142,7 +1148,7 @@ We can formalize it as follows.
 
 \subsublevel*{Code snippet}
 
- \comment{For this one we should have memory indexing.
+\note{For this one we should have memory indexing.
 How can we reach that?}
 
 \lstset{language=c,caption=Listing,label={lst:impl}}
@@ -1160,7 +1166,7 @@ for (int i = 0; i < a.length(); i++) {
 }
 \end{lstlisting}
 
- \comment{It is just write by tainted index.}
+\note{It is just write by tainted index.}
 
 \sublevel{Sequence comparison}
 
@@ -1194,12 +1200,8 @@ for (int i = 0; i < 100; i++) {
 if (counter == 75) abort();
 \end{lstlisting}
 
-\begin{wrapfigure}{r}{5cm}
-\begin{center}
-\includegraphics[scale=1.25]{pdf/classic_cfg.pdf}
-\end{center}
-\caption{Sequence comparison program control flow graph}
-\end{wrapfigure}
+\centerimage{classic_cfg}
+    {Sequence comparison program control flow graph}
 
 As summary, we propose simpler example.
 The program compares 3 bytes $(x, y, z)$ with $(1, 1, 1)$ using
@@ -1261,7 +1263,7 @@ void top(char input[4]) {
 We compare our model with other concrete, symbolic, and dynamic symbolic
 program execution models.
 
- \comment{Add models from:}
+\note{Add models from:}
 \begin{itemize}
     \item A Theory and Practice of Program Development.
         By Derek J. Andrews
