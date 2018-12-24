@@ -73,6 +73,7 @@
 % \newcommand{\term}[1]{\textcolor{magenta}{#1}}
 \newcommand{\true}{\textbf{true}}
 \newcommand{\false}{\textbf{false}}
+\newcommand{\ifl}{\en{if}\ru{если}}
 
 % Execution marks
 
@@ -127,10 +128,15 @@
 
 \setlength{\parindent}{0em}
 
-\title{Formal model of program execution, symbolic,
+\title{    
+    \en{Formal model of program execution, symbolic,
     dynamic symbolic execution (concolic execution),
     and taint tracking}
-\author{Sergey Vartanov \\
+    \ru{Формальная модель исполнения программы, символьного,
+    динамического символьного исполнения (конколик-исполнения),
+    и отслеживания помещенных данных}
+}
+\author{\en{Sergey Vartanov}\ru{Сергей Вартанов} \\
     \href{mailto:me@enzet.ru}{\texttt{me@enzet.ru}},
     \href{mailto:svartanov@ispras.ru}{\texttt{svartanov@ispras.ru}}}
 \makeindex
@@ -146,24 +152,43 @@
 \setlength{\parskip}{0.5em}
 
 \begin{abstract}
-The main goal of this document is to propose a formal definition of
+\en{The main goal of this document is to propose a formal definition of
 some program analysis terms, such as execution (concrete execution),
 (pure) symbolic execution,
 dynamic symbolic execution (concolic execution),
-feasibility, and taint analysis.
+feasibility, and taint analysis.}
+\ru{Основная цель данной работы --- предложить формальную модель некоторых
+терминов из области анализа программ, таких как исполнение
+(фактическое исполнение),
+(чистое) символьное исполнение,
+динамическое символьное исполнение (конколик-исполнение),
+исполнимость и отслеживание помеченных данных.}
 \end{abstract}
 
-\level{Concrete program execution}
+\level{
+    \en{Concrete program execution}
+    \ru{Фактическое исполнение программы}
+}
 
-\sublevel{Program definition}
+\sublevel{
+    \en{Program definition}
+    \ru{Определение программы}
+}
 
-We will start with a program definition.
+\en{We will start with a program definition.
 In order to separate program execution from
 symbolic and dynamic symbolic execution, which will be discussed later,
-we will use a term concrete program and concrete program execution
-since it processes concrete data.
+we will use terms \textit{concrete program} and
+\textit{concrete program execution}
+since it processes concrete data.}
+\ru{Мы начнём с определения программы.
+Чтобы подчеркнуть разницу между исполнением программы,
+символьным и динамическим символьным исполнением,
+которые будут рассмотрены позднее,
+мы будем использовать термин фактическое исполнение программы,
+поскольку при этом процессе обрабатываются фактические данные.}
 
-We want to start from the classical definition of a
+\en{We want to start from the classical definition of a
 \term{computational method} from
 Donald Knuth's \textit{The Art of Computer Programming}~\cite{knuth}.
 Computational method is $\langle Q, I, \Omega, f \rangle$,
@@ -176,7 +201,7 @@ $I$~--- input states.
 In this model execution of a computational method is
 $\forall x \in I \,\, x_0, x_1, \dots, x_k, \dots$.
 $x_0 = x, x_{k + 1} = f(x_k)$.
-For the sake of convenience, we will use slightly different notation
+For convenience, we will use slightly different notation
 because it will interfere with our further considerations:
 \begin{align}\mathcal{P} = \langle \mathcal{F}, D, D_I, D_T \rangle,\end{align}
 where $\mathcal{F}: D \ra D$ is an \term{execution function},
@@ -186,85 +211,135 @@ This definition is concise and theoretically
 any real-world program execution process can be described
 by this definition.
 However, we want to highlight some particular aspects of modern programs and
-computer systems.
+computer systems,
+so we will expand this definition with more complex constructions.}
+\noru{}
 
-\subsublevel*{Split execution function}
+\subsublevel*{
+    \en{Split execution function}
+    \ru{Разделение функции исполнения}
+}
 
-Firstly, execution function $\mathcal{F}$ is too complex.
+\en{Firstly, execution function $\mathcal{F}$ is too complex.
 It is a single function that manages the whole execution process.
-To write a program we should somehow split this function into set of more simple
-functions.
+To write a program we should somehow split this function into a set of 
+more simple functions.
 Let assume that set $D$ is finite: $|D| = n$.
-We can compute function result for each value $d_i$ from $D$.
+We can compute function result for each value $d_i$ from $D$.}
+\ru{Во-первых, функция исполнения $\mathcal{F}$ слишком сложная.
+Это единственная функция, которая управляет всем процессом исполнения.
+Чтобы иметь возможность составлять программы, 
+мы должны каким-то образом разделить
+функцию выполнения на множество более простых функций.
+Допустим, что множество $D$ конечно: $|D| = n$.
+Мы можем посчитать значения функции для каждого значения $d_i$ из $D$.}
 
 \begin{align}
 \mathcal{F}(d) =
     \begin{cases}
-        d_1', & \text{if } d = d_1, \\
-        d_2', & \text{if } d = d_2, \\
+        d_1', & \text{\ifl } d = d_1, \\
+        d_2', & \text{\ifl } d = d_2, \\
         \dots \\
-        d_n', & \text{if } d = d_n. \\
+        d_n', & \text{\ifl } d = d_n. \\
     \end{cases}
 \end{align}
 
-We can split set $D$ into a number of disjoint sets:
+\en{We can split set $D$ into a number of disjoint sets:
 $D = s_0 \cup s_1 \cup \dots \cup s_m,
     \forall i, j \,\, i \neq j \Ra s_i \cap s_j = \varnothing$.
 Now for each set $s_i$ we can define function $f_i: s_i \ra D$ such as
-$\forall d \in s_i \,\, f_i(d) = \mathcal{F}(d)$.
+$\forall d \in s_i \,\, f_i(d) = \mathcal{F}(d)$.}
+\noru{}
 
 \begin{align}
 \mathcal{F}(d) =
     \begin{cases}
-        f_0(d), & \text{if } d \in s_0, \\
-        f_1(d), & \text{if } d \in s_1, \\
+        f_0(d), & \text{\ifl } d \in s_0, \\
+        f_1(d), & \text{\ifl } d \in s_1, \\
         \dots \\
-        f_m(d), & \text{if } d \in s_m. \\
+        f_m(d), & \text{\ifl } d \in s_m. \\
     \end{cases}
 \end{align}
 
-These functions we will call function elements or
+\en{We will call these functions \textit{execution function elements} or
 for short \altterm{function elements}{function element}.
-It will be a representation of instruction or operation.
-Also, we can treat sets $s_i$ as state.
-It is very importaint to emphasize, that we defined function elements and
-states in such a way that two statements
-``next function element to be executed is $f_i$'' and
-``current state is $s_i$'' mean the same.
+It will be a representation of instruction or operation.}
+\ru{Мы будем называть эти функции \textit{элементами функции исполнения}, или
+коротко \altterm{функциональными элементами}{функциональный элемент}.
+Они представляют собой инструкции или операции.}
 
-In order to clarify what is meant by a term \term{state},
-we have to turn to the definition of
+\en{Also, we can treat sets $s_i$ as state.
+And here we have to clarify what is meant by a term \term{state}.}
+\ru{Также, мы можем рассматривать множества $s_i$ в качестве состояний.
+И здесь важно уточнить, что мы понимаем под термином \term{состояние}.}
+
+\en{We have to turn to the definition of
 Turing's machine~\cite{turing_computable_numbers}.
-There are two different meanings.
+There are two different meanings of a term \term{state}.
 \begin{enumerate}
     \item First meaning is the one used in Knuth's definition.
         It is a whole program execution state in some particular moment of
         time.
         In~\cite{turing_computable_numbers} it also called state of progress, 
-        or state of the system, or state formula.
+        state of the system, or state formula.
+        For that meaning we will use term \textbf{\term{process state}}.
+        For the process state we will use small letter $d$,
+        for the set of process states---capital letter $D$.
     \item The second one is the one we used.
         In~\cite{turing_computable_numbers} it also called 
-        record of \textit{m}-configuration, or value of state register,
+        record of \textit{m}-configuration, value of state register,
         or designator of instruction.
-\end{enumerate}
+        For that meaning we will use term \textbf{\term{program state}}.
+        For the program state we will use small letter $s$\footnote{
+            $D$ and $s$ are both sets of $d$ and formally the same.
+            But we will use them in different situations.
+        },
+        for the set of program states---capital letter $S$.
+\end{enumerate}}
+\ru{Мы должны обратиться к определению
+машины Тьюринга~\cite{turing_computable_numbers}.
+В этой работе приводится два значения термина \term{состояние}.
+\begin{enumerate}
+    \item Первое значение~--- то, которое используется в определении Кнута.
+        Это состояние всего исполнения программы в определённый момент времени.
+        В~\cite{turing_computable_numbers} оно также называется состоянием
+        прогресса, состоянием системы или формулой состояния.
+        В этом значении мы будем использовать термин 
+        \textbf{\term{состояние процесса}}.
+        Для состояния процесса мы будем использовать строчную букву $d$,
+        для множества состояний процесса~--- прописную букву $D$.
+    \item Второе значение~--- то, которое использовали мы.
+        В~\cite{turing_computable_numbers} оно также называется записью
+        \textit{m}-конфигурации, значением регистра, или указателем инструкции.
+        В этом значении мы будем использовать термин 
+        \textbf{\term{состояние программы}}.
+        Для состояния программы мы будем использовать строчную букву $s$,
+        для множества состояний программы~--- прописную букву $S$.
+\end{enumerate}}
 
-For the sake of disambiguity, from now for the first meaning we will use term
-\term{process state}, and for the second---\term{program state},
-and will never use the term \textit{state} without a specifier.
-For the process state we will use small letter $d$,
-for the set of process states---capital letter $D$,
-for the program state---small letter $s$\footnote{
-    $D$ and $s$ are both sets of $d$ and formally the same.
-    But we will use them in different situations.
-},
-for the set of program states---capital letter $S$.
+\centerimage{states}{
+    \en{Process state and program state specifiers.}
+    \ru{Состояние процесса и состояние программы.}
+}
 
-\centerimage{states}{Process state and program state specifiers.}
+\en{It is very importaint to emphasize, that we defined function elements and
+states in such a way that two statements
+``next function element to be executed is $f_i$'' and
+``current state is $s_i$'' mean the same.}
+\ru{Важно подчеркнуть, что мы определили функциональные элементы и состояния
+таким образом, что два утверждения 
+<<следующим выполненым функциональным элементом будет $f_i$>> и 
+<<текущее состояние~--- $s_i$>> эквивалентны.}
 
-For the sake of convenience, we will require that $s_0 = D_I$
+\en{For convenience, we will require that $s_0 = D_I$
 so we can treat $s_0$ as an initial program state
 and that there is a superset $\{s_j\}$ that form $D_T$
-so we can treat them as terminal program states: $D_T = \bigcup_{j} s_j$.
+so we can treat them as terminal program states: $D_T = \bigcup_{j} s_j$.}
+\ru{Для удобства потребуем, чтобы $s_0 = D_I$
+(в таком случае мы можем рассматривать $s_0$ как начальное состояние программы)
+и чтобы существовало подмножество $\{s_j\}$, которое формирует $D_T$
+(в таком случае мы можем рассматривать их как терминальные состояния программы:
+$D_T = \bigcup_{j} s_j$).}
 
 Now we can move our partition of a state set
 propose another definition of the program:
@@ -307,7 +382,8 @@ It can be treated as \term{instruction pointer} or \term{program counter}.
 
 \subsublevel*{Split data flow and control flow}
 
-% Secondly, assume, that for every $f_i$ there are functions $f^D_i$ and $f^F_i$
+% Secondly, assume, that for every $f_i$ there are 
+% functions $f^D_i$ and $f^F_i$
 % such as if $f_i(d_j) = d_k$,
 % $f^D_i(d^D_j) = d^D_k$ and $f^F_i(d^F_j) = d^F_k$
 % (where $d_j = (d^D_j, d^F_j)$ and $d_k = (d^D_k, d^F_k)$).
@@ -358,11 +434,18 @@ Additionally, we will assume the following.
         $F_T \neq \varnothing$.
 \end{itemize}
 
-\subsublevel*{Limitations}
+\subsublevel*{
+    \en{Limitations}
+    \ru{Ограничения}
+}
 
-We assume \textbf{deterministic} program execution
+\en{We assume \textbf{deterministic} program execution
 using \textbf{limited} binary data without \textbf{self-modification}.
-Concrete program execution means normal program execution on given binary data.
+Concrete program execution means normal program execution
+on given binary data.}
+\ru{Будем рассматривать \textbf{детерминированное} исполнение программы без
+\textbf{самомодификаций}, которая использует \textbf{ограниченный} набор
+бинарной информации.}
 
 \begin{itemize}
     \item Firstly, we should emphasize that we distinguish data ($D$)
@@ -374,22 +457,35 @@ Concrete program execution means normal program execution on given binary data.
     \item Data is limited and predefined: $|D| < \infty$.
 \end{itemize}
 
-\subsublevel*{Possible data model definition}
+\subsublevel*{
+    \en{Possible data model definition}
+    \ru{Возможные определения модели данных}
+}
 
-Data set $D$ is a set of all possible values that can be arguments of
+\en{Data set can be homogenous or heterogenous. 
+In Knuth's examples data set is heterogenous (different vector sizes).
+In real-world programs data is set homogenous.}
+\ru{Множество данных может быть как гомогенным, так и гетерогенным.
+В примерах Кнута множество данных гетерогенно (векторы имеют разные размеры).
+В реальных программах множество данных гомогенно.}
+
+\en{Data set $D$ is a set of all possible values that can be arguments of
 function elements $f_j$: $D = \{d_j\}$.
 Data $d \in D$ is an abstract entity and it can be anything.
 The simplest data definition is a set of values: $d = \{d^j\}, d \in D$
 (we will use superscript for data elements because it is more convenient to use
 subscript for data instances), where $d^j$ is a Boolean variable,
-Boolean vector, natural, integer, real number, or anything else.
+Boolean vector, natural, integer, real number, or anything else.}
+\noru{}
 
-As we want to model real computer programs we can notice,
+\en{As we want to model real computer programs we can notice,
 that simplest definition of data as a Boolean variables is useful enough
-for majority of computer systems, which operates limited binary memory.
+for majority of computer systems, which operates limited binary memory.}
+\noru{}
 
-However it is convenient to use more complicated data definitions to simplify
-modeling.
+\en{However it is convenient to use more complicated data definitions to simplify
+modeling.}
+\noru{}
 
 Binary data:
 \begin{itemize}
@@ -818,8 +914,10 @@ presented on Figure \ref{img:symbolic_execution}.
 %     & \se{s}_{0,n_0} \arrow{r} & \cdots
 % \end{tikzcd}
 
-\centerimage{symbolic_execution}
-    {Symbolic execution process.}
+\centerimage{symbolic_execution}{
+    \en{Symbolic execution process.}
+    \ru{Процесс символьного исполнения.}
+}
 
 Execution rule:
 \begin{itemize}

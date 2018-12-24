@@ -42,6 +42,9 @@ do
 done
 
 echo "TeX generation..."
+cd out
 makeindex main &> log
-bibtex main &> log
-pdflatex -interaction=nonstopmode main &> log
+bibtex ../main.aux &> log
+cd ..
+
+pdflatex --output-directory=out -interaction=nonstopmode main &> log
