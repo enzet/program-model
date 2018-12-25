@@ -41,10 +41,14 @@ do
     fi
 done
 
-echo "TeX generation..."
-cd out
-makeindex main &> log
-bibtex ../main.aux &> log
-cd ..
+echo "English version generation..."
 
-pdflatex --output-directory=out -interaction=nonstopmode main &> log
+makeindex en &> log
+bibtex en &> log
+pdflatex -interaction=nonstopmode en &> log
+
+echo "Russian version generation..."
+
+makeindex ru &> log
+bibtex ru &> log
+pdflatex -interaction=nonstopmode ru &> log

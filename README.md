@@ -10,7 +10,8 @@ The main goal of the document is to propose a formal model of
 
 ## Build (Linux and macOS) ##
 
-To create main PDF file (`main.pdf`), please run `./build.sh`.
+Run `./build.sh` to create two PDF files `en.pdf` (in English),
+and `ru.pdf` (in Russian, not fully translated).
 
 Requirements:
   * LaTeX,
@@ -19,7 +20,7 @@ Requirements:
 
 ## Graph drawing ##
 
-There is also simple graph drawing [Python module](generator).
+There is also a simple graph drawing [Python module](generator).
 It is used to generate execution sequences, execution paths,
 control flow graphs, and symbolic execution trees.
 
