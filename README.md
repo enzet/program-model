@@ -1,3 +1,5 @@
+<img align="right" width="400" src="https://raw.githubusercontent.com/enzet/program-model/master/out/first_page.png" />
+
 # Program execution formal model #
 
 This is a very rough draft. Use it on your own risk.
@@ -22,7 +24,3 @@ Requirements:
 There is also a simple graph drawing [Python module](generator).
 It is used to generate execution sequences, execution paths,
 control flow graphs, and symbolic execution trees.
-
-Generated symbolic tree example:
-
-![Preview](https://raw.github.com/enzet/program-model/master/image/symbolic_tree.png)
