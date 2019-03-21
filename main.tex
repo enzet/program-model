@@ -198,8 +198,9 @@ where $f: Q \ra Q$, $Q$~is states\footnote{
 In this model execution of a computational method $\forall x \in I$ is
 $x_0, x_1, \dots, x_k, \dots$, where $x_0 = x, x_{k + 1} = f(x_k)$.
 For convenience, we will use slightly different notation
-because it will interfere with our further considerations:
-\begin{align}\mathcal{P}_\text{Knuth} =
+because it will interfere with our further considerations
+(superscript will be used to distinguish different program definitions):
+\begin{align}\mathcal{P}^\text{K} =
 \langle \mathcal{F}, D, D_I, D_T \rangle,\end{align}
 where $\mathcal{F}: D \ra D$ is an \term{execution function},
 $D$~is states, $D_I$~is initial states, $D_T$~is terminal states.
@@ -243,6 +244,8 @@ There is a function result for each value $d_i$ from $D$.}
 \en{We can split set $D$ into disjoint sets:
 $D = s_0 \cup s_1 \cup \dots \cup s_m \cup \dots,
     \forall i, j \,\, i \neq j \Ra s_i \cap s_j = \varnothing$.
+These sets should be disjoint because we have to know current program state
+at each point in time.
 Now for each set $s_i$ we can define function $f_i: s_i \ra D$ such as
 $\forall d \in s_i \,\, f_i(d) = \mathcal{F}(d)$.}
 \noru{}
@@ -318,8 +321,8 @@ There are two different meanings of a term \term{state}.
     \ru{Состояние процесса и состояние программы.}
 }
 
-\en{It is very importaint to emphasize, that we defined function elements and
-states in such a way that two statements
+\en{It is importaint to note that function elements and
+states were defined in such a way that two statements
 ``next function element to be executed is $f_i$'' and
 ``current state is $s_i$'' mean the same.}
 \ru{Важно подчеркнуть, что мы определили функциональные элементы и состояния
@@ -329,33 +332,34 @@ states in such a way that two statements
 \en{For convenience, we will require that $s_0 = D_I$
 so we can treat $s_0$ as an initial program state
 and that there is a superset $\{s_j\}$ that form $D_T$
-so we can treat them as terminal program states: $D_T = \bigcup_{j} s_j$.}
+so we can treat them as terminal program states:
+$S_T = D_T = \bigcup_{j} s_j$.}
 \ru{Для удобства потребуем, чтобы $s_0 = D_I$
 (в таком случае мы можем рассматривать $s_0$ как начальное состояние программы)
 и чтобы существовало подмножество $\{s_j\}$, которое формирует $D_T$
 (в таком случае мы можем рассматривать их как терминальные состояния программы:
 $D_T = \bigcup_{j} s_j$).}
-Now we can move our partition of a state set
-propose another definition of the program:
-\begin{align}\mathcal{P} = \langle F, D, S, s_0, S_T \rangle,\end{align}
+Now we can propose another definition of the program:
+\begin{align}\mathcal{P}^1 = \langle F, D, S, s_0, S_T \rangle,\end{align}
 where
 $F = \{f_i\}, f_i: D \ra D$ is a set of function elements,
 $D$ is a set of all possible process states,
 $S = \{s_j\}$ is a set of program states,
 $s_0$ is a initial program state,
 $S_T = \{s_k\}$ is a set of terminal program states.
-Note, that current program state defines the next function element to be
+Note that current program state defines the next function element to be
 used to proceed program execution.
 Therefore we can
-define initial function element instead of initial program state,
+define initial function element instead of initial program state, and
 terminal function elements instead of terminal program states:
-\begin{align}\mathcal{P} = \langle F, D, S, f_0, F_T \rangle\end{align}
+\begin{align}\mathcal{P}^2 = \langle F, D, S, f_0, F_T \rangle\end{align}
 where
 $f_0$ is a initial function element,
 $F_T = \{f_k\}$ is a set of terminal function elements.
 
-Here $F$ can be treated as a \term{instruction set},
-set of operations, or set of possible \altterm{statements}{statement}.
+Here $F$ can be treated as a set of program \altterm{statements}{statement}
+but not as \term{instruction set}, because they may share semantics but work
+for different states.
 
 \subsublevel*{Program counter}
 
