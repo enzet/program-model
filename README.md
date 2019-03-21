@@ -10,8 +10,7 @@ The main goal of the document is to propose a formal model of
 
 ## Build (Linux and macOS) ##
 
-Run `./build.sh` to create two PDF files `en.pdf` (in English),
-and `ru.pdf` (in Russian, not fully translated).
+Run `./build.sh` to create PDF file `main.pdf`.
 
 Requirements:
   * LaTeX,
