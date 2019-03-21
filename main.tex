@@ -216,39 +216,44 @@ with more complex constructions.}
 
 \subsublevel*{\en{Split execution function}\ru{Разделение функции исполнения}}
 
-\en{Firstly, execution function $\mathcal{F}$ is too complex.
-It is a single function that manages the whole execution process.
-To write a program we should somehow split this function into a set of 
-more simple functions.
-% Let assume that set $D$ is finite: $|D| = n$.
-There is a function result for each value $d_i$ from $D$.}
-\ru{Во-первых, функция исполнения $\mathcal{F}$ слишком сложная.
-Это единственная функция, которая управляет всем процессом исполнения.
-Чтобы иметь возможность составлять программы, 
-мы должны каким-то образом разделить
-функцию выполнения на множество более простых функций.
-Допустим, что множество $D$ конечно: $|D| = n$.
-Мы можем посчитать значения функции для каждого значения $d_i$ из $D$.}
+% \en{Firstly, execution function $\mathcal{F}$ is too complex.
+% It is a single function that manages the whole execution process.
+% To write a program we should somehow split this function into a set of 
+% more simple functions.
+% % Let assume that set $D$ is finite: $|D| = n$.
+% There is a function result for each value $d_i$ from $D$.}
+% \ru{Во-первых, функция исполнения $\mathcal{F}$ слишком сложная.
+% Это единственная функция, которая управляет всем процессом исполнения.
+% Чтобы иметь возможность составлять программы, 
+% мы должны каким-то образом разделить
+% функцию выполнения на множество более простых функций.
+% Допустим, что множество $D$ конечно: $|D| = n$.
+% Мы можем посчитать значения функции для каждого значения $d_i$ из $D$.}
 
-\begin{align}
-\mathcal{F}(d) =
-    \begin{cases}
-        d_1', & \text{\ifl}\,\, d = d_1, \\
-        d_2', & \text{\ifl}\,\, d = d_2, \\
-        \dots \\
-        d_n', & \text{\ifl}\,\, d = d_n, \\
-        \dots \\
-    \end{cases}
-\end{align}
+% \begin{align}
+% \mathcal{F}(d) =
+%     \begin{cases}
+%         d_1', & \text{\ifl}\,\, d = d_1, \\
+%         d_2', & \text{\ifl}\,\, d = d_2, \\
+%         \dots \\
+%         d_n', & \text{\ifl}\,\, d = d_n, \\
+%         \dots \\
+%     \end{cases}
+% \end{align}
 
-\en{We can split set $D$ into disjoint sets:
+% \en{We can split set $D$ into disjoint sets:
+% $D = s_0 \cup s_1 \cup \dots \cup s_m \cup \dots,
+%     \forall i, j \,\, i \neq j \Ra s_i \cap s_j = \varnothing$.
+% These sets should be disjoint because we have to know current program state
+% at each point in time.
+% Now for each set $s_i$ we can define function $f_i: s_i \ra D$ such as
+% $\forall d \in s_i \,\, f_i(d) = \mathcal{F}(d)$.}
+% \noru{}
+
+Suppose that execution function $\mathcal{F}$ is a piecewise-defined function
+and it is defined for sets $s_0, s_1, \dots, s_m, \dots$ and
 $D = s_0 \cup s_1 \cup \dots \cup s_m \cup \dots,
     \forall i, j \,\, i \neq j \Ra s_i \cap s_j = \varnothing$.
-These sets should be disjoint because we have to know current program state
-at each point in time.
-Now for each set $s_i$ we can define function $f_i: s_i \ra D$ such as
-$\forall d \in s_i \,\, f_i(d) = \mathcal{F}(d)$.}
-\noru{}
 
 \begin{align}
 \mathcal{F}(d) =
@@ -261,17 +266,12 @@ $\forall d \in s_i \,\, f_i(d) = \mathcal{F}(d)$.}
     \end{cases}
 \end{align}
 
+It is important that sets are disjoint because we have to know current
+program state at each point in time.
 \en{We will call these functions \textit{execution function elements} or
-for short \altterm{function elements}{function element}.
-It will be a representation of instruction or operation.}
-\ru{Мы будем называть эти функции \textit{элементами функции исполнения}, или
-коротко \altterm{функциональными элементами}{функциональный элемент}.
-Они представляют собой инструкции или операции.}
-
+for short \altterm{function elements}{function element}.}
 \en{Also, we can treat sets $s_i$ as state.
 And here we have to clarify what is meant by a term \term{state}.}
-\ru{Также, мы можем рассматривать множества $s_i$ в качестве состояний.
-И здесь важно уточнить, что мы понимаем под термином \term{состояние}.}
 \en{We have to turn to the definition of
 Turing's machine~\cite{turing_computable_numbers}.
 There are two different meanings of a term \term{state}.
@@ -295,6 +295,12 @@ There are two different meanings of a term \term{state}.
         },
         for the set of program states---capital letter $S$.
 \end{enumerate}}
+
+\ru{Мы будем называть эти функции \textit{элементами функции исполнения}, или
+коротко \altterm{функциональными элементами}{функциональный элемент}.
+Они представляют собой инструкции или операции.}
+\ru{Также, мы можем рассматривать множества $s_i$ в качестве состояний.
+И здесь важно уточнить, что мы понимаем под термином \term{состояние}.}
 \ru{Мы должны обратиться к определению
 машины Тьюринга~\cite{turing_computable_numbers}.
 В этой работе приводится два значения термина \term{состояние}.
@@ -325,20 +331,11 @@ There are two different meanings of a term \term{state}.
 states were defined in such a way that two statements
 ``next function element to be executed is $f_i$'' and
 ``current state is $s_i$'' mean the same.}
-\ru{Важно подчеркнуть, что мы определили функциональные элементы и состояния
-таким образом, что два утверждения 
-<<следующим выполненым функциональным элементом будет $f_i$>> и 
-<<текущее состояние~--- $s_i$>> эквивалентны.}
 \en{For convenience, we will require that $s_0 = D_I$
 so we can treat $s_0$ as an initial program state
 and that there is a superset $\{s_j\}$ that form $D_T$
 so we can treat them as terminal program states:
 $S_T = D_T = \bigcup_{j} s_j$.}
-\ru{Для удобства потребуем, чтобы $s_0 = D_I$
-(в таком случае мы можем рассматривать $s_0$ как начальное состояние программы)
-и чтобы существовало подмножество $\{s_j\}$, которое формирует $D_T$
-(в таком случае мы можем рассматривать их как терминальные состояния программы:
-$D_T = \bigcup_{j} s_j$).}
 Now we can propose another definition of the program:
 \begin{align}\mathcal{P}^1 = \langle F, D, S, s_0, S_T \rangle,\end{align}
 where
@@ -357,25 +354,36 @@ where
 $f_0$ is a initial function element,
 $F_T = \{f_k\}$ is a set of terminal function elements.
 
+\ru{Важно подчеркнуть, что мы определили функциональные элементы и состояния
+таким образом, что два утверждения 
+<<следующим выполненым функциональным элементом будет $f_i$>> и 
+<<текущее состояние~--- $s_i$>> эквивалентны.}
+\ru{Для удобства потребуем, чтобы $s_0 = D_I$
+(в таком случае мы можем рассматривать $s_0$ как начальное состояние программы)
+и чтобы существовало подмножество $\{s_j\}$, которое формирует $D_T$
+(в таком случае мы можем рассматривать их как терминальные состояния программы:
+$D_T = \bigcup_{j} s_j$).}
+
 Here $F$ can be treated as a set of program \altterm{statements}{statement}
 but not as \term{instruction set}, because they may share semantics but work
 for different states.
 
 \subsublevel*{Program counter}
 
-$S = \{s_j\}$ was described as an arbitrary partition of $D$.
-However, with some assumptions about that partition we can get
-new properties of the program definition.
+% $S = \{s_j\}$ was described as an arbitrary partition of $D$.
+% However, with some assumptions about that partition we can get
+% new properties of the program definition.
+% Firstly, assume, that the partition $\{s_j\}$ was made in such a way,
+% that every process state $d_i$ can be divided into two parts:
+% $d_i = (d^D_i, d^F_i)$.
 
-Firstly, assume, that the partition $\{s_j\}$ was made in such a way,
-that every process state $d_i$ can be divided into two parts:
+Assume as well that every process state $d_i$ can be divided into two parts:
 $d_i = (d^D_i, d^F_i)$.
 So now there are two sets $D^D = \{d^D_i\}$ and $D^F = \{d^F_i\}$,
 where the second part only defines its state.
 I.e. $\exists g: g(d^F_i) = j \Lra d_i \in s_j$.
 In that case we can say that $d^F_i$ is a \term{program state designator}.
 It can be treated as \term{instruction pointer} or \term{program counter}.
-\note{We never said $D$ is homogeneous. Why do we assume it here?}
 
 \subsublevel*{Split data flow and control flow}
 
