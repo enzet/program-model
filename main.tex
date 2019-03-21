@@ -298,10 +298,10 @@ There are two different meanings of a term \term{state}.
 
 \ru{Мы будем называть эти функции \textit{элементами функции исполнения}, или
 коротко \altterm{функциональными элементами}{функциональный элемент}.
-Они представляют собой инструкции или операции.}
-\ru{Также, мы можем рассматривать множества $s_i$ в качестве состояний.
-И здесь важно уточнить, что мы понимаем под термином \term{состояние}.}
-\ru{Мы должны обратиться к определению
+Они представляют собой инструкции или операции.
+Также, мы можем рассматривать множества $s_i$ в качестве состояний.
+И здесь важно уточнить, что мы понимаем под термином \term{состояние}.
+Мы должны обратиться к определению
 машины Тьюринга~\cite{turing_computable_numbers}.
 В этой работе приводится два значения термина \term{состояние}.
 \begin{enumerate}
@@ -369,6 +369,7 @@ but not as \term{instruction set}, because they may share semantics but work
 for different states.
 
 \subsublevel*{Program counter}
+%\subsublevel*{Split data flow and control flow}
 
 % $S = \{s_j\}$ was described as an arbitrary partition of $D$.
 % However, with some assumptions about that partition we can get
@@ -384,8 +385,6 @@ where the second part only defines its state.
 I.e. $\exists g: g(d^F_i) = j \Lra d_i \in s_j$.
 In that case we can say that $d^F_i$ is a \term{program state designator}.
 It can be treated as \term{instruction pointer} or \term{program counter}.
-
-\subsublevel*{Split data flow and control flow}
 
 % Secondly, assume, that for every $f_i$ there are 
 % functions $f^D_i$ and $f^F_i$
@@ -403,24 +402,13 @@ It can be treated as \term{instruction pointer} or \term{program counter}.
 % remove program state designator from the process state, but
 We can a bit redefine function elements and make them return
 new process state \textbf{and}
-next function element: $\mathcal{P} = \langle F, F_I, F_T, D \rangle$,
-where function elements and data are defined as follows:
-\begin{itemize}
-    \item $F = \{f_j\} = \{(f^F_j, f^D_j)\}$~is a \term{function element set}.
-        $f_j: s_j \ra F \times D$~is a \term{function element}.
-        $f_j = (f^F_j, f^D_j)$:
-        \begin{itemize}
-            \item $f^F_j: s_j \ra F$~is
-                \term{control flow function element}.
-            \item $f^D_j: s_j \ra D$~is \term{data flow function element}.
-        \end{itemize}
-        Function element could be considered as program instruction, that
-        computes next program instruction \{$f^F_j$\}
-        and modifies data \{$f^D_j$\}.
-    \item $F_I$ is a set of \term{initial function elements}.
-    \item $F_T$ is a set of \term{terminal function elements}.
-    \item $D = \{d_j\}$ is a set of possible \term{data} values.
-\end{itemize}
+next function element: $\mathcal{P} = \langle F, D, S, f_0, F_T \rangle$,
+where $F = \{f_j\} = \{(f^F_j, f^D_j)\}$,
+$f_j: s_j \ra F \times D$, $f_j = (f^F_j, f^D_j)$:
+$f^F_j: s_j \ra F$~is \term{control flow function element},
+$f^D_j: s_j \ra D$~is \term{data flow function element}.
+Function element could be considered as program instruction, that
+computes next program instruction \{$f^F_j$\} and modifies data \{$f^D_j$\}.
 
 Additionally, we will assume the following.
 \begin{itemize}
