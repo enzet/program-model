@@ -2,12 +2,12 @@
 
 mkdir -p pdf
 
-if [ -x "$(command -v python3)" ]; then
-    python3 run.py
-else
-    echo "No Python 3 found."
-    exit 1
-fi
+#if [ -x "$(command -v python3)" ]; then
+#    python3 run.py
+#else
+#    echo "No Python 3 found."
+#    exit 1
+#fi
 
 if [ $? -eq 0 ]; then
     echo "Images generated."
@@ -41,14 +41,7 @@ do
     fi
 done
 
-echo "English version generation..."
+makeindex main &> log
+bibtex main &> log
+pdflatex -interaction=nonstopmode main &> log
 
-makeindex en &> log
-bibtex en &> log
-pdflatex -interaction=nonstopmode en &> log
-
-echo "Russian version generation..."
-
-makeindex ru &> log
-bibtex ru &> log
-pdflatex -interaction=nonstopmode ru &> log

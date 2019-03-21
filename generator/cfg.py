@@ -15,7 +15,7 @@ class CFGElement:
 
 
 class Node(CFGElement):
-    def __init__(self, point: Vector, name: str="f", index: str="",
+    def __init__(self, point: Vector, name: str="s", index: str="",
             is_terminal: bool=False, is_feasible: bool=True):
         super().__init__()
         self.point = point
@@ -24,7 +24,7 @@ class Node(CFGElement):
         self.is_terminal = is_terminal
         self.is_feasible = is_feasible
 
-    def add(self, output_svg: svg.SVG):
+    def add(self, output_svg: svg.SVG) -> None:
         circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, self.radius)
         circle.style.stroke_width = 0.5
         if not self.is_feasible:
@@ -55,7 +55,7 @@ class Text(CFGElement):
         self.point = point
         self.text = text
 
-    def add(self, output_svg: svg.SVG):
+    def add(self, output_svg: svg.SVG) -> None:
         text = svg.Text(Vector(2.5, 4.5) + self.point * 5, self.text,
             style=svg.Style(font_size="10px", font_family="CMU Serif",
                 text_anchor="middle"))
@@ -68,7 +68,7 @@ class Loop(CFGElement):
         self.point = point
         self.angle = angle
 
-    def add(self, output_svg: svg.SVG):
+    def add(self, output_svg: svg.SVG) -> None:
         x = 2.5 + self.point.x * 5
         y = 2.5 + self.point.y * 5
         r = 7.5
@@ -91,7 +91,14 @@ class Loop(CFGElement):
         output_svg.add(v)
 
 
-def create_v(point: Vector, n: Vector, m: Vector):
+def create_v(point: Vector, n: Vector, m: Vector) -> list:
+    """
+
+    :param point:
+    :param n:
+    :param m:
+    :return:
+    """
     return [[point - n * 3 - m * 3, point - n * 2.5 - m * 1.5,
             point - n * 1.5 - m * 0.5, point],
         [point, point - n * 1.5 + m * 0.5, point - n * 2.5 + m * 1.5,

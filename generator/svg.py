@@ -226,6 +226,12 @@ class Text(SVGElement):
                 point.y + self.style.font_size * 0.2))
 
     def draw(self, file_, show_boundary: bool=False) -> None:
+        """
+        Write <text> tag into SVG file.
+
+        :param file_: output file.
+        :param show_boundary: draw text boundary box.
+        """
         file_.write("    <text x=\"" + str(self.point.x) + "\" y=\"" +
             str(self.point.y) + "\" ")
         file_.write("style=\"")
@@ -237,15 +243,28 @@ class Text(SVGElement):
 
 
 class SVG:
+    """
+    SVG document.
+    """
     def __init__(self) -> None:
         self.elements = []
         self.boundary_box = Box(Vector(), Vector())
 
     def add(self, element: SVGElement) -> None:
+        """
+        Add SVG element to SVG document.
+
+        :param element: SVG element.
+        """
         self.elements.append(element)
         self.boundary_box = self.boundary_box * element.boundary_box
 
     def draw(self, file_name: str) -> None:
+        """
+        Write the whole SVG document into a file.
+
+        :param file_name: result SVG file name.
+        """
         width = self.boundary_box.point2.x
         height = self.boundary_box.point2.y
 

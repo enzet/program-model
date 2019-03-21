@@ -16,11 +16,11 @@ def main(directory_name):
     def v(x, y):
         return Vector(x, y)
 
-    def an(point, id_, l="f", t=False, f=True):
+    def an(point, id_, l="s", t=False, f=True):
         graph.add(Node(point, name=l, index=id_, is_terminal=t,
             is_feasible=f))
 
-    def ant(point, id_, l="f"):
+    def ant(point, id_, l="s"):
         graph.add(Node(point, name=l, index=id_, is_terminal=True))
 
     def aa(point1, point2, f=True):
@@ -88,17 +88,17 @@ def main(directory_name):
     x, y = 2, 4
 
     graph.add(Text(Vector(x, y), TextWrap().add("CFG")))
-    line(graph, x, y + 4, "f", ["0", "1"], 5, True, True, True)
+    line(graph, x, y + 4, "s", ["0", "1"], 5, True, True, True)
 
     x += 12
     graph.add(Text(Vector(x, y - 2), TextWrap().add("symbolic")))
     graph.add(Text(Vector(x, y), TextWrap().add("execution tree")))
-    line(graph, x, y + 4, "f", ["0", "1"], 5, True, True)
+    line(graph, x, y + 4, "s", ["0", "1"], 5, True, True)
 
     x += 12
     text_wrap = TextWrap().add("P", italic=True).add("0", sub=True)
     graph.add(Text(Vector(x, y), text_wrap))
-    line(graph, x, y + 4, "f", ["0", "1"], 5, True, True)
+    line(graph, x, y + 4, "s", ["0", "1"], 5, True, True)
 
     d("simple")
 

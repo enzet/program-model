@@ -1,5 +1,6 @@
 % To compile as an article.
 
+\documentclass[oneside,a4paper]{article}  % fleqn
 \newcommand{\level}{\section}
 \newcommand{\sublevel}{\subsection}
 \newcommand{\subsublevel}{\subsubsection}
@@ -101,6 +102,11 @@
 \setlength{\skip\footins}{0.7cm}
 \setlength{\footnotesep}{0.3cm}
 
+% Lanugage.
+
+\newcommand{\en}[1]{#1}
+\newcommand{\ru}[1]{}
+
 % Images.
 
 \newcommand{\centerimage}[2]{
@@ -150,7 +156,7 @@
 \setlength{\parskip}{0.5em}
 
 \begin{abstract}
-\en{The main goal of this document is to propose a formal definition of
+\en{The primary objective of this document is to propose a formal definition of
 some program analysis terms, such as execution (concrete execution),
 (pure) symbolic execution,
 dynamic symbolic execution (concolic execution),
@@ -163,15 +169,9 @@ feasibility, and taint analysis.}
 исполнимость и отслеживание помеченных данных.}
 \end{abstract}
 
-\level{
-    \en{Concrete program execution}
-    \ru{Фактическое исполнение программы}
-}
+\level{\en{Concrete program execution}\ru{Фактическое исполнение программы}}
 
-\sublevel{
-    \en{Program definition}
-    \ru{Определение программы}
-}
+\sublevel{\en{Program definition}\ru{Определение программы}}
 
 \en{We will start with a program definition.
 In order to separate program execution from
@@ -213,10 +213,7 @@ and computer systems, we will add some constraints and expand this definition
 with more complex constructions.}
 \noru{}
 
-\subsublevel*{
-    \en{Split execution function}
-    \ru{Разделение функции исполнения}
-}
+\subsublevel*{\en{Split execution function}\ru{Разделение функции исполнения}}
 
 \en{Firstly, execution function $\mathcal{F}$ is too complex.
 It is a single function that manages the whole execution process.
@@ -430,10 +427,7 @@ Additionally, we will assume the following.
         $F_T \neq \varnothing$.
 \end{itemize}
 
-\subsublevel*{
-    \en{Limitations}
-    \ru{Ограничения}
-}
+\subsublevel*{\en{Limitations}\ru{Ограничения}}
 
 \en{We assume \textbf{deterministic} program execution
 using \textbf{limited} binary data without \textbf{self-modification}.
@@ -453,10 +447,8 @@ on given binary data.}
     \item Data is limited and predefined: $|D| < \infty$.
 \end{itemize}
 
-\subsublevel*{
-    \en{Possible data model definition}
-    \ru{Возможные определения модели данных}
-}
+\subsublevel*{\en{Possible data model definition}\
+\ru{Возможные определения модели данных}}
 
 \en{Data set can be homogenous or heterogenous. 
 In Knuth's examples data set is heterogenous (different vector sizes).
@@ -479,8 +471,8 @@ that simplest definition of data as a Boolean variables is useful enough
 for majority of computer systems, which operates limited binary memory.}
 \noru{}
 
-\en{However it is convenient to use more complicated data definitions to simplify
-modeling.}
+\en{However it is convenient to use more complicated data definitions to 
+simplify modeling.}
 \noru{}
 
 Binary data:
@@ -1129,9 +1121,9 @@ to research their properties.
 
 Simple data-driven program, that shows how we can split program execution
 into different functions without any explicit program counter.
-Program divides a number by two until it is possible:
+Program divides a natural number by two until it is possible:
 $\mathcal{P} = \langle \mathcal{F}, D, D_I, D_T \rangle, D = \nat,
-D_I = D, D_F = \{2n + 1\}$,
+D_I = \nat, D_F = \{2n - 1 | n \in \nat\}$,
 
 \begin{align}
 \mathcal{F}(d) =
@@ -1144,7 +1136,8 @@ D_I = D, D_F = \{2n + 1\}$,
 There are two explicit functions: $f_0(d) = \dfrac{d}{2}$ and $f_1(d) = d$.
 So. we can slightly change program definition:
 $\mathcal{P} = \langle F, D, S, s_0, S_T \rangle,
-F = \{f_0, f_1\}, s_0 = \{2n\}, s_1 = \{2n + 1\}$.
+F = \{f_0, f_1\}, s_0 = \{2n | n \in \nat\}, s_1 = \{2n - 1 | n \in \nat\}$.
+\note{Why $s_0$ is initial. It should be whole $D$.}
 
 \sublevel{Simplest program}
 
