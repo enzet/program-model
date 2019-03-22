@@ -119,6 +119,14 @@
 \end{figure}
 }
 
+\newcommand{\rightimage}[3]{
+\begin{wrapfigure}{R}{#3\textwidth}
+    \centering
+        \includegraphics[scale=1.25]{pdf/#1.pdf}
+    \caption{\label{img:#1}#2}
+\end{wrapfigure}
+}
+
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{claim}{Claim}
@@ -185,6 +193,8 @@ since it processes concrete data.}
 которые будут рассмотрены позднее,
 мы будем использовать термин фактическое исполнение программы,
 поскольку при этом процессе обрабатываются фактические данные.}
+
+% \rightimage{data}{Data.}{0.25}
 
 \en{We want to start from the classical definition of a
 \term{computational method} from
@@ -516,11 +526,11 @@ and external knowledge about array allocation:
 
 \subsublevel*{Control flow graph}
 
-Set of all possible next function elements for function element $f$ is
-$f[D] = \{f_j \in F | f_j = f_j^F(d), d \in D\}$.
+Set of all possible next program states for program state $s_i$ is
+$\{s_j \in S | \exists d' = f_i(d), d \in s_i, d' \in s_j\}$.
 \altterm{Control flow graph}{control flow graph} is a directed graph where
-vertices are function elements and there is an edge from
-vertex $f_i$ to vertex $f_j$ iff $f_j \in f_i[D]$.
+vertices are program states and there is an edge from
+vertex $s_i$ to vertex $s_j$ iff $s_j \in f_i[s_i]$.
 Function element $f_j = (f_j^F, f_j^D)$ is \term{branch} iff $|f_j[D]| > 1$.
 Otherwise (if range of the control flow function
 element has exactly one element),
