@@ -67,8 +67,8 @@
 \newcommand{\pcunchanged}{c_{t + 1} = c_t}
 \newcommand{\Ra}{\Rightarrow}
 \newcommand{\ra}{\rightarrow}
-\newcommand{\term}[1]{\textit{#1}\index{#1}}
-\newcommand{\altterm}[2]{\textit{#1}\index{#2}}
+\newcommand{\term}[1]{\textbf{#1}\index{#1}}
+\newcommand{\altterm}[2]{\textbf{#1}\index{#2}}
 % \newcommand{\term}[1]{\textcolor{magenta}{#1}}
 \newcommand{\true}{\textbf{true}}
 \newcommand{\false}{\textbf{false}}
@@ -184,8 +184,8 @@ feasibility, and taint analysis.}
 \en{We will start with a program definition.
 In order to separate program execution from
 symbolic and dynamic symbolic execution, which will be discussed later,
-we will use terms \textit{concrete program} and
-\textit{concrete program execution}
+we will use terms \textit{concrete program} 
+and \textit{concrete program execution}
 since it processes concrete data.}
 \ru{Мы начнём с определения программы.
 Чтобы подчеркнуть разницу между исполнением программы,
@@ -197,8 +197,9 @@ since it processes concrete data.}
 % \rightimage{data}{Data.}{0.25}
 
 \en{We want to start from the classical definition of a
-\term{computational method} from
-Donald Knuth's \textit{The Art of Computer Programming}~\cite{knuth}.
+\term{computational method} 
+(here and throughout bold typeface will be used for new terms)
+from Donald Knuth's \textit{The Art of Computer Programming}~\cite{knuth}.
 Computational method is $\langle Q, I, \Omega, f \rangle$,
 where $f: Q \ra Q$, $Q$~is states\footnote{
     Note, that there is no requrement, that all states should be reachable.
