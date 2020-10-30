@@ -2,12 +2,12 @@
 
 mkdir -p pdf
 
-#if [ -x "$(command -v python3)" ]; then
-#    python3 run.py
-#else
-#    echo "No Python 3 found."
-#    exit 1
-#fi
+if [ -x "$(command -v python3)" ]; then
+    python3 run.py
+else
+    echo "No Python 3 found."
+    exit 1
+fi
 
 if [ $? -eq 0 ]; then
     echo "Images generated."

@@ -1,3 +1,5 @@
-from generator import generate
+from generator.generate import Generator
 
-generate.main("image")
+
+if __name__ == "__main__":
+    Generator("image").generate()

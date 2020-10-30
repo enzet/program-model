@@ -2,20 +2,32 @@ import math
 
 from typing import List
 
-from generator import svg
-from generator.vector import Vector
+import svgwrite
+from svgwrite import Drawing
+import numpy as np
+
+
+def rotation_matrix(angle) -> np.array:
+    """
+    Get a matrix to rotate 2D vector by the angle.
+
+    :param angle: angle in radians
+    """
+    return np.array([
+        [np.cos(angle), np.sin(angle)],
+        [-np.sin(angle), np.cos(angle)]])
 
 
 class CFGElement:
     def __init__(self):
         self.radius = 7.5
 
-    def add(self, output_svg: svg.SVG):
+    def add(self, output_svg: Drawing):
         pass
 
 
 class Node(CFGElement):
-    def __init__(self, point: Vector, name: str="s", index: str="",
+    def __init__(self, point: np.array, name: str="s", index: str="",
             is_terminal: bool=False, is_feasible: bool=True):
         super().__init__()
         self.point = point
@@ -24,74 +36,72 @@ class Node(CFGElement):
         self.is_terminal = is_terminal
         self.is_feasible = is_feasible
 
-    def add(self, output_svg: svg.SVG) -> None:
-        circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5, self.radius)
-        circle.style.stroke_width = 0.5
+    def add(self, svg: Drawing) -> None:
+        circle = svg.circle(
+            np.array((2.5, 2.5)) + self.point * 5, self.radius,
+            stroke_width=0.5, fill="none", stroke="black")
         if not self.is_feasible:
-            circle.style.stroke_dasharray = "1,1"
-        output_svg.add(circle)
+            circle.update({"stroke-dasharray": "1,1"})
+        svg.add(circle)
 
         if self.is_terminal:
-            circle = svg.Circle(Vector(2.5, 2.5) + self.point * 5,
-                self.radius - 1.0)
-            circle.style.stroke_width = 0.5
+            circle = svg.circle(np.array((2.5, 2.5)) + self.point * 5,
+                self.radius - 1.0, fill="none", stroke="black")
+            circle.update({"stroke-width": 0.5})
             if not self.is_feasible:
-                circle.style.stroke_dasharray = "1,1"
-            output_svg.add(circle)
+                circle.update({"stroke-dasharray": "1,1"})
+            svg.add(circle)
 
-        text_wrap = svg.TextWrap()
-        text_wrap.add(self.name, italic=True)
-        text_wrap.add(self.index, sub=True)
+        text_wrap = svg.text(
+            "", np.array((2.5, 4.5)) + self.point * 5, font_size="10px",
+            font_family="CMU Serif", text_anchor="middle")
+        text_wrap.add(svg.tspan(self.name, font_style="italic"))
+        text_wrap.add(svg.tspan(
+            self.index, font_size="65%", baseline_shift="sub"))
 
-        text = svg.Text(Vector(2.5, 4.5) + self.point * 5, text_wrap,
-                style=svg.Style(font_size="10px", font_family="CMU Serif",
-                    text_anchor="middle"))
-        output_svg.add(text)
+        svg.add(text_wrap)
 
 
 class Text(CFGElement):
-    def __init__(self, point: Vector, text: svg.TextWrap):
+    def __init__(self, text: svgwrite.text.Text):
         super().__init__()
-        self.point = point
-        self.text = text
+        self.text: svgwrite.text.Text = text
+        self.text.update({
+            "font-family": "CMU Serif", "font-size": "10px",
+            "text-anchor": "middle"})
 
-    def add(self, output_svg: svg.SVG) -> None:
-        text = svg.Text(Vector(2.5, 4.5) + self.point * 5, self.text,
-            style=svg.Style(font_size="10px", font_family="CMU Serif",
-                text_anchor="middle"))
-        output_svg.add(text)
+    def add(self, svg: Drawing) -> None:
+        svg.add(self.text)
 
 
 class Loop(CFGElement):
-    def __init__(self, point: Vector, angle: float):
+    def __init__(self, point: np.array, angle: float):
         super().__init__()
         self.point = point
         self.angle = angle
 
-    def add(self, output_svg: svg.SVG) -> None:
-        x = 2.5 + self.point.x * 5
-        y = 2.5 + self.point.y * 5
+    def add(self, svg: Drawing) -> None:
+        point = np.array((2.5, 2.5)) + self.point * 5
         r = 7.5
         a1 = self.angle + math.pi / 9.0
         a2 = self.angle - math.pi / 9.0
-        n1 = Vector(math.cos(a1), math.sin(a1))
-        n2 = Vector(math.cos(a2), math.sin(a2))
-        p1 = Vector(x, y) + n1 * r
-        p2 = Vector(x, y) + n1 * 20
-        p3 = Vector(x, y) + n2 * 20
-        p4 = Vector(x, y) + n2 * r
-        path = [[p1, p2, p3, p4]]
-        curve = svg.Curve(path)
-        curve.style.stroke_width = 0.5
-        output_svg.add(curve)
+        n1 = np.array((math.cos(a1), math.sin(a1)))
+        n2 = np.array((math.cos(a2), math.sin(a2)))
+        p1 = point + n1 * r
+        p2 = point + n1 * 20
+        p3 = point + n2 * 20
+        p4 = point + n2 * r
+        svg.add(svg.path(
+            d=["M", p1, "C", p2, p3, p4], fill="none", stroke="black",
+            stroke_width=0.5))
 
-        n = (p4 - p3).norm()
-        v = svg.Curve(create_v(p4, n, n.rotate(-math.pi / 2.0)))
-        v.style.stroke_width = 0.5
-        output_svg.add(v)
+        n = (p4 - p3) / np.linalg.norm(p4 - p3)
+        svg.add(svg.path(
+            d=create_v(p4, n, np.dot(rotation_matrix(-math.pi / 2.0), n)),
+            stroke_width=0.5, fill="none", stroke="black"))
 
 
-def create_v(point: Vector, n: Vector, m: Vector) -> list:
+def create_v(point: np.array, n: np.array, m: np.array) -> list:
     """
 
     :param point:
@@ -99,50 +109,49 @@ def create_v(point: Vector, n: Vector, m: Vector) -> list:
     :param m:
     :return:
     """
-    return [[point - n * 3 - m * 3, point - n * 2.5 - m * 1.5,
-            point - n * 1.5 - m * 0.5, point],
-        [point, point - n * 1.5 + m * 0.5, point - n * 2.5 + m * 1.5,
-            point - n * 3 + m * 3]]
+    return [
+        "M", point - n * 3 - m * 3,
+        "C", point - n * 2.5 - m * 1.5, point - n * 1.5 - m * 0.5, point,
+        "C", point - n * 1.5 + m * 0.5, point - n * 2.5 + m * 1.5, point - n * 3 + m * 3]
 
 
 class Arrow(CFGElement):
-    def __init__(self, point1: Vector, point2: Vector, is_feasible: bool=True):
+    def __init__(self, point1: np.array, point2: np.array, is_feasible: bool=True):
         super().__init__()
         self.point1 = point1
         self.point2 = point2
         self.is_feasible = is_feasible
 
-    def add(self, output_svg: svg.SVG):
-        a = Vector(2.5, 2.5) + self.point1 * 5
-        b = Vector(2.5, 2.5) + self.point2 * 5
-        n = (b - a).norm()
+    def add(self, svg: Drawing):
+        a: np.array = np.array((2.5, 2.5)) + self.point1 * 5
+        b: np.array = np.array((2.5, 2.5)) + self.point2 * 5
+        n = (b - a) / np.linalg.norm((b - a))
         na = a + (n * self.radius)
         nb = b - (n * self.radius)
-        line = svg.Line(na.x, na.y, nb.x, nb.y)
-        line.style.stroke_width = 0.5
+        line = svg.line(na, nb, stroke_width=0.5, fill="none", stroke="black")
         if not self.is_feasible:
-            line.style.stroke_dasharray = "1,1"
-        output_svg.add(line)
+            line.update({"stroke-dasharray": "1,1"})
+        svg.add(line)
 
-        v = svg.Curve(create_v(nb, n, n.rotate(-math.pi / 2.0)))
+        v = svg.path(
+            d=create_v(nb, n, np.dot(rotation_matrix(-math.pi / 2.0), n)),
+            stroke_width=0.5, fill="none", stroke="black")
         if not self.is_feasible:
-            v.style.stroke_dasharray = "1,1"
-        v.style.stroke_width = 0.5
-        output_svg.add(v)
+            v.update({"stroke-dasharray": "1,1"})
+        svg.add(v)
 
 
 class Ellipsis(CFGElement):
-    def __init__(self, point: Vector, n: Vector):
+    def __init__(self, point: np.array, n: np.array):
         super().__init__()
         self.point = point
         self.n = n
 
-    def add(self, output_svg):
+    def add(self, svg):
         for i in [-4, 0, 4]:
-            p = svg.Circle(Vector(2.5, 2.5) + self.point * 5 + self.n * i, 0.6)
-            p.style.stroke = "none"
-            p.style.fill = "#000000"
-            output_svg.add(p)
+            svg.add(svg.circle(
+                np.array((2.5, 2.5)) + self.point * 5 + self.n * i, 0.6,
+                stroke="none", fill="black"))
 
 
 class CFGRepr:
@@ -152,9 +161,10 @@ class CFGRepr:
 
     def add(self, element: CFGElement):
         element.radius = self.radius
+        assert isinstance(element, CFGElement)
         self.elements.append(element)
 
-    def add_chain(self, point: Vector, array: List[str], is_vertical=True,
+    def add_chain(self, point: np.array, array: List[str], is_vertical=True,
             is_terminated=False):
         previous = point
 
@@ -170,22 +180,23 @@ class CFGRepr:
             previous = point
 
             if is_vertical:
-                point = point + Vector(0, 5)
+                point = point + np.array((0, 5))
             else:
-                point = point + Vector(5, 0)
+                point = point + np.array((5, 0))
 
-    def draw(self, file_name: str):
-        output_svg = svg.SVG()
-        self.create_svg(output_svg)
-        output_svg.draw(file_name)
+    def draw(self, file_name: str, size: np.array):
+        svg: Drawing = Drawing(size=list(map(str, size)))
+        self.create_svg(svg)
+        with open(file_name, "w+") as output_file:
+            svg.write(output_file)
 
-    def create_svg(self, drawing: svg.SVG):
-        for element in self.elements:
+    def create_svg(self, drawing: Drawing):
+        for element in self.elements:  # type: CFGElement
             element.add(drawing)
 
 
 class Vertex:
-    def __init__(self, id_, point: Vector, is_terminal=False):
+    def __init__(self, id_, point: np.array, is_terminal=False):
         self.id_ = id_
         self.point = point
         self.is_terminal = is_terminal
@@ -221,7 +232,7 @@ class CFG:
 
     def add_vertices(self, vertices: list):
         for id_, x, y in vertices:
-            self.add_vertex(Vertex(id_, Vector(x, y)))
+            self.add_vertex(Vertex(id_, np.array((x, y))))
 
     def add_edges(self, array: list):
         for id_1, id_2 in array:
@@ -231,29 +242,33 @@ class CFG:
 
             self.vertices[id_1].add_child(self.vertices[id_2])
 
-    def draw_cfg(self, drawing: svg.SVG, title=None):
+    def draw_cfg(self, drawing: Drawing, title: Text = None):
         if title:
-            title_text, title_point = title
-            self.repr.add(Text(title_point, title_text))
+            self.repr.add(title)
 
         self.repr.create_svg(drawing)
 
-    def draw_paths(self, drawing: svg.SVG, point: Vector):
+    def draw_paths(self, svg: Drawing, point: np.array):
         repr = CFGRepr()
 
         queue = [self.vertices[self.init_id]]
 
         def draw(queue, x, y, wstep, hstep, index):
             if len(queue[-1].children) == 0:
-                repr.add(Text(Vector(x, y),
-                    svg.TextWrap().add("P", italic=True)
-                        .add(str(index), sub=True)))
+                text_wrap = svg.text(
+                    "", np.array((2.5, 2.5)) + np.array((x, y)) * 5,
+                    font_size="10px", font_family="CMU Serif",
+                    text_anchor="middle")
+                text_wrap.add(svg.tspan("P", font_style="italic"))
+                text_wrap.add(svg.tspan(
+                    str(index), font_size="65%", baseline_shift="sub"))
+                repr.add(Text(text_wrap))
                 yy = y + 4
                 for inx, child in enumerate(queue):
-                    repr.add(Node(Vector(x, yy), index=child.id_,
+                    repr.add(Node(np.array((x, yy)), index=child.id_,
                         is_terminal=child.is_terminal))
                     if inx != len(queue) - 1:
-                        repr.add(Arrow(Vector(x, yy), Vector(x, yy + hstep)))
+                        repr.add(Arrow(np.array((x, yy)), np.array((x, yy + hstep))))
                     yy += hstep
             else:
                 for child in queue[-1].children:
@@ -261,6 +276,6 @@ class CFG:
                     draw(queue + [child], x, y, wstep, hstep, index)
                     index += 1
 
-        draw(queue, point.x, point.y, 5, 5, 0)
+        draw(queue, point[0], point[1], 5, 5, 0)
 
-        repr.create_svg(drawing)
+        repr.create_svg(svg)
