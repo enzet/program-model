@@ -1,4 +1,6 @@
-*.aux 
+# Latex auxiliary files.
+
+*.aux
 *.bbl 
 *.blg 
 *.idx
@@ -6,9 +8,15 @@
 *.ind
 *.lof
 *.lot
+*.log
 *.out
-*.log 
-*.pdf 
+*.pdf
 *.toc
 
+# IDE files.
+
 .idea
+
+# Debug output file.
+
+result.html
