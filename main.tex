@@ -4,7 +4,7 @@
 \newcommand{\level}{\section}
 \newcommand{\sublevel}{\subsection}
 \newcommand{\subsublevel}{\subsubsection}
-\usepackage[a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+% \usepackage[a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
 
 % To compile as a book.
 
@@ -47,7 +47,7 @@
 % \lhead{}
 % \chead{\textcolor{red}{This is a rough draft!}}
 % \rhead{}
-\renewcommand{\headrulewidth}{0pt}
+% \renewcommand{\headrulewidth}{0pt}
 
 % Soft colors.
 
@@ -106,6 +106,7 @@
 
 \newcommand{\en}[1]{#1}
 \newcommand{\ru}[1]{}
+\newcommand{\noru}[1]{}
 
 % Images.
 
@@ -194,12 +195,9 @@ since it processes concrete data.}
 мы будем использовать термин фактическое исполнение программы,
 поскольку при этом процессе обрабатываются фактические данные.}
 
-% \rightimage{data}{Data.}{0.25}
-
-\en{We want to start from the classical definition of a
-\term{computational method} 
-(here and throughout bold typeface will be used for new terms)
-from Donald Knuth's \textit{The Art of Computer Programming}~\cite{knuth}.
+\en{We want to start with the classical definition of a
+\term{computational method} from
+Donald Knuth's \textit{The Art of Computer Programming}~\cite{knuth}.
 Computational method is $\langle Q, I, \Omega, f \rangle$,
 where $f: Q \ra Q$, $Q$~is states\footnote{
     Note, that there is no requrement, that all states should be reachable.
@@ -214,11 +212,11 @@ because it will interfere with our further considerations
 \begin{align}\mathcal{P}^\text{K} =
 \langle \mathcal{F}, D, D_I, D_T \rangle,\end{align}
 where $\mathcal{F}: D \ra D$ is an \term{execution function},
-$D$~is states, $D_I$~is initial states, $D_T$~is terminal states.
+$D$~is a set of states, $D_I$~is a set of initial states, $D_T$~is a set of
+terminal states.
 This definition seems to be concise and comprehensive. 
 It has no any assumptions about the nature of states $D$ and its limitations.
-% Theoretically
-% any real-world program execution process can be described
+% Theoretically any real-world program execution process can be described
 % by this definition.
 However, since we want to highlight some particular aspects of modern programs
 and computer systems, we will add some constraints and expand this definition
@@ -261,8 +259,9 @@ with more complex constructions.}
 % $\forall d \in s_i \,\, f_i(d) = \mathcal{F}(d)$.}
 % \noru{}
 
-Suppose that execution function $\mathcal{F}$ is a piecewise-defined function
-and it is defined for sets $s_0, s_1, \dots, s_m, \dots$ and
+\sloppy
+Suppose that execution function $\mathcal{F}$ is a function piecewise-defined
+for sets $s_0, s_1, \dots, s_m, \dots$, where
 $D = s_0 \cup s_1 \cup \dots \cup s_m \cup \dots,
     \forall i, j \,\, i \neq j \Ra s_i \cap s_j = \varnothing$.
 
@@ -281,7 +280,7 @@ It is important that sets are disjoint because we have to know current
 program state at each point in time.
 \en{We will call these functions \textit{execution function elements} or
 for short \altterm{function elements}{function element}.}
-\en{Also, we can treat sets $s_i$ as state.
+\en{Also, we can treat set $s_i$ as a state.
 And here we have to clarify what is meant by a term \term{state}.}
 \en{We have to turn to the definition of
 Turing's machine~\cite{turing_computable_numbers}.
@@ -1353,7 +1352,7 @@ Function elements will be defined as follows.
     \end{cases} \]
 
 And alternative definition of element $f_6$:
-\[ f'_6^F(\{x, y, z, c\}) =
+\[ f'^F_6(\{x, y, z, c\}) =
     \begin{cases}
         f_7, & \text{if }c = 2, \\
         f_8, & \text{if }c \neq 2.
