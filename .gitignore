@@ -1,3 +1,8 @@
+# Temporary files.
+
+image/*.svg
+__pycache__
+
 # Latex auxiliary files.
 
 *.aux
